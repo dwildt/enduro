@@ -1,6 +1,11 @@
 Enduro-style 2D Obstacle Racing (vanilla JS)
 
-Spec generated: 2025-12-05T13:39:27.257Z
+Spec generated: 2025-12-05T14:34:27.990Z
+
+Deployment notes
+- This repo uses GitHub Actions Pages deployment (upload artifact + deploy-pages) via .github/workflows/deploy.yml.
+- The workflow publishes the contents of the `docs/` folder on push to `main` and the Pages site will be available at: https://<your-username>.github.io/enduro/ after the Action completes.
+- Ensure Pages is configured to use "GitHub Actions" as the source in the repository Settings → Pages (this is the recommended long-term setup so the workflow won't need changes).
 
 Overview
 A lightweight, dependency-free browser prototype inspired by Atari Enduro. The game uses HTML5 <canvas> and plain ES modules to implement a 2D top-down/pseudo-3D obstacle racing game with 4 progressive phases and an 8-bit pixel-art visual style.
