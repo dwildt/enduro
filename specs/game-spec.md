@@ -1,6 +1,6 @@
 # Enduro-style 2D Obstacle Racing — Game Specification
 
-Generated: 2025-12-05T12:29:42.937Z
+Generated: 2025-12-05T12:36:00.604Z
 
 ## High-level summary
 A small 2D top-down / pseudo-3D arcade racing game inspired by Atari "Enduro" implemented in vanilla JavaScript using the HTML5 <canvas>. The player controls a car and must avoid obstacles and traffic while progressing through 4 distinct phases (levels). Each phase increases difficulty and introduces new hazards and visual themes.
@@ -218,8 +218,9 @@ Notes:
 
 Project structure (issue-sliced roadmap)
 
-Timestamp: 2025-12-05T12:29:42.937Z
+Timestamp: 2025-12-05T12:36:00.604Z
 
+- GitHub Pages deploy (first task): add a deploy workflow to publish docs/ or gh-pages and validate an end-to-end hello-world deployment. Acceptance criteria: a deployment workflow file is present in .github/workflows (deploy.yml); README updated with Pages deployment instructions; CI run succeeds running `npm run lint` and `npm test`; workflow publishes the docs/ folder (or gh-pages) and the Action logs indicate a successful publish step (this serves a simple index.html as proof).
 - Scaffold: create index.html, styles.css, src/, assets/, package.json with scripts (start, lint, test); acceptance: site serves via npx serve, npm run lint && npm test run (tests may be placeholders).
 - Core game loop & canvas: fixed-timestep update/render loop, requestAnimationFrame integration, canvas mounting; acceptance: deterministic tick update unit tests and lint passing.
 - Player / Main scenario (movement + lanes): Car entity, lane positions, smooth interpolation, keyboard + mouse basic mapping; acceptance: unit tests for position updates and manual keyboard validation; lint passing.
@@ -231,7 +232,6 @@ Timestamp: 2025-12-05T12:29:42.937Z
 - Assets & 8‑bit visual style: assetLoader and placeholder pixel-art assets + palette enforcing 8‑bit look (retro pixels); acceptance: visual check and asset-loading unit test, assets adhere to palette; lint passing.
 - Sound & polish: SFX for crash/checkpoint/transition and minor visual polish (fade transitions); acceptance: audio playback smoke tests and UX check; lint passing.
 - Tests & CI integration: add Jest tests for pure logic modules, ESLint config, and GitHub Actions workflow to run lint + test on PR/push; acceptance: workflow file present and local run of npm run lint && npm test passes.
-- GitHub Pages deploy: add workflow to publish docs/ or gh-pages; acceptance: deploy workflow added and documented in README.
 
 For each issue: include short summary, link to relevant spec sections, clear acceptance criteria (include tests), and labels (enhancement/feature, test, ci, docs).
 
