@@ -1,6 +1,6 @@
 Enduro-style 2D Obstacle Racing (vanilla JS)
 
-Spec generated: 2025-12-05T12:36:00.604Z
+Spec generated: 2025-12-05T13:39:27.257Z
 
 Overview
 A lightweight, dependency-free browser prototype inspired by Atari Enduro. The game uses HTML5 <canvas> and plain ES modules to implement a 2D top-down/pseudo-3D obstacle racing game with 4 progressive phases and an 8-bit pixel-art visual style.
