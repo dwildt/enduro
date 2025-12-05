@@ -1,6 +1,6 @@
 Enduro-style 2D Obstacle Racing (vanilla JS)
 
-Spec generated: 2025-12-05T14:34:27.990Z
+Spec generated: 2025-12-05T23:58:37.330Z
 
 Deployment notes
 - This repo uses GitHub Actions Pages deployment (upload artifact + deploy-pages) via .github/workflows/deploy.yml.
