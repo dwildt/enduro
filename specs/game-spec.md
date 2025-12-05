@@ -1,6 +1,6 @@
 # Enduro-style 2D Obstacle Racing — Game Specification
 
-Generated: 2025-12-05T12:15:50.234Z
+Generated: 2025-12-05T12:29:42.937Z
 
 ## High-level summary
 A small 2D top-down / pseudo-3D arcade racing game inspired by Atari "Enduro" implemented in vanilla JavaScript using the HTML5 <canvas>. The player controls a car and must avoid obstacles and traffic while progressing through 4 distinct phases (levels). Each phase increases difficulty and introduces new hazards and visual themes.
@@ -215,4 +215,24 @@ Notes:
 - Keep DOM-free logic small and pure to facilitate unit testing with Jest
 
 ---
+
+Project structure (issue-sliced roadmap)
+
+Timestamp: 2025-12-05T12:29:42.937Z
+
+- Scaffold: create index.html, styles.css, src/, assets/, package.json with scripts (start, lint, test); acceptance: site serves via npx serve, npm run lint && npm test run (tests may be placeholders).
+- Core game loop & canvas: fixed-timestep update/render loop, requestAnimationFrame integration, canvas mounting; acceptance: deterministic tick update unit tests and lint passing.
+- Player / Main scenario (movement + lanes): Car entity, lane positions, smooth interpolation, keyboard + mouse basic mapping; acceptance: unit tests for position updates and manual keyboard validation; lint passing.
+- Input abstraction (desktop + mobile): input.js with PointerEvent support, tap zones, swipe mapping, hold behavior, optional on-screen buttons; acceptance: unit tests mapping events→actions and touch manual checks; lint passing.
+- Obstacles & spawner: lane-based spawner, configurable spawn rates per phase, basic enemy types (slow/fast/stationary); acceptance: deterministic spawn-rate unit tests and in-game verification; lint passing.
+- Collision & lives: collision.js (AABB), life decrement, temporary invulnerability, game-over flow; acceptance: unit tests for collision outcomes and game-over state; lint passing.
+- Scoring, timer & HUD: distance scoring, overtakes, phase bonuses, HUD rendering (lives, score, phase, timer); acceptance: unit tests for scoring math and HUD reflecting state; lint passing.
+- Level manager & phases: implement 4 phases with difficulty scaling, transitions, and phase overlays; acceptance: unit tests for transition triggers and manual transition visuals; lint passing.
+- Assets & 8‑bit visual style: assetLoader and placeholder pixel-art assets + palette enforcing 8‑bit look (retro pixels); acceptance: visual check and asset-loading unit test, assets adhere to palette; lint passing.
+- Sound & polish: SFX for crash/checkpoint/transition and minor visual polish (fade transitions); acceptance: audio playback smoke tests and UX check; lint passing.
+- Tests & CI integration: add Jest tests for pure logic modules, ESLint config, and GitHub Actions workflow to run lint + test on PR/push; acceptance: workflow file present and local run of npm run lint && npm test passes.
+- GitHub Pages deploy: add workflow to publish docs/ or gh-pages; acceptance: deploy workflow added and documented in README.
+
+For each issue: include short summary, link to relevant spec sections, clear acceptance criteria (include tests), and labels (enhancement/feature, test, ci, docs).
+
 Next step: scaffold the repo (index.html, src/, basic main.js and input.js) and add package.json with scripts for test and lint. Would you like scaffolding now?
