@@ -1,7 +1,7 @@
 name: Deploy to GitHub Pages
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -10,7 +10,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-upload:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,14 +20,12 @@ jobs:
       - run: npm ci || true
       - run: npm run lint
       - run: npm test
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./docs
-
-  deploy:
-    needs: build-and-upload
-    runs-on: ubuntu-latest
-    steps:
+      - name: Verify docs directory
+        run: |
+          if [ ! -d ./docs ]; then echo "docs/ directory missing" && false; fi
+          ls -la docs
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v3
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs
