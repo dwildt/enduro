@@ -6,5 +6,8 @@
     "start": "npx serve .",
     "lint": "eslint \"src/**/*.js\" \"tests/**/*.js\" --ext .js",
     "test": "node tests/run-tests.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.39.0"
   }
 }
