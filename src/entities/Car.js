@@ -21,7 +21,7 @@ export default class Car {
   // dt in seconds
   update(dt){
     const dx = this.targetX - this.x;
-    if(Math.abs(dx) < 1) { this.x = this.targetX; return }
+    if(Math.abs(dx) < 1) { this.x = this.targetX; return; }
     const dir = Math.sign(dx);
     const move = this.speed * dt * dir;
     if(Math.abs(move) >= Math.abs(dx)) this.x = this.targetX;
