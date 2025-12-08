@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "npx serve .",
-    "lint": "echo \"No lint configured\"",
+    "lint": "eslint \"src/**/*.js\" \"tests/**/*.js\" --ext .js",
     "test": "node tests/run-tests.js"
   }
 }
