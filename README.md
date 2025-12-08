@@ -1,52 +1,56 @@
-Enduro-style 2D Obstacle Racing (vanilla JS)
+Enduro — 8-bit Obstacle Racing (vanilla JS)
 
 Spec generated: 2025-12-05T23:58:37.330Z
-
-Deployment notes
-- This repo uses GitHub Actions Pages deployment (upload artifact + deploy-pages) via .github/workflows/deploy.yml.
-- The workflow publishes the contents of the `docs/` folder on push to `main` and the Pages site will be available at: https://<your-username>.github.io/enduro/ after the Action completes.
-- Ensure Pages is configured to use "GitHub Actions" as the source in the repository Settings → Pages (this is the recommended long-term setup so the workflow won't need changes).
+Updated: 2025-12-08T12:54:32.074Z
 
 Overview
-A lightweight, dependency-free browser prototype inspired by Atari Enduro. The game uses HTML5 <canvas> and plain ES modules to implement a 2D top-down/pseudo-3D obstacle racing game with 4 progressive phases and an 8-bit pixel-art visual style.
+A small, dependency-free browser prototype inspired by Atari Enduro. Built with plain ES modules and HTML5 <canvas>, the game is a 2D top-down/pseudo-3D obstacle racer with an 8-bit pixel-art aesthetic, responsive desktop and mobile controls, and 4 progressive phases.
 
-What exists (specs)
-- specs/game-spec.md — full game design, controls (desktop + mobile), phases, CI and deployment notes
-- specs/issue-templates-spec.md — description of issue templates
-- .github/ISSUE_TEMPLATE/* — actual templates (bug_report.md, feature_request.md, idea.md)
+Key features
+- 8-bit pixel-art visual style; pixelated rendering and palette-friendly assets
+- Simple, responsive controls: keyboard (arrow / A D), mouse click zones, and touch (tap/swipe)
+- Four phases with increasing difficulty and themed visuals
+- Obstacles and basic AI (lane-based spawner)
+- Scoring, lives, and HUD (score, timer, phase, lives)
+- Basic sound effects and simple visual polish (fade transitions)
+- Tests (unit tests for core logic), ESLint configured, and CI to run lint + tests
+- Deployable to GitHub Pages via Actions (docs/ or GitHub Actions artifact flow)
 
-Development notes
-- No build step by default; the game runs as static files served by any static server.
-- Recommended local quick server (choose one):
-  - npx serve .  # serve current directory (recommended for simple preview)
-  - npx http-server . -p 8080  # alternative
+Project structure
+- index.html — game mount and canvas
+- styles.css — base styling and pixelated rendering flag
+- src/ — game source (ES modules and some CommonJS test helpers)
+  - main.js
+  - input.cjs / input.js
+  - score.cjs / hud.cjs
+  - collision.cjs
+  - levelManager.cjs
+  - spawner.cjs
+  - assetLoader.cjs
+  - sound.cjs
+  - entities/
+    - Car.js
+    - Obstacle.js
+- tests/ — unit tests used by `npm test`
+- docs/ — static files published by GitHub Pages (index.html proof)
+- .github/workflows/ — CI and deploy workflows
+- specs/ — project and issue specifications
 
-Node & npm (optional)
-- If npm is used, add package.json and scripts:
-  - "lint": "eslint \"src/**/*.js\""
-  - "test": "jest"
-  - "start": "npx serve ."
-- CI is configured via GitHub Actions in specs; see specs/game-spec.md for suggested workflows.
+NPM scripts (local development)
+- npm install            # install dependencies (dev + prod)
+- npm run lint           # run ESLint over src/ and tests/
+- npm test               # run unit tests (node-based test runner)
+- npm start              # quick preview (runs: npx serve .)
 
-GitHub Pages
-- The spec describes two deploy approaches: using docs/ or gh-pages branch via actions. Place built or static files in docs/ for the simplest setup.
+Workflow & contribution notes
+- Trunk-based development: work is done on the main branch per project policy when using Copilot CLI.
+- Always run lint and tests before committing changes locally: npm run lint && npm test
+- Commits created by the Copilot CLI should include tests passing locally; pushing remains a manual step by the repository owner.
+- Convert specs into issues (specs/ contains issues and templates) and use the .github/ISSUE_TEMPLATE templates when creating new issues via the UI or gh CLI.
 
-Issue workflow
-- Specs are the source of truth. Before coding, convert specs into issues (one per major task/feature) so work is tracked.
-- Example: use `gh issue create -F specs/game-spec.md --title "Game: Enduro spec"` to open an issue from a spec file.
+CI & GitHub Pages
+- CI runs ESLint and tests on push/PR; see .github/workflows/ci.yml.
+- Pages deployment is automated via .github/workflows/deploy.yml and publishes docs/ to your Pages site. Ensure Pages settings allow GitHub Actions deployments.
 
-Copilot CLI & workflow notes
-- When using GitHub Copilot CLI with this repo, pushing commits is considered a manual task for the repository owner.
-- Always run lint and tests locally before creating commits or asking Copilot to propose changes. Example:
-  - npm run lint && npm test
-- For quick previews, using npx to run a static server is supported (see "Development notes" above).
-
-Recommended local workflow (developer-controlled)
-1. Create a branch for the task.
-2. Implement changes locally and run: npm run lint && npm test
-3. Stage commits and prepare a descriptive commit message.
-4. Push the branch (manual) and open a PR for review.
-
-Contact / further instructions
-- See .github/copilot-instructions.md for guidance on using Copilot CLI in this repo.
-- See specs/ for detailed game planning.
+Contact
+- See .github/copilot-instructions.md for Copilot CLI usage guidelines and repository-specific rules.
