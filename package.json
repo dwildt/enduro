@@ -8,6 +8,6 @@
     "test": "node tests/run-tests.js"
   },
   "devDependencies": {
-    "eslint": "^8.39.0"
+    "eslint": "^8.57.1"
   }
 }
