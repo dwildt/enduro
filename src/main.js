@@ -119,7 +119,17 @@ function update(dt){
   if(Math.random() < dynamicSpawn * dt){
     const lane = Math.floor(Math.random() * lanePositions.length);
     const speed = 80 * diff.baseSpeed + Math.random() * 60;
-    obstacles.push(new Obstacle(lane, lanePositions, -60, speed));
+    const spawnY = -60;
+    // ensure lane spacing: don't spawn if nearest obstacle in this lane is too close to spawn point
+    const laneObs = obstacles.filter(o => o.lane === lane);
+    let nearest = null;
+    for(const o of laneObs){
+      if(o.y > spawnY && (nearest === null || o.y < nearest.y)) nearest = o;
+    }
+    const minGap = 100; // pixels
+    if(!nearest || (nearest.y - spawnY) >= minGap){
+      obstacles.push(new Obstacle(lane, lanePositions, spawnY, speed));
+    }
   }
 
   // update obstacles
