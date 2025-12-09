@@ -15,6 +15,17 @@ const obstacles = []; // active obstacles array
 const spawnRate = 0.9; // per second
 let spawnAccumulator = 0; // reserved for future rate logic
 
+// sprite images (8-bit SVGs)
+const carImg = new Image();
+let carImgLoaded = false;
+carImg.onload = () => { carImgLoaded = true; };
+carImg.src = 'assets/images/car.svg';
+
+const obstacleImg = new Image();
+let obstacleImgLoaded = false;
+obstacleImg.onload = () => { obstacleImgLoaded = true; };
+obstacleImg.src = 'assets/images/obstacle.svg';
+
 // silence unused warning for elapsedTime until HUD uses it
 /* eslint-disable no-unused-vars */
 let _elapsedTime_suppress = null;
@@ -137,15 +148,23 @@ function render(interp){
 
   // draw obstacles
   obstacles.forEach(o=>{
-    ctx.fillStyle = '#f55';
-    ctx.fillRect(o.x - o.width/2, o.y - o.height/2, o.width, o.height);
+    if(obstacleImgLoaded){
+      ctx.drawImage(obstacleImg, o.x - o.width/2, o.y - o.height/2, o.width, o.height);
+    } else {
+      ctx.fillStyle = '#f55';
+      ctx.fillRect(o.x - o.width/2, o.y - o.height/2, o.width, o.height);
+    }
   });
 
-  // draw player car as simple rectangle
+  // draw player car as image when available
   const carW = 32;
   const carH = 48;
-  ctx.fillStyle = invulTimer > 0 ? '#ff0' : '#0ff';
-  ctx.fillRect(car.x - carW/2, car.y - carH/2, carW, carH);
+  if(carImgLoaded){
+    ctx.drawImage(carImg, car.x - carW/2, car.y - carH/2, carW, carH);
+  } else {
+    ctx.fillStyle = invulTimer > 0 ? '#ff0' : '#0ff';
+    ctx.fillRect(car.x - carW/2, car.y - carH/2, carW, carH);
+  }
 
   // HUD
   ctx.fillStyle = '#0f0';
