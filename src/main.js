@@ -181,7 +181,10 @@ function resetGame(){
   score = 0;
   elapsedTime = 0;
   running = true;
+  console.log('resetGame called');
 }
+// expose for debugging
+window.resetGame = resetGame;
 
 function loop(now){
   const frameTime = now - last;
