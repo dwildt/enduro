@@ -13,12 +13,26 @@ const car = new Car(1, lanePositions);
 import Obstacle from './entities/Obstacle.js';
 const obstacles = []; // active obstacles array
 const spawnRate = 0.9; // per second
-let spawnAccumulator = 0;
+let spawnAccumulator = 0; // reserved for future rate logic
+
+// silence unused warning for elapsedTime until HUD uses it
+/* eslint-disable no-unused-vars */
+let _elapsedTime_suppress = null;
+/* eslint-enable no-unused-vars */
 
 // Lives and invulnerability for browser
 let lives = 3;
 let invulTimer = 0; // seconds
 const invulSeconds = 1.5;
+
+// Score and timer (simple in-main manager)
+let score = 0;
+let elapsedTime = 0;
+const pointsPerSec = 10;
+
+// Game state
+let running = true;
+let flashTimer = 0; // visual flash on hit
 
 let last = performance.now();
 const TICK = 1000/60;
@@ -33,6 +47,10 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => {
   if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = false; }
   if(e.key === 'ArrowRight' || e.key === 'd') { inputState.right = false; }
+  if(e.key === 'r' || e.key === 'R') {
+    // restart on R
+    resetGame();
+  }
 });
 
 // Pointer / click zones
@@ -47,8 +65,13 @@ function aabbOverlap(ax, ay, aw, ah, bx, by, bw, bh){
 }
 
 function update(dt){
+  if(!running) return;
   // dt in seconds
   car.update(dt);
+
+  // scoring/time
+  elapsedTime += dt;
+  score += pointsPerSec * dt;
 
   // spawn logic
   spawnAccumulator += dt;
@@ -67,6 +90,7 @@ function update(dt){
 
   // invulnerability update
   if(invulTimer > 0){ invulTimer = Math.max(0, invulTimer - dt); }
+  if(flashTimer > 0){ flashTimer = Math.max(0, flashTimer - dt); }
 
   // collision checks
   if(invulTimer <= 0){
@@ -75,7 +99,13 @@ function update(dt){
       if(collided){
         lives = Math.max(0, lives - 1);
         invulTimer = invulSeconds;
+        flashTimer = 0.3;
+        // vibrate if available
+        if(navigator.vibrate) navigator.vibrate(100);
         console.log('Hit! lives=', lives);
+        if(lives <= 0){
+          running = false;
+        }
         break;
       }
     }
@@ -122,6 +152,35 @@ function render(interp){
   ctx.font = '16px monospace';
   ctx.fillText(hello(), 10, 20);
   ctx.fillText('Lives: '+lives, 360, 20);
+  ctx.fillText('Score: '+Math.floor(score), 200, 20);
+
+  // flash effect
+  if(flashTimer > 0){
+    ctx.fillStyle = 'rgba(255,255,255,0.2)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
+  // game over overlay
+  if(!running){
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#fff';
+    ctx.font = '24px monospace';
+    ctx.fillText('GAME OVER', canvas.width/2 - 70, canvas.height/2 - 10);
+    ctx.font = '16px monospace';
+    ctx.fillText('Score: '+Math.floor(score), canvas.width/2 - 40, canvas.height/2 + 20);
+    ctx.fillText('Press R to restart', canvas.width/2 - 70, canvas.height/2 + 50);
+  }
+}
+
+function resetGame(){
+  // reset runtime state
+  obstacles.length = 0;
+  lives = 3;
+  invulTimer = 0;
+  score = 0;
+  elapsedTime = 0;
+  running = true;
 }
 
 function loop(now){
