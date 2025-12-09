@@ -5,8 +5,15 @@ const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
 ctx.imageSmoothingEnabled = false;
 
-// Lane positions match Car default
-const lanePositions = [80, 240, 400];
+// compute lane positions dynamically to ensure equal lane widths
+const roadX = 64;
+const roadW = canvas.width - 128;
+function computeLanePositions(){
+  // 3 lanes centered at 1/6, 3/6, 5/6 of road width
+  const centers = [1/6, 3/6, 5/6].map(f => Math.round(roadX + roadW * f));
+  return centers;
+}
+let lanePositions = computeLanePositions();
 const car = new Car(1, lanePositions);
 
 // Obstacles for browser runtime
@@ -47,7 +54,11 @@ const pointsPerSec = 10;
 
 // Game state
 let running = true;
+let paused = false;
 let flashTimer = 0; // visual flash on hit
+
+// Pause overlay timer for smooth display
+let pauseOverlay = false;
 
 let last = performance.now();
 const TICK = 1000/60;
@@ -58,6 +69,11 @@ const inputState = { left:false, right:false };
 window.addEventListener('keydown', (e) => {
   if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = true; car.moveLeft(); }
   if(e.key === 'ArrowRight' || e.key === 'd') { inputState.right = true; car.moveRight(); }
+  if(e.key === 'p' || e.key === 'P' || e.key === ' ') { // toggle pause (space or p)
+    if(!running) return; // don't pause when game over
+    paused = !paused;
+    pauseOverlay = paused;
+  }
 });
 window.addEventListener('keyup', (e) => {
   if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = false; }
@@ -133,18 +149,28 @@ function update(dt){
 }
 
 function render(interp){
-  // background
-  ctx.fillStyle = '#222';
+  // background colors based on phase
+  const phaseId = levelManager.getCurrentPhase().id;
+  const phaseColors = {
+    1: { margin:'#111', road:'#2b2b2b', divider:'#444' }, // Country Roads
+    2: { margin:'#0f0f0f', road:'#3a3430', divider:'#5a5047' }, // Mountain Pass (earthy)
+    3: { margin:'#221c18', road:'#5a4b2b', divider:'#7a6b4b' }, // Desert Highway (sandy)
+    4: { margin:'#050611', road:'#0d1220', divider:'#26324a' } // Night City (dark blue)
+  };
+  const colors = phaseColors[phaseId] || phaseColors[1];
+
+  // margins/background
+  ctx.fillStyle = colors.margin;
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
   // road
   const roadX = 64;
   const roadW = canvas.width - 128;
-  ctx.fillStyle = '#2b2b2b';
+  ctx.fillStyle = colors.road;
   ctx.fillRect(roadX, 32, roadW, canvas.height - 64);
 
   // lane dividers
-  ctx.strokeStyle = '#444';
+  ctx.strokeStyle = colors.divider;
   ctx.lineWidth = 4;
   const lanes = lanePositions.length;
   for(let i=1;i<lanes;i++){
@@ -175,12 +201,17 @@ function render(interp){
     ctx.fillRect(car.x - carW/2, car.y - carH/2, carW, carH);
   }
 
-  // HUD
+  // Header: centered "Enduro 8-bit"
   ctx.fillStyle = '#0f0';
-  ctx.font = '16px monospace';
-  ctx.fillText(hello(), 10, 20);
-  ctx.fillText('Lives: '+lives, 360, 20);
-  ctx.fillText('Score: '+Math.floor(score), 200, 20);
+  ctx.font = '18px monospace';
+  const header = 'Enduro 8-bit';
+  const headerW = ctx.measureText(header).width;
+  ctx.fillText(header, canvas.width/2 - headerW/2, 22);
+
+  // HUD: score and lives on the top corners
+  ctx.font = '14px monospace';
+  ctx.fillText('Score: '+Math.floor(score), 18, 44);
+  ctx.fillText('Lives: '+lives, canvas.width - 100, 44);
 
   // flash effect
   if(flashTimer > 0){
@@ -195,6 +226,15 @@ function render(interp){
     ctx.fillStyle = '#fff';
     ctx.font = '20px monospace';
     ctx.fillText(levelManager.getCurrentPhase().name, 20, 48);
+  }
+
+  // pause overlay
+  if(paused){
+    ctx.fillStyle = 'rgba(0,0,0,0.5)';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#fff';
+    ctx.font = '24px monospace';
+    ctx.fillText('PAUSED', canvas.width/2 - 40, canvas.height/2);
   }
 
   // game over overlay
