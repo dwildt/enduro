@@ -11,9 +11,13 @@ const car = new Car(1, lanePositions);
 
 // Obstacles for browser runtime
 import Obstacle from './entities/Obstacle.js';
+import { LevelManager } from './levelManager.js';
 const obstacles = []; // active obstacles array
 const spawnRate = 0.9; // per second
 let spawnAccumulator = 0; // reserved for future rate logic
+
+const levelManager = new LevelManager();
+let phaseOverlayTimer = 0;
 
 // sprite images (8-bit SVGs)
 const carImg = new Image();
@@ -84,12 +88,17 @@ function update(dt){
   elapsedTime += dt;
   score += pointsPerSec * dt;
 
-  // spawn logic
-  spawnAccumulator += dt;
-  // use probability per frame
-  if(Math.random() < spawnRate * dt){
+  // level manager update (returns true on transition)
+  const transitioned = levelManager.update(dt);
+  if(transitioned){ phaseOverlayTimer = 3; }
+
+  // spawn logic based on current phase
+  const diff = levelManager.getDifficulty();
+  const dynamicSpawn = diff.spawnRate;
+  if(Math.random() < dynamicSpawn * dt){
     const lane = Math.floor(Math.random() * lanePositions.length);
-    obstacles.push(new Obstacle(lane, lanePositions, -60, 120 + Math.random() * 60));
+    const speed = 80 * diff.baseSpeed + Math.random() * 60;
+    obstacles.push(new Obstacle(lane, lanePositions, -60, speed));
   }
 
   // update obstacles
@@ -177,6 +186,15 @@ function render(interp){
   if(flashTimer > 0){
     ctx.fillStyle = 'rgba(255,255,255,0.2)';
     ctx.fillRect(0,0,canvas.width,canvas.height);
+  }
+
+  // phase title overlay
+  if(phaseOverlayTimer > 0){
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
+    ctx.fillRect(0,0,canvas.width,80);
+    ctx.fillStyle = '#fff';
+    ctx.font = '20px monospace';
+    ctx.fillText(levelManager.getCurrentPhase().name, 20, 48);
   }
 
   // game over overlay
