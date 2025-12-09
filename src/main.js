@@ -67,13 +67,17 @@ let accumulator = 0;
 // Input handling
 const inputState = { left:false, right:false };
 window.addEventListener('keydown', (e) => {
-  if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = true; car.moveLeft(); }
-  if(e.key === 'ArrowRight' || e.key === 'd') { inputState.right = true; car.moveRight(); }
-  if(e.key === 'p' || e.key === 'P' || e.key === ' ') { // toggle pause (space or p)
+  // Pause toggle: Space or P
+  if(e.key === 'p' || e.key === 'P' || e.key === ' ') {
     if(!running) return; // don't pause when game over
     paused = !paused;
     pauseOverlay = paused;
+    return;
   }
+  // When paused ignore input
+  if(paused) return;
+  if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = true; car.moveLeft(); }
+  if(e.key === 'ArrowRight' || e.key === 'd') { inputState.right = true; car.moveRight(); }
 });
 window.addEventListener('keyup', (e) => {
   if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = false; }
@@ -86,6 +90,7 @@ window.addEventListener('keyup', (e) => {
 
 // Pointer / click zones
 canvas.addEventListener('pointerdown', (ev) => {
+  if(paused || !running) return;
   const rect = canvas.getBoundingClientRect();
   const x = ev.clientX - rect.left;
   if(x < canvas.width/2) car.moveLeft(); else car.moveRight();
@@ -96,7 +101,7 @@ function aabbOverlap(ax, ay, aw, ah, bx, by, bw, bh){
 }
 
 function update(dt){
-  if(!running) return;
+  if(!running || paused) return;
   // dt in seconds
   car.update(dt);
 
