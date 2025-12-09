@@ -111,7 +111,7 @@ function update(dt){
 
   // level manager update (returns true on transition)
   const transitioned = levelManager.update(dt);
-  if(transitioned){ phaseOverlayTimer = 3; }
+  if(transitioned){ phaseOverlayTimer = 2; }
 
   // spawn logic based on current phase
   const diff = levelManager.getDifficulty();
@@ -234,13 +234,19 @@ function render(interp){
     ctx.fillRect(0,0,canvas.width,canvas.height);
   }
 
-  // phase title overlay
+  // phase title overlay (small pill below HUD)
   if(phaseOverlayTimer > 0){
+    const boxW = Math.min(360, canvas.width - 160);
+    const boxH = 36;
+    const boxX = (canvas.width - boxW) / 2;
+    const boxY = 60; // below header and HUD
     ctx.fillStyle = 'rgba(0,0,0,0.6)';
-    ctx.fillRect(0,0,canvas.width,80);
+    ctx.fillRect(boxX, boxY, boxW, boxH);
     ctx.fillStyle = '#fff';
-    ctx.font = '20px monospace';
-    ctx.fillText(levelManager.getCurrentPhase().name, 20, 48);
+    ctx.font = '18px monospace';
+    const name = levelManager.getCurrentPhase().name;
+    const textW = ctx.measureText(name).width;
+    ctx.fillText(name, canvas.width/2 - textW/2, boxY + boxH/2 + 6);
   }
 
   // pause overlay
