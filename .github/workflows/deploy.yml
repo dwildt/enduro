@@ -20,6 +20,15 @@ jobs:
       - run: npm ci || true
       - run: npm run lint
       - run: npm test
+      - name: Prepare docs site from repo
+        run: |
+          echo "Preparing docs/ from repository root"
+          rm -rf docs || true
+          mkdir -p docs
+          # copy site static files into docs/
+          cp -R index.html styles.css assets src docs/ || true
+          # if docs/index.html should be different, update here
+          ls -la docs
       - name: Verify docs directory
         run: |
           if [ ! -d ./docs ]; then echo "docs/ directory missing" && false; fi
