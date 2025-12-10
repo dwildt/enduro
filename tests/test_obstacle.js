@@ -1,5 +1,5 @@
 const assert = require('assert');
-const Obstacle = require('../src/entities/Obstacle.js').default || require('../src/entities/Obstacle.js');
+const Obstacle = require('../src/entities/Obstacle.cjs');
 const { aabbOverlap } = require('../src/collision.cjs');
 
 const lanes = [80,240,400];

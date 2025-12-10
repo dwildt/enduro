@@ -1,4 +1,4 @@
-const Obstacle = require('./entities/Obstacle.js').default || require('./entities/Obstacle.js');
+const Obstacle = require('./entities/Obstacle.cjs');
 const { Spawner } = require('./spawner.cjs');
 
 class ObstacleManager {
