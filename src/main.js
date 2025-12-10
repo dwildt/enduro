@@ -182,7 +182,8 @@ function render(interp){
   const roadX = 64;
   const roadW = canvas.width - 128;
   ctx.fillStyle = colors.road;
-  ctx.fillRect(roadX, 32, roadW, canvas.height - 64);
+  // start road at top (no top margin)
+  ctx.fillRect(roadX, 0, roadW, canvas.height);
 
   // lane dividers
   ctx.strokeStyle = colors.divider;
@@ -191,8 +192,8 @@ function render(interp){
   for(let i=1;i<lanes;i++){
     const x = (lanePositions[i-1] + lanePositions[i]) / 2;
     ctx.beginPath();
-    ctx.moveTo(x, 40);
-    ctx.lineTo(x, canvas.height - 40);
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, canvas.height);
     ctx.stroke();
   }
 
