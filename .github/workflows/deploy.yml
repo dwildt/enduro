@@ -33,8 +33,9 @@ jobs:
         run: |
           if [ ! -d ./docs ]; then echo "docs/ directory missing" && false; fi
           ls -la docs
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./docs
+          path: ./docs
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v3
