@@ -33,6 +33,14 @@ jobs:
         run: |
           if [ ! -d ./docs ]; then echo "docs/ directory missing" && false; fi
           ls -la docs
+      - name: Ensure GitHub Pages enabled (API)
+        run: |
+          echo "Ensuring GitHub Pages site is configured to use gh-pages branch";
+          curl -sS -X PUT \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/repos/${{ github.repository }}/pages \
+            -d '{"source":{"branch":"gh-pages","path":"/"}}' || true
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
