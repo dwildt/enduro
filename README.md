@@ -39,19 +39,19 @@ Enduro is a browser-based obstacle racing game inspired by the classic Atari End
 Navigate through traffic by switching between three lanes. Avoid obstacles to survive and progress through four increasingly challenging phases:
 
 ### Phase 1: Country Roads
-- **Duration:** 60 seconds
+- **Duration:** 20 seconds
 - **Speed:** 1.0x
 - **Spawn Rate:** 0.6/second
 - **Theme:** Rural roads with earth tones
 
 ### Phase 2: Mountain Pass
-- **Duration:** 90 seconds
+- **Duration:** 40 seconds
 - **Speed:** 1.3x
 - **Spawn Rate:** 0.9/second
 - **Theme:** Mountainous terrain with earthy palette
 
 ### Phase 3: Desert Highway
-- **Duration:** 120 seconds
+- **Duration:** 80 seconds
 - **Speed:** 1.6x
 - **Spawn Rate:** 1.4/second
 - **Theme:** Sandy desert roads
