@@ -1,56 +1,153 @@
-Enduro — 8-bit Obstacle Racing (vanilla JS)
+# Enduro - 8-bit Obstacle Racing
 
-Spec generated: 2025-12-05T23:58:37.330Z
-Updated: 2025-12-08T12:54:32.074Z
+![Deploy Status](https://github.com/dwildt/enduro/workflows/Deploy%20to%20GitHub%20Pages/badge.svg)
 
-Overview
-A small, dependency-free browser prototype inspired by Atari Enduro. Built with plain ES modules and HTML5 <canvas>, the game is a 2D top-down/pseudo-3D obstacle racer with an 8-bit pixel-art aesthetic, responsive desktop and mobile controls, and 4 progressive phases.
+**[▶️ Play Now](https://dwildt.github.io/enduro)**
 
-Key features
-- 8-bit pixel-art visual style; pixelated rendering and palette-friendly assets
-- Simple, responsive controls: keyboard (arrow / A D), mouse click zones, and touch (tap/swipe)
-- Four phases with increasing difficulty and themed visuals
-- Obstacles and basic AI (lane-based spawner)
-- Scoring, lives, and HUD (score, timer, phase, lives)
-- Basic sound effects and simple visual polish (fade transitions)
-- Tests (unit tests for core logic), ESLint configured, and CI to run lint + tests
-- Deployable to GitHub Pages via Actions (docs/ or GitHub Actions artifact flow)
+## About
 
-Project structure
-- index.html — game mount and canvas
-- styles.css — base styling and pixelated rendering flag
-- src/ — game source (ES modules and some CommonJS test helpers)
-  - main.js
-  - input.cjs / input.js
-  - score.cjs / hud.cjs
-  - collision.cjs
-  - levelManager.cjs
-  - spawner.cjs
-  - assetLoader.cjs
-  - sound.cjs
-  - entities/
-    - Car.js
-    - Obstacle.js
-- tests/ — unit tests used by `npm test`
-- docs/ — static files published by GitHub Pages (index.html proof)
-- .github/workflows/ — CI and deploy workflows
-- specs/ — project and issue specifications
+Enduro is a browser-based obstacle racing game inspired by the classic Atari Enduro. Built with vanilla JavaScript and HTML5 Canvas, it features an 8-bit pixel-art aesthetic and progressive difficulty across four themed phases.
 
-NPM scripts (local development)
-- npm install            # install dependencies (dev + prod)
-- npm run lint           # run ESLint over src/ and tests/
-- npm test               # run unit tests (node-based test runner)
-- npm start              # quick preview (runs: npx serve .)
+- **Zero dependencies** - Plain ES modules, no frameworks
+- **Retro aesthetic** - 8-bit pixel-art visuals with pixelated rendering
+- **Cross-platform** - Responsive controls for desktop and mobile
+- **CI/CD** - Automated testing and deployment via GitHub Actions
 
-Workflow & contribution notes
-- Trunk-based development: work is done on the main branch per project policy when using Copilot CLI.
-- Always run lint and tests before committing changes locally: npm run lint && npm test
-- Commits created by the Copilot CLI should include tests passing locally; pushing remains a manual step by the repository owner.
-- Convert specs into issues (specs/ contains issues and templates) and use the .github/ISSUE_TEMPLATE templates when creating new issues via the UI or gh CLI.
+## Features
 
-CI & GitHub Pages
-- CI runs ESLint and tests on push/PR; see .github/workflows/ci.yml.
-- Pages deployment is automated via .github/workflows/deploy.yml and publishes docs/ to your Pages site. Ensure Pages settings allow GitHub Actions deployments.
+- 🎮 **8-bit pixel-art visual style** with retro color palettes
+- ⌨️ **Multiple control schemes** - keyboard, mouse, and touch support
+- 🏁 **4 progressive phases** with increasing difficulty and themed environments
+- ❤️ **Lives system** with invulnerability timer after hits
+- 🎯 **Time-based scoring** - survive longer to score higher
+- 🚗 **Lane-based gameplay** with smart obstacle spawning
+- ✅ **Unit tested** core game logic
+- 🚀 **Auto-deployed** to GitHub Pages on every push
 
-Contact
-- See .github/copilot-instructions.md for Copilot CLI usage guidelines and repository-specific rules.
+## Controls
+
+| Input | Action |
+|-------|--------|
+| **Arrow Keys** or **A/D** | Switch lanes left/right |
+| **Space** or **P** | Pause/unpause game |
+| **R** | Restart game |
+| **Mouse Click** | Click left/right side to switch lanes |
+| **Touch** | Tap left/right side to switch lanes |
+
+## Gameplay
+
+Navigate through traffic by switching between three lanes. Avoid obstacles to survive and progress through four increasingly challenging phases:
+
+### Phase 1: Country Roads
+- **Duration:** 60 seconds
+- **Speed:** 1.0x
+- **Spawn Rate:** 0.6/second
+- **Theme:** Rural roads with earth tones
+
+### Phase 2: Mountain Pass
+- **Duration:** 90 seconds
+- **Speed:** 1.3x
+- **Spawn Rate:** 0.9/second
+- **Theme:** Mountainous terrain with earthy palette
+
+### Phase 3: Desert Highway
+- **Duration:** 120 seconds
+- **Speed:** 1.6x
+- **Spawn Rate:** 1.4/second
+- **Theme:** Sandy desert roads
+
+### Phase 4: Night City Sprint
+- **Duration:** Endless
+- **Speed:** 2.0x
+- **Spawn Rate:** 2.2/second
+- **Theme:** Dark urban environment
+
+**Lives:** You start with 3 lives. After taking damage, you have 1.5 seconds of invulnerability.
+
+**Scoring:** Earn 10 points per second survived. Can you reach Phase 4?
+
+## Development
+
+### Prerequisites
+
+- Node.js (for running tests and ESLint)
+- Modern browser with ES module support
+
+### Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start local development server
+npm start
+# Game will be available at http://localhost:3000
+
+# Run tests
+npm test
+
+# Run linter
+npm run lint
+
+# Pre-commit check (recommended)
+npm run lint && npm test
+```
+
+### Project Structure
+
+```
+enduro/
+├── index.html              # Game entry point
+├── styles.css              # Pixelated rendering styles
+├── src/
+│   ├── main.js            # Game loop and core logic
+│   ├── entities/
+│   │   ├── Car.js         # Player car class
+│   │   └── Obstacle.js    # Obstacle car class
+│   ├── levelManager.js    # Phase progression system
+│   ├── collision.cjs      # Collision detection
+│   ├── spawner.cjs        # Obstacle spawning logic
+│   └── ...                # Additional game modules
+├── assets/
+│   └── images/            # SVG sprite assets
+├── tests/                 # Unit tests
+└── .github/
+    └── workflows/
+        └── deploy.yml     # CI/CD pipeline
+```
+
+### Architecture
+
+- **Game Loop:** Fixed timestep at 60 FPS using accumulator pattern
+- **Entities:** ES6 classes for Car and Obstacle with lane-based positioning
+- **Rendering:** HTML5 Canvas with `imageSmoothingEnabled: false` for pixel-art
+- **Testing:** Unit tests for core logic (collision, spawning, scoring)
+- **Module System:** ES modules (.js) for browser, CommonJS (.cjs) for Node tests
+
+## Deployment
+
+The game automatically deploys to GitHub Pages when changes are pushed to the `main` branch:
+
+1. GitHub Actions workflow runs ESLint and tests
+2. Static files are bundled into an artifact
+3. Artifact is deployed to GitHub Pages
+4. Site is live at https://dwildt.github.io/enduro
+
+### Deployment Status
+
+Check the [Actions tab](https://github.com/dwildt/enduro/actions) for deployment status and logs.
+
+## Contributing
+
+1. Ensure tests and linter pass before committing: `npm run lint && npm test`
+2. Follow the trunk-based development workflow (work on `main`)
+3. All `git push` operations must be done manually by the repository owner
+4. See [CLAUDE.md](CLAUDE.md) for AI-assisted development guidelines
+
+## License
+
+This project is part of a 100 Days of Code challenge.
+
+---
+
+Inspired by the classic Atari Enduro. Built with vanilla JavaScript.
