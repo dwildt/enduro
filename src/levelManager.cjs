@@ -2,10 +2,10 @@ class LevelManager {
   constructor(){
     // phases definitions: id, name, duration (seconds), baseSpeed, spawnRate
     this.phases = [
-      { id:1, name:'Country Roads', duration:20, baseSpeed:1.0, spawnRate:0.5 },
-      { id:2, name:'Mountain Pass', duration:40, baseSpeed:1.3, spawnRate:0.8 },
-      { id:3, name:'Desert Highway', duration:80, baseSpeed:1.6, spawnRate:1.2 },
-      { id:4, name:'Night City Sprint', duration:99999, baseSpeed:2.0, spawnRate:2.0 }
+      { id:1, name:'Country Roads', duration:20, baseSpeed:1.0, spawnRate:0.4 },
+      { id:2, name:'Mountain Pass', duration:40, baseSpeed:1.3, spawnRate:0.6 },
+      { id:3, name:'Desert Highway', duration:80, baseSpeed:1.6, spawnRate:0.8 },
+      { id:4, name:'Night City Sprint', duration:99999, baseSpeed:2.0, spawnRate:1.0 }
     ];
     this.currentIndex = 0; // index into phases
     this.elapsedInPhase = 0; // seconds

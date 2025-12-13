@@ -197,12 +197,24 @@ function render(interp){
     ctx.stroke();
   }
 
-  // draw obstacles
+  // draw obstacles with speed-based color coding
   obstacles.forEach(o=>{
+    const speed = o.speed;
     if(obstacleImgLoaded){
+      // Draw the image first
       ctx.drawImage(obstacleImg, o.x - o.width/2, o.y - o.height/2, o.width, o.height);
+      // Apply speed-based tint overlay
+      let tint;
+      if(speed < 100) tint = 'rgba(100, 255, 100, 0.3)'; // greenish for slow
+      else if(speed < 150) tint = 'rgba(255, 255, 100, 0.3)'; // yellowish for medium
+      else tint = 'rgba(255, 100, 100, 0.3)'; // reddish for fast
+      ctx.fillStyle = tint;
+      ctx.fillRect(o.x - o.width/2, o.y - o.height/2, o.width, o.height);
     } else {
-      ctx.fillStyle = '#f55';
+      // Fallback colors when image not loaded
+      if(speed < 100) ctx.fillStyle = '#5f5';
+      else if(speed < 150) ctx.fillStyle = '#ff5';
+      else ctx.fillStyle = '#f55';
       ctx.fillRect(o.x - o.width/2, o.y - o.height/2, o.width, o.height);
     }
   });

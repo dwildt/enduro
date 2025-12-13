@@ -41,30 +41,35 @@ Navigate through traffic by switching between three lanes. Avoid obstacles to su
 ### Phase 1: Country Roads
 - **Duration:** 20 seconds
 - **Speed:** 1.0x
-- **Spawn Rate:** 0.6/second
+- **Spawn Rate:** 0.4/second
 - **Theme:** Rural roads with earth tones
 
 ### Phase 2: Mountain Pass
 - **Duration:** 40 seconds
 - **Speed:** 1.3x
-- **Spawn Rate:** 0.9/second
+- **Spawn Rate:** 0.6/second
 - **Theme:** Mountainous terrain with earthy palette
 
 ### Phase 3: Desert Highway
 - **Duration:** 80 seconds
 - **Speed:** 1.6x
-- **Spawn Rate:** 1.4/second
+- **Spawn Rate:** 0.8/second
 - **Theme:** Sandy desert roads
 
 ### Phase 4: Night City Sprint
 - **Duration:** Endless
 - **Speed:** 2.0x
-- **Spawn Rate:** 2.2/second
+- **Spawn Rate:** 1.0/second
 - **Theme:** Dark urban environment
 
 **Lives:** You start with 3 lives. After taking damage, you have 1.5 seconds of invulnerability.
 
 **Scoring:** Earn 10 points per second survived. Can you reach Phase 4?
+
+**Visual Cues:** Obstacle cars are color-coded by speed:
+- 🟢 Green tint = Slower cars (easier to avoid)
+- 🟡 Yellow tint = Medium speed cars
+- 🔴 Red tint = Fast cars (hardest to avoid)
 
 ## Development
 
