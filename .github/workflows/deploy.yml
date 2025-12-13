@@ -34,7 +34,7 @@ jobs:
           if [ ! -d ./docs ]; then echo "docs/ directory missing" && false; fi
           ls -la docs
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./docs
       - name: Deploy to GitHub Pages
