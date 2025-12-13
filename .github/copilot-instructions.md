@@ -3,7 +3,7 @@ GitHub Copilot CLI — Project Instructions
 This file documents recommended usage of GitHub Copilot CLI in the Enduro project.
 
 Key principles
-- Pushes are manual: any git push or final publishing step must be performed by the repository owner/maintainer. Do not rely on Copilot CLI to push changes automatically.
+- **Pushes are ALWAYS manual**: Any `git push` or final publishing step MUST be performed by the repository owner/maintainer. AI tools (Copilot CLI, Claude Code, etc.) must NEVER execute `git push` commands. Commits may be created by AI tools, but pushing to GitHub is exclusively a manual operation.
 - Tests and lint first: always run linting and tests locally before proposing changes or creating commits. Example:
   - npm run lint && npm test
 
@@ -30,11 +30,11 @@ Recommended Copilot-assisted workflow for this repo
 3. Ask Copilot CLI to draft changes or a PR for a given task (example):
    - /delegate "Implement obstacle spawner based on specs/game-spec.md"
 4. Review generated changes locally. Run lint and tests against generated code.
-5. When satisfied, commit locally and push manually:
-   - git add -A
-   - git commit -m "feat: implement obstacle spawner"
-   - git push origin your-branch
-6. Open a PR on GitHub for review.
+5. When satisfied, commit locally (AI tools may do this) then **MANUALLY push**:
+   - git add -A  # May be done by AI tool
+   - git commit -m "feat: implement obstacle spawner"  # May be done by AI tool
+   - git push origin main  # MUST be done manually by repository owner
+6. The push triggers CI and deployment automatically.
 
 Creating issues from specs
 - Use the GitHub CLI to convert a spec into an issue, for example:

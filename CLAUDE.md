@@ -131,11 +131,17 @@ This split allows core game logic to be unit tested in Node.js while keeping bro
 
 ## Development Notes
 
-### Trunk-Based Development
-Work directly on main branch per project policy. No feature branches required for Copilot CLI workflow.
+### Git Workflow and Push Policy
 
-### Manual Push Policy
-All git push operations are manual. Automated tools should not push without explicit approval.
+**CRITICAL: All `git push` operations must be performed manually by the repository owner.**
+
+- Claude Code may create commits with `git commit` after making changes
+- Claude Code must NEVER execute `git push` commands
+- After commits are created, the repository owner will manually review and push
+- This ensures the owner maintains full control over what gets published to GitHub
+
+### Trunk-Based Development
+Work directly on main branch per project policy. No feature branches required.
 
 ### Avoiding Over-Engineering
 Keep changes minimal and focused. Don't add features, refactoring, or improvements beyond what's requested. No premature abstractions.
