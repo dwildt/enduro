@@ -1,4 +1,3 @@
-import { hello } from './utils.js';
 import Car from './entities/Car.js';
 
 const canvas = document.getElementById('game');
@@ -20,11 +19,22 @@ const car = new Car(1, lanePositions);
 import Obstacle from './entities/Obstacle.js';
 import { LevelManager } from './levelManager.js';
 const obstacles = []; // active obstacles array
-const spawnRate = 0.9; // per second
-let spawnAccumulator = 0; // reserved for future rate logic
 
 const levelManager = new LevelManager();
 let phaseOverlayTimer = 0;
+
+// Pickups for browser runtime
+import Pickup from './entities/Pickup.js';
+const pickups = []; // active pickups array
+let pickupSpawnTimer = 0; // accumulates time between spawns
+const pickupSpawnInterval = 10; // spawn every 10 seconds
+
+// Power-up effect state
+let powerUpType = null; // 'invuln' or 'scoreboost' or null
+let powerUpTimer = 0; // seconds remaining
+const invulnDuration = 5; // 5 seconds of invulnerability
+const scoreBoostDuration = 8; // 8 seconds of 2x score
+const scoreMultiplier = 2; // 2x multiplier when active
 
 // sprite images (8-bit SVGs)
 const carImg = new Image();
@@ -37,11 +47,6 @@ let obstacleImgLoaded = false;
 obstacleImg.onload = () => { obstacleImgLoaded = true; };
 obstacleImg.src = 'assets/images/obstacle.svg';
 
-// silence unused warning for elapsedTime until HUD uses it
-/* eslint-disable no-unused-vars */
-let _elapsedTime_suppress = null;
-/* eslint-enable no-unused-vars */
-
 // Lives and invulnerability for browser
 let lives = 3;
 let invulTimer = 0; // seconds
@@ -49,16 +54,14 @@ const invulSeconds = 1.5;
 
 // Score and timer (simple in-main manager)
 let score = 0;
-let elapsedTime = 0;
+/* eslint-disable-next-line no-unused-vars */
+let elapsedTime = 0; // tracked but not currently displayed in HUD
 const pointsPerSec = 10;
 
 // Game state
 let running = true;
 let paused = false;
 let flashTimer = 0; // visual flash on hit
-
-// Pause overlay timer for smooth display
-let pauseOverlay = false;
 
 let last = performance.now();
 const TICK = 1000/60;
@@ -71,7 +74,6 @@ window.addEventListener('keydown', (e) => {
   if(e.key === 'p' || e.key === 'P' || e.key === ' ') {
     if(!running) return; // don't pause when game over
     paused = !paused;
-    pauseOverlay = paused;
     return;
   }
   // When paused ignore input
@@ -107,7 +109,8 @@ function update(dt){
 
   // scoring/time
   elapsedTime += dt;
-  score += pointsPerSec * dt;
+  const multiplier = (powerUpType === 'scoreboost') ? scoreMultiplier : 1;
+  score += pointsPerSec * dt * multiplier;
 
   // level manager update (returns true on transition)
   const transitioned = levelManager.update(dt);
@@ -139,12 +142,33 @@ function update(dt){
     if(obstacles[i].isOffscreen(canvas.height)) obstacles.splice(i,1);
   }
 
+  // Pickup spawning
+  pickupSpawnTimer += dt;
+  if(pickupSpawnTimer >= pickupSpawnInterval){
+    pickupSpawnTimer = 0;
+    const lane = Math.floor(Math.random() * lanePositions.length);
+    const type = Math.random() < 0.5 ? 'invuln' : 'scoreboost';
+    pickups.push(new Pickup(type, lane, lanePositions, -60));
+  }
+
+  // Update pickups
+  pickups.forEach(p => p.update(dt));
+  // Remove offscreen pickups
+  for(let i = pickups.length - 1; i >= 0; i--){
+    if(pickups[i].isOffscreen(canvas.height)) pickups.splice(i,1);
+  }
+
   // invulnerability update
   if(invulTimer > 0){ invulTimer = Math.max(0, invulTimer - dt); }
   if(flashTimer > 0){ flashTimer = Math.max(0, flashTimer - dt); }
 
+  // Power-up timer update
+  if(powerUpTimer > 0){ powerUpTimer = Math.max(0, powerUpTimer - dt); }
+  if(powerUpTimer <= 0){ powerUpType = null; }
+
   // collision checks
-  if(invulTimer <= 0){
+  // Only check collision if not invulnerable from hit OR power-up
+  if(invulTimer <= 0 && powerUpType !== 'invuln'){
     for(const o of obstacles){
       const collided = aabbOverlap(car.x - 16, car.y - 24, 32, 48, o.x - o.width/2, o.y - o.height/2, o.width, o.height);
       if(collided){
@@ -159,6 +183,22 @@ function update(dt){
         }
         break;
       }
+    }
+  }
+
+  // Pickup collision detection
+  for(let i = pickups.length - 1; i >= 0; i--){
+    const p = pickups[i];
+    const collided = aabbOverlap(
+      car.x - 16, car.y - 24, 32, 48,
+      p.x - p.width/2, p.y - p.height/2, p.width, p.height
+    );
+    if(collided){
+      // Apply power-up effect
+      powerUpType = p.type;
+      powerUpTimer = p.type === 'invuln' ? invulnDuration : scoreBoostDuration;
+      pickups.splice(i, 1); // Remove collected pickup
+      break;
     }
   }
 }
@@ -219,6 +259,19 @@ function render(interp){
     }
   });
 
+  // Draw pickups
+  pickups.forEach(p=>{
+    const color = p.type === 'invuln' ? '#00f' : '#f90'; // blue or orange
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.width/2, 0, Math.PI * 2);
+    ctx.fill();
+    // Add glow effect
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+
   // draw player car as image when available
   const carW = 32;
   const carH = 48;
@@ -240,6 +293,16 @@ function render(interp){
   ctx.font = '14px monospace';
   ctx.fillText('Score: '+Math.floor(score), 18, 44);
   ctx.fillText('Lives: '+lives, canvas.width - 100, 44);
+
+  // Power-up indicator
+  if(powerUpType){
+    const label = powerUpType === 'invuln' ? 'SHIELD' : 'BOOST';
+    const color = powerUpType === 'invuln' ? '#00f' : '#f90';
+    ctx.fillStyle = color;
+    ctx.font = '14px monospace';
+    const timerText = `${label}: ${Math.ceil(powerUpTimer)}s`;
+    ctx.fillText(timerText, canvas.width/2 - 40, 44);
+  }
 
   // flash effect
   if(flashTimer > 0){
@@ -287,8 +350,12 @@ function render(interp){
 function resetGame(){
   // reset runtime state
   obstacles.length = 0;
+  pickups.length = 0;
   lives = 3;
   invulTimer = 0;
+  powerUpType = null;
+  powerUpTimer = 0;
+  pickupSpawnTimer = 0;
   score = 0;
   elapsedTime = 0;
   running = true;

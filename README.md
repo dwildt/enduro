@@ -34,6 +34,15 @@ Enduro is a browser-based obstacle racing game inspired by the classic Atari End
 | **Mouse Click** | Click left/right side to switch lanes |
 | **Touch** | Tap left/right side to switch lanes |
 
+## Power-ups
+
+Collect power-ups to gain temporary advantages:
+
+- 🛡️ **Shield (Blue)** - 5 seconds of invulnerability
+- ⚡ **Boost (Orange)** - 8 seconds of 2x score multiplier
+
+Power-ups spawn every 10 seconds in random lanes. The HUD shows the active power-up and remaining time.
+
 ## Gameplay
 
 Navigate through traffic by switching between three lanes. Avoid obstacles to survive and progress through four increasingly challenging phases:
