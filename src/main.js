@@ -50,8 +50,8 @@ obstacleImg.src = 'assets/images/obstacle.svg';
 // Sprite animations
 const carAnimation = new SpriteAnimation({
   imagePath: 'assets/images/car-sprite.svg',
-  frameWidth: 32,
-  frameHeight: 48,
+  frameWidth: 64,
+  frameHeight: 128,
   frameCount: 4,
   fps: 10,
   loop: true
@@ -59,8 +59,8 @@ const carAnimation = new SpriteAnimation({
 
 const obstacleAnimation = new SpriteAnimation({
   imagePath: 'assets/images/obstacle-sprite.svg',
-  frameWidth: 32,
-  frameHeight: 48,
+  frameWidth: 64,
+  frameHeight: 128,
   frameCount: 3,
   fps: 8,
   loop: true

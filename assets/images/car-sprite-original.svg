@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="48" viewBox="0 0 128 48" shape-rendering="crispEdges">
+  <!-- Frame 0 (x=0) -->
+  <rect x="0" y="0" width="32" height="48" fill="#0b0b0b"/>
+  <rect x="4" y="10" width="24" height="18" fill="#00ffff"/>
+  <rect x="6" y="6" width="20" height="6" fill="#007f7f"/>
+  <!-- Wheels frame 0: horizontal -->
+  <rect x="6" y="28" width="6" height="4" fill="#111"/>
+  <rect x="20" y="28" width="6" height="4" fill="#111"/>
+
+  <!-- Frame 1 (x=32) -->
+  <rect x="32" y="0" width="32" height="48" fill="#0b0b0b"/>
+  <rect x="36" y="10" width="24" height="18" fill="#00ffff"/>
+  <rect x="38" y="6" width="20" height="6" fill="#007f7f"/>
+  <!-- Wheels frame 1: diagonal \ -->
+  <rect x="38" y="28" width="5" height="5" fill="#111"/>
+  <rect x="39" y="27" width="3" height="2" fill="#222"/>
+  <rect x="52" y="28" width="5" height="5" fill="#111"/>
+  <rect x="53" y="27" width="3" height="2" fill="#222"/>
+
+  <!-- Frame 2 (x=64) -->
+  <rect x="64" y="0" width="32" height="48" fill="#0b0b0b"/>
+  <rect x="68" y="10" width="24" height="18" fill="#00ffff"/>
+  <rect x="70" y="6" width="20" height="6" fill="#007f7f"/>
+  <!-- Wheels frame 2: vertical -->
+  <rect x="71" y="27" width="4" height="6" fill="#111"/>
+  <rect x="85" y="27" width="4" height="6" fill="#111"/>
+
+  <!-- Frame 3 (x=96) -->
+  <rect x="96" y="0" width="32" height="48" fill="#0b0b0b"/>
+  <rect x="100" y="10" width="24" height="18" fill="#00ffff"/>
+  <rect x="102" y="6" width="20" height="6" fill="#007f7f"/>
+  <!-- Wheels frame 3: diagonal / -->
+  <rect x="103" y="28" width="5" height="5" fill="#111"/>
+  <rect x="104" y="30" width="3" height="2" fill="#222"/>
+  <rect x="117" y="28" width="5" height="5" fill="#111"/>
+  <rect x="118" y="30" width="3" height="2" fill="#222"/>
+</svg>
