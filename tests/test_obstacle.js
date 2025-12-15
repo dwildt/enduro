@@ -3,7 +3,7 @@ const Obstacle = require('../src/entities/Obstacle.cjs');
 const { aabbOverlap } = require('../src/collision.cjs');
 
 const lanes = [80,240,400];
-const ob = new Obstacle(1, lanes, -50, 100);
+const ob = new Obstacle(1, lanes, -50, 100, null);
 // update 1s -> y should increase by ~100
 ob.update(1.0);
 assert.ok(ob.y > -50, 'obstacle moved down');

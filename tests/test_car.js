@@ -2,7 +2,7 @@ const assert = require('assert');
 const { Car } = require('../src/car.cjs');
 
 // initial lane
-const car = new Car(1,[80,240,400]);
+const car = new Car(1,[80,240,400], null);
 assert.strictEqual(car.x,240,'initial x should match lane center');
 
 // move right

@@ -1,11 +1,12 @@
 export default class Car {
-  constructor(laneIndex=1, lanePositions=[80, 240, 400]){
+  constructor(laneIndex=1, lanePositions=[80, 240, 400], animation=null){
     this.lanePositions = lanePositions;
     this.lane = laneIndex;
     this.x = lanePositions[laneIndex];
     this.y = 540; // fixed vertical position in canvas
     this.targetX = this.x;
     this.speed = 300; // pixels per second for lane interpolation
+    this.animation = animation;
   }
 
   moveLeft(){
@@ -26,5 +27,10 @@ export default class Car {
     const move = this.speed * dt * dir;
     if(Math.abs(move) >= Math.abs(dx)) this.x = this.targetX;
     else this.x += move;
+
+    // Update animation if present
+    if(this.animation){
+      this.animation.update(dt);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import Car from './entities/Car.js';
+import SpriteAnimation from './SpriteAnimation.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -13,7 +14,6 @@ function computeLanePositions(){
   return centers;
 }
 let lanePositions = computeLanePositions();
-const car = new Car(1, lanePositions);
 
 // Obstacles for browser runtime
 import Obstacle from './entities/Obstacle.js';
@@ -46,6 +46,32 @@ const obstacleImg = new Image();
 let obstacleImgLoaded = false;
 obstacleImg.onload = () => { obstacleImgLoaded = true; };
 obstacleImg.src = 'assets/images/obstacle.svg';
+
+// Sprite animations
+const carAnimation = new SpriteAnimation({
+  imagePath: 'assets/images/car-sprite.svg',
+  frameWidth: 32,
+  frameHeight: 48,
+  frameCount: 4,
+  fps: 10,
+  loop: true
+});
+
+const obstacleAnimation = new SpriteAnimation({
+  imagePath: 'assets/images/obstacle-sprite.svg',
+  frameWidth: 32,
+  frameHeight: 48,
+  frameCount: 3,
+  fps: 8,
+  loop: true
+});
+
+// Load animations
+carAnimation.load();
+obstacleAnimation.load();
+
+// Create car with animation
+const car = new Car(1, lanePositions, carAnimation);
 
 // Lives and invulnerability for browser
 let lives = 3;
@@ -131,7 +157,7 @@ function update(dt){
     }
     const minGap = 100; // pixels
     if(!nearest || (nearest.y - spawnY) >= minGap){
-      obstacles.push(new Obstacle(lane, lanePositions, spawnY, speed));
+      obstacles.push(new Obstacle(lane, lanePositions, spawnY, speed, obstacleAnimation));
     }
   }
 
@@ -240,9 +266,14 @@ function render(interp){
   // draw obstacles with speed-based color coding
   obstacles.forEach(o=>{
     const speed = o.speed;
-    if(obstacleImgLoaded){
-      // Draw the image first
-      ctx.drawImage(obstacleImg, o.x - o.width/2, o.y - o.height/2, o.width, o.height);
+    if(o.animation && o.animation.isLoaded()){
+      // Draw animated sprite
+      const frame = o.animation.getCurrentFrame();
+      ctx.drawImage(
+        o.animation.image,
+        frame.x, frame.y, frame.width, frame.height,
+        o.x - o.width/2, o.y - o.height/2, o.width, o.height
+      );
       // Apply speed-based tint overlay
       let tint;
       if(speed < 100) tint = 'rgba(100, 255, 100, 0.3)'; // greenish for slow
@@ -250,8 +281,18 @@ function render(interp){
       else tint = 'rgba(255, 100, 100, 0.3)'; // reddish for fast
       ctx.fillStyle = tint;
       ctx.fillRect(o.x - o.width/2, o.y - o.height/2, o.width, o.height);
+    } else if(obstacleImgLoaded){
+      // Fallback to static image
+      ctx.drawImage(obstacleImg, o.x - o.width/2, o.y - o.height/2, o.width, o.height);
+      // Apply speed-based tint overlay
+      let tint;
+      if(speed < 100) tint = 'rgba(100, 255, 100, 0.3)';
+      else if(speed < 150) tint = 'rgba(255, 255, 100, 0.3)';
+      else tint = 'rgba(255, 100, 100, 0.3)';
+      ctx.fillStyle = tint;
+      ctx.fillRect(o.x - o.width/2, o.y - o.height/2, o.width, o.height);
     } else {
-      // Fallback colors when image not loaded
+      // Fallback to colored rectangle
       if(speed < 100) ctx.fillStyle = '#5f5';
       else if(speed < 150) ctx.fillStyle = '#ff5';
       else ctx.fillStyle = '#f55';
@@ -275,7 +316,14 @@ function render(interp){
   // draw player car as image when available
   const carW = 32;
   const carH = 48;
-  if(carImgLoaded){
+  if(car.animation && car.animation.isLoaded()){
+    const frame = car.animation.getCurrentFrame();
+    ctx.drawImage(
+      car.animation.image,
+      frame.x, frame.y, frame.width, frame.height,
+      car.x - carW/2, car.y - carH/2, carW, carH
+    );
+  } else if(carImgLoaded){
     ctx.drawImage(carImg, car.x - carW/2, car.y - carH/2, carW, carH);
   } else {
     ctx.fillStyle = invulTimer > 0 ? '#ff0' : '#0ff';
