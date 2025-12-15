@@ -1,3 +1,5 @@
 .github/issue_bodies/
 
 node_modules/
+
+.DS_Store
