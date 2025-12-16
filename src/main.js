@@ -33,7 +33,6 @@ const pickupSpawnInterval = 10; // spawn every 10 seconds
 // Power-up effect state
 let powerUpType = null; // 'invuln' or 'scoreboost' or null
 let powerUpTimer = 0; // seconds remaining
-let prevPowerUpTimer = 0; // for detecting timer threshold crossings
 const invulnDuration = 5; // 5 seconds of invulnerability
 const scoreBoostDuration = 8; // 8 seconds of 2x score
 const scoreMultiplier = 2; // 2x multiplier when active
@@ -128,6 +127,14 @@ window.addEventListener('keydown', (e) => {
   if(e.key === 'p' || e.key === 'P' || e.key === ' ') {
     if(!running) return; // don't pause when game over
     paused = !paused;
+
+    // Stop/restart engine when pausing/unpausing
+    if(paused){
+      soundManager.stopEngine();
+    } else if(!soundManager.isEngineMuted()){
+      const isBoosted = powerUpType === 'scoreboost';
+      soundManager.startEngine(isBoosted);
+    }
     return;
   }
   // When paused ignore input
@@ -271,17 +278,18 @@ function update(dt){
 
   // Power-up timer update
   if(powerUpTimer > 0){
-    // Timer beep at 3s, 2s, 1s remaining
+    // Save current value before decrementing
+    const timerBefore = powerUpTimer;
+    powerUpTimer = Math.max(0, powerUpTimer - dt);
+
+    // Timer beep at 3s, 2s, 1s remaining (check after decrement)
     for(const threshold of [3, 2, 1]){
-      if(prevPowerUpTimer > threshold && powerUpTimer <= threshold){
+      if(timerBefore > threshold && powerUpTimer <= threshold){
         soundManager.playTimerBeep();
         break;
       }
     }
-
-    powerUpTimer = Math.max(0, powerUpTimer - dt);
   }
-  prevPowerUpTimer = powerUpTimer;
 
   // Update engine boost when power-up changes
   const isBoosted = powerUpType === 'scoreboost';
@@ -323,7 +331,6 @@ function update(dt){
       // Apply power-up effect
       powerUpType = p.type;
       powerUpTimer = p.type === 'invuln' ? invulnDuration : scoreBoostDuration;
-      prevPowerUpTimer = powerUpTimer;
       soundManager.playPowerUp();
 
       // Update engine sound when getting boost
@@ -542,7 +549,6 @@ function resetGame(){
   invulTimer = 0;
   powerUpType = null;
   powerUpTimer = 0;
-  prevPowerUpTimer = 0;
   pickupSpawnTimer = 0;
   score = 0;
   elapsedTime = 0;
