@@ -1,5 +1,6 @@
 import Car from './entities/Car.js';
 import SpriteAnimation from './SpriteAnimation.js';
+import SoundManager from './SoundManager.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -32,6 +33,7 @@ const pickupSpawnInterval = 10; // spawn every 10 seconds
 // Power-up effect state
 let powerUpType = null; // 'invuln' or 'scoreboost' or null
 let powerUpTimer = 0; // seconds remaining
+let prevPowerUpTimer = 0; // for detecting timer threshold crossings
 const invulnDuration = 5; // 5 seconds of invulnerability
 const scoreBoostDuration = 8; // 8 seconds of 2x score
 const scoreMultiplier = 2; // 2x multiplier when active
@@ -73,6 +75,9 @@ obstacleAnimation.load();
 // Create car with animation
 const car = new Car(1, lanePositions, carAnimation);
 
+// Sound manager
+const soundManager = new SoundManager();
+
 // Lives and invulnerability for browser
 let lives = 3;
 let invulTimer = 0; // seconds
@@ -96,6 +101,29 @@ let accumulator = 0;
 // Input handling
 const inputState = { left:false, right:false };
 window.addEventListener('keydown', (e) => {
+  // Initialize audio on first keypress (browser requirement)
+  if (!soundManager.audioContext) {
+    soundManager.init();
+  }
+
+  // Mute toggle: M for SFX
+  if(e.key === 'm' || e.key === 'M') {
+    soundManager.setSfxMuted(!soundManager.isSfxMuted());
+    return;
+  }
+
+  // Engine toggle: E
+  if(e.key === 'e' || e.key === 'E') {
+    soundManager.setEngineMuted(!soundManager.isEngineMuted());
+    if (!soundManager.isEngineMuted() && running && !paused) {
+      const isBoosted = powerUpType === 'scoreboost';
+      soundManager.startEngine(isBoosted);
+    } else if (soundManager.isEngineMuted()) {
+      soundManager.stopEngine();
+    }
+    return;
+  }
+
   // Pause toggle: Space or P
   if(e.key === 'p' || e.key === 'P' || e.key === ' ') {
     if(!running) return; // don't pause when game over
@@ -104,8 +132,16 @@ window.addEventListener('keydown', (e) => {
   }
   // When paused ignore input
   if(paused) return;
-  if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = true; car.moveLeft(); }
-  if(e.key === 'ArrowRight' || e.key === 'd') { inputState.right = true; car.moveRight(); }
+  if(e.key === 'ArrowLeft' || e.key === 'a') {
+    inputState.left = true;
+    car.moveLeft();
+    soundManager.playLaneChange();
+  }
+  if(e.key === 'ArrowRight' || e.key === 'd') {
+    inputState.right = true;
+    car.moveRight();
+    soundManager.playLaneChange();
+  }
 });
 window.addEventListener('keyup', (e) => {
   if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = false; }
@@ -116,11 +152,53 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-// Pointer / click zones
+// Pointer / click zones - includes mobile audio controls
 canvas.addEventListener('pointerdown', (ev) => {
-  if(paused || !running) return;
   const rect = canvas.getBoundingClientRect();
   const x = ev.clientX - rect.left;
+  const y = ev.clientY - rect.top;
+
+  // Initialize audio on first touch if needed
+  if (!soundManager.audioContext) {
+    soundManager.init();
+  }
+
+  // SFX button bounds (upper right, first row)
+  const sfxBtnX = canvas.width - 82;
+  const sfxBtnY = 40;
+  const sfxBtnW = 39;
+  const sfxBtnH = 20;
+
+  // Engine button bounds (upper right, second row)
+  const engineBtnX = canvas.width - 82;
+  const engineBtnY = 55;
+  const engineBtnW = 39;
+  const engineBtnH = 20;
+
+  // Check if tapped SFX button
+  if (x >= sfxBtnX && x <= sfxBtnX + sfxBtnW &&
+      y >= sfxBtnY && y <= sfxBtnY + sfxBtnH) {
+    soundManager.setSfxMuted(!soundManager.isSfxMuted());
+    ev.preventDefault();
+    return;
+  }
+
+  // Check if tapped Engine button
+  if (x >= engineBtnX && x <= engineBtnX + engineBtnW &&
+      y >= engineBtnY && y <= engineBtnY + engineBtnH) {
+    soundManager.setEngineMuted(!soundManager.isEngineMuted());
+    if (!soundManager.isEngineMuted() && running && !paused) {
+      const isBoosted = powerUpType === 'scoreboost';
+      soundManager.startEngine(isBoosted);
+    } else if (soundManager.isEngineMuted()) {
+      soundManager.stopEngine();
+    }
+    ev.preventDefault();
+    return;
+  }
+
+  // Existing lane change logic (only if not tapping buttons and game is running)
+  if(paused || !running) return;
   if(x < canvas.width/2) car.moveLeft(); else car.moveRight();
 });
 
@@ -140,7 +218,10 @@ function update(dt){
 
   // level manager update (returns true on transition)
   const transitioned = levelManager.update(dt);
-  if(transitioned){ phaseOverlayTimer = 2; }
+  if(transitioned){
+    phaseOverlayTimer = 2;
+    soundManager.playCheckpoint();
+  }
 
   // spawn logic based on current phase
   const diff = levelManager.getDifficulty();
@@ -189,7 +270,23 @@ function update(dt){
   if(flashTimer > 0){ flashTimer = Math.max(0, flashTimer - dt); }
 
   // Power-up timer update
-  if(powerUpTimer > 0){ powerUpTimer = Math.max(0, powerUpTimer - dt); }
+  if(powerUpTimer > 0){
+    // Timer beep at 3s, 2s, 1s remaining
+    for(const threshold of [3, 2, 1]){
+      if(prevPowerUpTimer > threshold && powerUpTimer <= threshold){
+        soundManager.playTimerBeep();
+        break;
+      }
+    }
+
+    powerUpTimer = Math.max(0, powerUpTimer - dt);
+  }
+  prevPowerUpTimer = powerUpTimer;
+
+  // Update engine boost when power-up changes
+  const isBoosted = powerUpType === 'scoreboost';
+  soundManager.updateEngineBoost(isBoosted);
+
   if(powerUpTimer <= 0){ powerUpType = null; }
 
   // collision checks
@@ -201,11 +298,14 @@ function update(dt){
         lives = Math.max(0, lives - 1);
         invulTimer = invulSeconds;
         flashTimer = 0.3;
+        soundManager.playHit();
         // vibrate if available
         if(navigator.vibrate) navigator.vibrate(100);
         console.log('Hit! lives=', lives);
         if(lives <= 0){
           running = false;
+          soundManager.playGameOver();
+          soundManager.stopEngine();
         }
         break;
       }
@@ -223,6 +323,14 @@ function update(dt){
       // Apply power-up effect
       powerUpType = p.type;
       powerUpTimer = p.type === 'invuln' ? invulnDuration : scoreBoostDuration;
+      prevPowerUpTimer = powerUpTimer;
+      soundManager.playPowerUp();
+
+      // Update engine sound when getting boost
+      if(p.type === 'scoreboost'){
+        soundManager.updateEngineBoost(true);
+      }
+
       pickups.splice(i, 1); // Remove collected pickup
       break;
     }
@@ -342,6 +450,37 @@ function render(interp){
   ctx.fillText('Score: '+Math.floor(score), 18, 44);
   ctx.fillText('Lives: '+lives, canvas.width - 100, 44);
 
+  // Audio indicators (upper right, below lives)
+  // SFX indicator
+  ctx.fillStyle = soundManager.isSfxMuted() ? '#666' : '#0f0';
+  ctx.font = '12px monospace';
+  const sfxText = soundManager.isSfxMuted() ? '[M] OFF' : '[M] ON';
+  ctx.fillText(sfxText, canvas.width - 80, 58);
+
+  // Engine indicator
+  ctx.fillStyle = soundManager.isEngineMuted() ? '#666' : '#fa0';
+  const engineText = soundManager.isEngineMuted() ? '[E] OFF' : '[E] ON';
+  ctx.fillText(engineText, canvas.width - 80, 72);
+
+  // Mobile touch controls - visual borders around buttons
+  const sfxBtnX = canvas.width - 80;
+  const sfxBtnY = 52;
+  const sfxBtnW = 35;
+  const sfxBtnH = 18;
+
+  const engineBtnX = canvas.width - 80;
+  const engineBtnY = 67;
+  const engineBtnW = 35;
+  const engineBtnH = 18;
+
+  // Draw button backgrounds (subtle borders for touch targets)
+  ctx.strokeStyle = soundManager.isSfxMuted() ? '#666' : '#0f0';
+  ctx.lineWidth = 1;
+  ctx.strokeRect(sfxBtnX - 2, sfxBtnY - 12, sfxBtnW + 4, sfxBtnH + 2);
+
+  ctx.strokeStyle = soundManager.isEngineMuted() ? '#666' : '#fa0';
+  ctx.strokeRect(engineBtnX - 2, engineBtnY - 12, engineBtnW + 4, engineBtnH + 2);
+
   // Power-up indicator
   if(powerUpType){
     const label = powerUpType === 'invuln' ? 'SHIELD' : 'BOOST';
@@ -403,10 +542,15 @@ function resetGame(){
   invulTimer = 0;
   powerUpType = null;
   powerUpTimer = 0;
+  prevPowerUpTimer = 0;
   pickupSpawnTimer = 0;
   score = 0;
   elapsedTime = 0;
   running = true;
+  soundManager.stopEngine();
+  if (!soundManager.isEngineMuted()) {
+    soundManager.startEngine(false);
+  }
   console.log('resetGame called');
 }
 // expose for debugging
@@ -425,3 +569,5 @@ function loop(now){
 }
 
 requestAnimationFrame(loop);
+
+// Engine will start automatically when user presses E key or on game reset
