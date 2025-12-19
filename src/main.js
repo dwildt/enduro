@@ -243,8 +243,7 @@ function update(dt){
     for(const o of laneObs){
       if(o.y > spawnY && (nearest === null || o.y < nearest.y)) nearest = o;
     }
-    const minGap = 100; // pixels
-    if(!nearest || (nearest.y - spawnY) >= minGap){
+    if(!nearest || (nearest.y - spawnY) >= diff.minGap){
       obstacles.push(new Obstacle(lane, lanePositions, spawnY, speed, obstacleAnimation));
     }
   }
