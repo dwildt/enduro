@@ -1,0 +1,41 @@
+{
+  "version": "1.0.0",
+  "assets": [
+    {
+      "name": "car-sprite",
+      "type": "image",
+      "path": "assets/images/car-sprite.svg",
+      "width": 192,
+      "height": 128,
+      "frames": 3,
+      "description": "Player car sprite sheet (blue) with 3-frame wheel animation"
+    },
+    {
+      "name": "obstacle-sprite",
+      "type": "image",
+      "path": "assets/images/obstacle-sprite.svg",
+      "width": 192,
+      "height": 128,
+      "frames": 3,
+      "description": "Obstacle car sprite sheet (red) with 3-frame wheel animation"
+    },
+    {
+      "name": "car-static",
+      "type": "image",
+      "path": "assets/images/car.svg",
+      "width": 64,
+      "height": 128,
+      "frames": 1,
+      "description": "Player car static sprite (fallback)"
+    },
+    {
+      "name": "obstacle-static",
+      "type": "image",
+      "path": "assets/images/obstacle.svg",
+      "width": 64,
+      "height": 128,
+      "frames": 1,
+      "description": "Obstacle car static sprite (fallback)"
+    }
+  ]
+}

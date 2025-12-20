@@ -130,6 +130,79 @@ enduro/
         └── deploy.yml     # CI/CD pipeline
 ```
 
+### Asset Management
+
+#### Asset Directory Structure
+
+```
+assets/
+├── manifest.json          # Asset registry with metadata
+└── images/
+    ├── car-sprite.svg            # Player car sprite sheet (192x128, 3 frames)
+    ├── obstacle-sprite.svg       # Obstacle car sprite sheet (192x128, 3 frames)
+    ├── car.svg                   # Player car static fallback (64x128)
+    └── obstacle.svg              # Obstacle car static fallback (64x128)
+```
+
+#### Asset Conventions
+
+**Sprite Sheets:**
+- Format: SVG for resolution independence
+- Size: 192x128 (64x128 per frame × 3 frames)
+- Naming: `{entity}-sprite.svg`
+- Frames: Horizontal layout, equal width
+
+**Static Sprites:**
+- Format: SVG
+- Size: 64x128
+- Naming: `{entity}.svg`
+- Purpose: Fallback for sprite sheets
+
+**Manifest Format:**
+
+The `assets/manifest.json` file lists all game assets with metadata:
+
+```json
+{
+  "version": "1.0.0",
+  "assets": [
+    {
+      "name": "asset-id",
+      "type": "image",
+      "path": "assets/images/file.svg",
+      "width": 64,
+      "height": 128,
+      "frames": 1,
+      "description": "Asset description"
+    }
+  ]
+}
+```
+
+#### Loading Assets
+
+**Browser (main.js):**
+```javascript
+import AssetLoader from './assetLoader.js';
+
+const loader = new AssetLoader({ pixelated: true });
+
+// Load from manifest
+await loader.loadManifest('assets/manifest.json');
+
+// Load all with progress
+await loader.loadAllWithProgress((progress) => {
+  console.log(`Loading: ${progress.percentage}% (${progress.loaded}/${progress.total})`);
+});
+
+// Get asset
+const carSprite = loader.get('car-sprite');
+```
+
+**Tests (Node.js):**
+
+AssetLoader is tested in CommonJS format. See `tests/test_assets.js` for examples.
+
 ### Architecture
 
 - **Game Loop:** Fixed timestep at 60 FPS using accumulator pattern
