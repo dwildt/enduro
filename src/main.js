@@ -37,6 +37,28 @@ const invulnDuration = 5; // 5 seconds of invulnerability
 const scoreBoostDuration = 8; // 8 seconds of 2x score
 const scoreMultiplier = 2; // 2x multiplier when active
 
+// Detect mobile/narrow viewport for showing touch buttons
+function isMobileViewport() {
+  return window.innerWidth < 768; // Tablets and phones
+}
+
+let showTouchButtons = isMobileViewport();
+
+// Update on resize
+window.addEventListener('resize', () => {
+  showTouchButtons = isMobileViewport();
+});
+
+// Touch swipe detection
+let touchStartX = null;
+const SWIPE_THRESHOLD = 50; // pixels
+
+// Inline detectSwipe function (avoid mixing CommonJS and ES modules)
+function detectSwipe(deltaX, threshold) {
+  if (Math.abs(deltaX) < threshold) return null;
+  return deltaX > 0 ? 'right' : 'left';
+}
+
 // sprite images (8-bit SVGs)
 const carImg = new Image();
 let carImgLoaded = false;
@@ -159,7 +181,7 @@ window.addEventListener('keyup', (e) => {
   }
 });
 
-// Pointer / click zones - includes mobile audio controls
+// Pointer / click zones - includes mobile audio controls and movement buttons
 canvas.addEventListener('pointerdown', (ev) => {
   const rect = canvas.getBoundingClientRect();
   const x = ev.clientX - rect.left;
@@ -168,6 +190,35 @@ canvas.addEventListener('pointerdown', (ev) => {
   // Initialize audio on first touch if needed
   if (!soundManager.audioContext) {
     soundManager.init();
+  }
+
+  // Movement button hit detection (only on mobile)
+  if (showTouchButtons) {
+    const leftBtnX = 10;
+    const leftBtnY = canvas.height - 70;
+    const leftBtnW = 60;
+    const leftBtnH = 60;
+
+    const rightBtnX = canvas.width - 70;
+    const rightBtnY = canvas.height - 70;
+    const rightBtnW = 60;
+    const rightBtnH = 60;
+
+    // Left button
+    if (x >= leftBtnX && x <= leftBtnX + leftBtnW &&
+        y >= leftBtnY && y <= leftBtnY + leftBtnH) {
+      if (!paused && running) car.moveLeft();
+      ev.preventDefault();
+      return;
+    }
+
+    // Right button
+    if (x >= rightBtnX && x <= rightBtnX + rightBtnW &&
+        y >= rightBtnY && y <= rightBtnY + rightBtnH) {
+      if (!paused && running) car.moveRight();
+      ev.preventDefault();
+      return;
+    }
   }
 
   // SFX button bounds (upper right, first row)
@@ -208,6 +259,33 @@ canvas.addEventListener('pointerdown', (ev) => {
   if(paused || !running) return;
   if(x < canvas.width/2) car.moveLeft(); else car.moveRight();
 });
+
+// Touch swipe detection for lane changes
+canvas.addEventListener('touchstart', (ev) => {
+  if (ev.touches.length === 1) {
+    const touch = ev.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    touchStartX = touch.clientX - rect.left;
+  }
+}, { passive: true });
+
+canvas.addEventListener('touchend', (ev) => {
+  if (touchStartX !== null && paused === false && running === true) {
+    const touch = ev.changedTouches[0];
+    const rect = canvas.getBoundingClientRect();
+    const touchEndX = touch.clientX - rect.left;
+    const deltaX = touchEndX - touchStartX;
+
+    const swipe = detectSwipe(deltaX, SWIPE_THRESHOLD);
+    if (swipe === 'left') {
+      car.moveLeft();
+    } else if (swipe === 'right') {
+      car.moveRight();
+    }
+  }
+
+  touchStartX = null;
+}, { passive: true });
 
 function aabbOverlap(ax, ay, aw, ah, bx, by, bw, bh){
   return ax < bx + bw && ax + aw > bx && ay < by + bh && ay + ah > by;
@@ -486,6 +564,45 @@ function render(interp){
 
   ctx.strokeStyle = soundManager.isEngineMuted() ? '#666' : '#fa0';
   ctx.strokeRect(engineBtnX - 2, engineBtnY - 12, engineBtnW + 4, engineBtnH + 2);
+
+  // Movement buttons (mobile only)
+  if (showTouchButtons) {
+    const leftBtnX = 10;
+    const leftBtnY = canvas.height - 70;
+    const leftBtnW = 60;
+    const leftBtnH = 60;
+
+    const rightBtnX = canvas.width - 70;
+    const rightBtnY = canvas.height - 70;
+    const rightBtnW = 60;
+    const rightBtnH = 60;
+
+    // Left button
+    ctx.strokeStyle = '#0af'; // Cyan color
+    ctx.lineWidth = 2;
+    ctx.strokeRect(leftBtnX, leftBtnY, leftBtnW, leftBtnH);
+
+    ctx.fillStyle = '#0af';
+    ctx.font = 'bold 24px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('←', leftBtnX + leftBtnW/2, leftBtnY + leftBtnH/2);
+
+    // Right button
+    ctx.strokeStyle = '#0af';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(rightBtnX, rightBtnY, rightBtnW, rightBtnH);
+
+    ctx.fillStyle = '#0af';
+    ctx.font = 'bold 24px monospace';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('→', rightBtnX + rightBtnW/2, rightBtnY + rightBtnH/2);
+
+    // Reset text alignment for other rendering
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
 
   // Power-up indicator
   if(powerUpType){

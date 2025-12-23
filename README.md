@@ -26,13 +26,25 @@ Enduro is a browser-based obstacle racing game inspired by the classic Atari End
 
 ## Controls
 
+### Desktop
 | Input | Action |
 |-------|--------|
 | **Arrow Keys** or **A/D** | Switch lanes left/right |
 | **Space** or **P** | Pause/unpause game |
 | **R** | Restart game |
+| **M** | Toggle sound effects |
+| **E** | Toggle engine sound |
 | **Mouse Click** | Click left/right side to switch lanes |
-| **Touch** | Tap left/right side to switch lanes |
+
+### Mobile / Touch Devices
+| Input | Action |
+|-------|--------|
+| **On-screen buttons** | Tap left/right arrows at bottom corners |
+| **Swipe left/right** | Swipe horizontally to change lanes |
+| **Tap left/right side** | Tap screen halves to change lanes |
+| **Audio buttons** | Tap [M] and [E] in upper right for sound controls |
+
+**Note:** On-screen movement buttons appear automatically on narrow viewports (phones/tablets under 768px width).
 
 ## Power-ups
 
@@ -210,6 +222,33 @@ AssetLoader is tested in CommonJS format. See `tests/test_assets.js` for example
 - **Rendering:** HTML5 Canvas with `imageSmoothingEnabled: false` for pixel-art
 - **Testing:** Unit tests for core logic (collision, spawning, scoring)
 - **Module System:** ES modules (.js) for browser, CommonJS (.cjs) for Node tests
+
+## Manual Mobile Testing Checklist
+
+Test on actual mobile device or Chrome DevTools device emulation:
+
+**Movement Buttons:**
+- [ ] On-screen arrows appear on narrow viewport (< 768px width)
+- [ ] Left button moves car to left lane
+- [ ] Right button moves car to right lane
+- [ ] Buttons don't appear on desktop (> 768px width)
+- [ ] Buttons are large enough to tap comfortably (60x60px)
+
+**Swipe Detection:**
+- [ ] Swipe left triggers moveLeft()
+- [ ] Swipe right triggers moveRight()
+- [ ] Short swipes (< 50px) don't trigger movement
+- [ ] Swiping works during gameplay (not paused)
+
+**Fallback Tap Zones:**
+- [ ] Tapping left screen half moves left
+- [ ] Tapping right screen half moves right
+- [ ] Audio buttons still work (upper right corner)
+
+**Responsiveness:**
+- [ ] Game scales properly on small screens
+- [ ] No horizontal scrolling
+- [ ] Touch buttons positioned correctly at different screen sizes
 
 ## Deployment
 
