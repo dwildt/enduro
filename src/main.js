@@ -49,6 +49,52 @@ window.addEventListener('resize', () => {
   showTouchButtons = isMobileViewport();
 });
 
+// Mobile control button dimensions
+const BUTTON_SIZE = 50;
+const BUTTON_GAP = 6;
+const BUTTON_MARGIN_RIGHT = 10;
+const BUTTON_MARGIN_TOP = 80; // Below "Lives: X" indicator
+
+function getControlButtonBounds() {
+  const baseX = canvas.width - BUTTON_SIZE - BUTTON_MARGIN_RIGHT;
+  return {
+    sfx: { x: baseX, y: BUTTON_MARGIN_TOP, w: BUTTON_SIZE, h: BUTTON_SIZE },
+    engine: {
+      x: baseX,
+      y: BUTTON_MARGIN_TOP + BUTTON_SIZE + BUTTON_GAP,
+      w: BUTTON_SIZE,
+      h: BUTTON_SIZE
+    },
+    pause: {
+      x: baseX,
+      y: BUTTON_MARGIN_TOP + (BUTTON_SIZE + BUTTON_GAP) * 2,
+      w: BUTTON_SIZE,
+      h: BUTTON_SIZE
+    }
+  };
+}
+
+// Helper function for drawing mobile control buttons
+function drawControlButton(bounds, symbol, isActive, activeColor) {
+  const color = isActive ? activeColor : '#666';
+
+  // Background
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+  ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h);
+
+  // Border
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h);
+
+  // Symbol
+  ctx.fillStyle = color;
+  ctx.font = 'bold 20px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(symbol, bounds.x + bounds.w/2, bounds.y + bounds.h/2);
+}
+
 // Touch swipe detection
 let touchStartX = null;
 const SWIPE_THRESHOLD = 50; // pixels
@@ -216,6 +262,48 @@ canvas.addEventListener('pointerdown', (ev) => {
     if (x >= rightBtnX && x <= rightBtnX + rightBtnW &&
         y >= rightBtnY && y <= rightBtnY + rightBtnH) {
       if (!paused && running) car.moveRight();
+      ev.preventDefault();
+      return;
+    }
+
+    // Mobile control buttons (takes priority over subtle indicators)
+    const buttons = getControlButtonBounds();
+
+    // SFX button
+    if (x >= buttons.sfx.x && x <= buttons.sfx.x + buttons.sfx.w &&
+        y >= buttons.sfx.y && y <= buttons.sfx.y + buttons.sfx.h) {
+      soundManager.setSfxMuted(!soundManager.isSfxMuted());
+      ev.preventDefault();
+      return;
+    }
+
+    // Engine button
+    if (x >= buttons.engine.x && x <= buttons.engine.x + buttons.engine.w &&
+        y >= buttons.engine.y && y <= buttons.engine.y + buttons.engine.h) {
+      soundManager.setEngineMuted(!soundManager.isEngineMuted());
+      if (!soundManager.isEngineMuted() && running && !paused) {
+        const isBoosted = powerUpType === 'scoreboost';
+        soundManager.startEngine(isBoosted);
+      } else if (soundManager.isEngineMuted()) {
+        soundManager.stopEngine();
+      }
+      ev.preventDefault();
+      return;
+    }
+
+    // Pause button
+    if (x >= buttons.pause.x && x <= buttons.pause.x + buttons.pause.w &&
+        y >= buttons.pause.y && y <= buttons.pause.y + buttons.pause.h) {
+      if (!running) return; // Don't pause when game over
+      paused = !paused;
+
+      // Stop/restart engine when pausing/unpausing
+      if (paused) {
+        soundManager.stopEngine();
+      } else if (!soundManager.isEngineMuted()) {
+        const isBoosted = powerUpType === 'scoreboost';
+        soundManager.startEngine(isBoosted);
+      }
       ev.preventDefault();
       return;
     }
@@ -564,6 +652,20 @@ function render(interp){
 
   ctx.strokeStyle = soundManager.isEngineMuted() ? '#666' : '#fa0';
   ctx.strokeRect(engineBtnX - 2, engineBtnY - 12, engineBtnW + 4, engineBtnH + 2);
+
+  // Mobile control buttons (upper right, below Lives indicator)
+  if (showTouchButtons) {
+    const buttons = getControlButtonBounds();
+
+    // Draw three buttons
+    drawControlButton(buttons.sfx, '♪', !soundManager.isSfxMuted(), '#0f0');
+    drawControlButton(buttons.engine, 'ENG', !soundManager.isEngineMuted(), '#fa0');
+    drawControlButton(buttons.pause, '||', true, '#0af');
+
+    // Reset text alignment for other rendering
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+  }
 
   // Movement buttons (mobile only)
   if (showTouchButtons) {
