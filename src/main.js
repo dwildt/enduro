@@ -345,6 +345,18 @@ canvas.addEventListener('pointerdown', (ev) => {
 
   // Existing lane change logic (only if not tapping buttons and game is running)
   if(paused || !running) return;
+
+  // On mobile, don't use tap zones if clicking in button areas
+  if (showTouchButtons) {
+    const buttons = getControlButtonBounds();
+    // Check if click is in control button region (upper right)
+    if (x >= buttons.sfx.x - 10 && y >= buttons.sfx.y - 10 &&
+        y <= buttons.pause.y + buttons.pause.h + 10) {
+      // Click is in control button area, ignore tap zone
+      return;
+    }
+  }
+
   if(x < canvas.width/2) car.moveLeft(); else car.moveRight();
 });
 
