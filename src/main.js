@@ -52,24 +52,54 @@ window.addEventListener('resize', () => {
 // Mobile control button dimensions
 const BUTTON_SIZE = 50;
 const BUTTON_GAP = 6;
-const BUTTON_MARGIN_RIGHT = 10;
-const BUTTON_MARGIN_TOP = 80; // Below "Lives: X" indicator
+const BUTTON_MARGIN_BOTTOM = 10;
+
+// Movement button dimensions
+const MOVE_BUTTON_SIZE = 60;
+const MOVE_BUTTON_MARGIN = 10;
 
 function getControlButtonBounds() {
-  const baseX = canvas.width - BUTTON_SIZE - BUTTON_MARGIN_RIGHT;
+  // Position control buttons at bottom center
+  const centerX = canvas.width / 2;
+  const baseY = canvas.height - BUTTON_SIZE - BUTTON_MARGIN_BOTTOM;
+
   return {
-    sfx: { x: baseX, y: BUTTON_MARGIN_TOP, w: BUTTON_SIZE, h: BUTTON_SIZE },
+    sfx: {
+      x: centerX - (BUTTON_SIZE + BUTTON_GAP) * 1.5,
+      y: baseY,
+      w: BUTTON_SIZE,
+      h: BUTTON_SIZE
+    },
     engine: {
-      x: baseX,
-      y: BUTTON_MARGIN_TOP + BUTTON_SIZE + BUTTON_GAP,
+      x: centerX - BUTTON_SIZE / 2,
+      y: baseY,
       w: BUTTON_SIZE,
       h: BUTTON_SIZE
     },
     pause: {
-      x: baseX,
-      y: BUTTON_MARGIN_TOP + (BUTTON_SIZE + BUTTON_GAP) * 2,
+      x: centerX + (BUTTON_SIZE + BUTTON_GAP) * 0.5,
+      y: baseY,
       w: BUTTON_SIZE,
       h: BUTTON_SIZE
+    }
+  };
+}
+
+function getMovementButtonBounds() {
+  const baseY = canvas.height - MOVE_BUTTON_SIZE - BUTTON_MARGIN_BOTTOM;
+
+  return {
+    left: {
+      x: MOVE_BUTTON_MARGIN,
+      y: baseY,
+      w: MOVE_BUTTON_SIZE,
+      h: MOVE_BUTTON_SIZE
+    },
+    right: {
+      x: canvas.width - MOVE_BUTTON_SIZE - MOVE_BUTTON_MARGIN,
+      y: baseY,
+      w: MOVE_BUTTON_SIZE,
+      h: MOVE_BUTTON_SIZE
     }
   };
 }
@@ -238,48 +268,44 @@ canvas.addEventListener('pointerdown', (ev) => {
     soundManager.init();
   }
 
-  // Movement button hit detection (only on mobile)
+  // On mobile, ONLY use visible buttons (no tap zones)
   if (showTouchButtons) {
-    const leftBtnX = 10;
-    const leftBtnY = canvas.height - 70;
-    const leftBtnW = 60;
-    const leftBtnH = 60;
+    const moveButtons = getMovementButtonBounds();
+    const controlButtons = getControlButtonBounds();
 
-    const rightBtnX = canvas.width - 70;
-    const rightBtnY = canvas.height - 70;
-    const rightBtnW = 60;
-    const rightBtnH = 60;
-
-    // Left button
-    if (x >= leftBtnX && x <= leftBtnX + leftBtnW &&
-        y >= leftBtnY && y <= leftBtnY + leftBtnH) {
-      if (!paused && running) car.moveLeft();
+    // Left movement button
+    if (x >= moveButtons.left.x && x <= moveButtons.left.x + moveButtons.left.w &&
+        y >= moveButtons.left.y && y <= moveButtons.left.y + moveButtons.left.h) {
+      if (!paused && running) {
+        car.moveLeft();
+        soundManager.playLaneChange();
+      }
       ev.preventDefault();
       return;
     }
 
-    // Right button
-    if (x >= rightBtnX && x <= rightBtnX + rightBtnW &&
-        y >= rightBtnY && y <= rightBtnY + rightBtnH) {
-      if (!paused && running) car.moveRight();
+    // Right movement button
+    if (x >= moveButtons.right.x && x <= moveButtons.right.x + moveButtons.right.w &&
+        y >= moveButtons.right.y && y <= moveButtons.right.y + moveButtons.right.h) {
+      if (!paused && running) {
+        car.moveRight();
+        soundManager.playLaneChange();
+      }
       ev.preventDefault();
       return;
     }
-
-    // Mobile control buttons (takes priority over subtle indicators)
-    const buttons = getControlButtonBounds();
 
     // SFX button
-    if (x >= buttons.sfx.x && x <= buttons.sfx.x + buttons.sfx.w &&
-        y >= buttons.sfx.y && y <= buttons.sfx.y + buttons.sfx.h) {
+    if (x >= controlButtons.sfx.x && x <= controlButtons.sfx.x + controlButtons.sfx.w &&
+        y >= controlButtons.sfx.y && y <= controlButtons.sfx.y + controlButtons.sfx.h) {
       soundManager.setSfxMuted(!soundManager.isSfxMuted());
       ev.preventDefault();
       return;
     }
 
     // Engine button
-    if (x >= buttons.engine.x && x <= buttons.engine.x + buttons.engine.w &&
-        y >= buttons.engine.y && y <= buttons.engine.y + buttons.engine.h) {
+    if (x >= controlButtons.engine.x && x <= controlButtons.engine.x + controlButtons.engine.w &&
+        y >= controlButtons.engine.y && y <= controlButtons.engine.y + controlButtons.engine.h) {
       soundManager.setEngineMuted(!soundManager.isEngineMuted());
       if (!soundManager.isEngineMuted() && running && !paused) {
         const isBoosted = powerUpType === 'scoreboost';
@@ -292,8 +318,8 @@ canvas.addEventListener('pointerdown', (ev) => {
     }
 
     // Pause button
-    if (x >= buttons.pause.x && x <= buttons.pause.x + buttons.pause.w &&
-        y >= buttons.pause.y && y <= buttons.pause.y + buttons.pause.h) {
+    if (x >= controlButtons.pause.x && x <= controlButtons.pause.x + controlButtons.pause.w &&
+        y >= controlButtons.pause.y && y <= controlButtons.pause.y + controlButtons.pause.h) {
       if (!running) return; // Don't pause when game over
       paused = !paused;
 
@@ -307,62 +333,27 @@ canvas.addEventListener('pointerdown', (ev) => {
       ev.preventDefault();
       return;
     }
-  }
 
-  // SFX button bounds (upper right, first row)
-  const sfxBtnX = canvas.width - 82;
-  const sfxBtnY = 40;
-  const sfxBtnW = 39;
-  const sfxBtnH = 20;
-
-  // Engine button bounds (upper right, second row)
-  const engineBtnX = canvas.width - 82;
-  const engineBtnY = 55;
-  const engineBtnW = 39;
-  const engineBtnH = 20;
-
-  // Check if tapped SFX button
-  if (x >= sfxBtnX && x <= sfxBtnX + sfxBtnW &&
-      y >= sfxBtnY && y <= sfxBtnY + sfxBtnH) {
-    soundManager.setSfxMuted(!soundManager.isSfxMuted());
+    // On mobile, ignore all other clicks (no tap zones)
     ev.preventDefault();
     return;
   }
 
-  // Check if tapped Engine button
-  if (x >= engineBtnX && x <= engineBtnX + engineBtnW &&
-      y >= engineBtnY && y <= engineBtnY + engineBtnH) {
-    soundManager.setEngineMuted(!soundManager.isEngineMuted());
-    if (!soundManager.isEngineMuted() && running && !paused) {
-      const isBoosted = powerUpType === 'scoreboost';
-      soundManager.startEngine(isBoosted);
-    } else if (soundManager.isEngineMuted()) {
-      soundManager.stopEngine();
-    }
-    ev.preventDefault();
-    return;
-  }
-
-  // Existing lane change logic (only if not tapping buttons and game is running)
+  // Desktop: use tap zones for lane changes
   if(paused || !running) return;
-
-  // On mobile, don't use tap zones if clicking in button areas
-  if (showTouchButtons) {
-    const buttons = getControlButtonBounds();
-    // Check if click is in control button region (upper right)
-    if (x >= buttons.sfx.x - 10 && y >= buttons.sfx.y - 10 &&
-        y <= buttons.pause.y + buttons.pause.h + 10) {
-      // Click is in control button area, ignore tap zone
-      return;
-    }
+  if(x < canvas.width/2) {
+    car.moveLeft();
+    soundManager.playLaneChange();
+  } else {
+    car.moveRight();
+    soundManager.playLaneChange();
   }
-
-  if(x < canvas.width/2) car.moveLeft(); else car.moveRight();
 });
 
-// Touch swipe detection for lane changes
+// Touch swipe detection - disabled on mobile (use buttons instead)
 canvas.addEventListener('touchstart', (ev) => {
-  if (ev.touches.length === 1) {
+  // Swipe only enabled on desktop (when touch buttons are not shown)
+  if (!showTouchButtons && ev.touches.length === 1) {
     const touch = ev.touches[0];
     const rect = canvas.getBoundingClientRect();
     touchStartX = touch.clientX - rect.left;
@@ -370,7 +361,8 @@ canvas.addEventListener('touchstart', (ev) => {
 }, { passive: true });
 
 canvas.addEventListener('touchend', (ev) => {
-  if (touchStartX !== null && paused === false && running === true) {
+  // Swipe only enabled on desktop (when touch buttons are not shown)
+  if (!showTouchButtons && touchStartX !== null && paused === false && running === true) {
     const touch = ev.changedTouches[0];
     const rect = canvas.getBoundingClientRect();
     const touchEndX = touch.clientX - rect.left;
@@ -379,8 +371,10 @@ canvas.addEventListener('touchend', (ev) => {
     const swipe = detectSwipe(deltaX, SWIPE_THRESHOLD);
     if (swipe === 'left') {
       car.moveLeft();
+      soundManager.playLaneChange();
     } else if (swipe === 'right') {
       car.moveRight();
+      soundManager.playLaneChange();
     }
   }
 
@@ -634,84 +628,50 @@ function render(interp){
   ctx.fillText('Score: '+Math.floor(score), 18, 44);
   ctx.fillText('Lives: '+lives, canvas.width - 100, 44);
 
-  // Audio indicators (upper right, below lives)
-  // SFX indicator
-  ctx.fillStyle = soundManager.isSfxMuted() ? '#666' : '#0f0';
-  ctx.font = '12px monospace';
-  const sfxText = soundManager.isSfxMuted() ? '[M] OFF' : '[M] ON';
-  ctx.fillText(sfxText, canvas.width - 80, 58);
+  // Audio indicators (desktop only - on mobile these are buttons at bottom)
+  if (!showTouchButtons) {
+    // SFX indicator
+    ctx.fillStyle = soundManager.isSfxMuted() ? '#666' : '#0f0';
+    ctx.font = '12px monospace';
+    const sfxText = soundManager.isSfxMuted() ? '[M] OFF' : '[M] ON';
+    ctx.fillText(sfxText, canvas.width - 80, 58);
 
-  // Engine indicator
-  ctx.fillStyle = soundManager.isEngineMuted() ? '#666' : '#fa0';
-  const engineText = soundManager.isEngineMuted() ? '[E] OFF' : '[E] ON';
-  ctx.fillText(engineText, canvas.width - 80, 72);
-
-  // Mobile touch controls - visual borders around buttons
-  const sfxBtnX = canvas.width - 80;
-  const sfxBtnY = 52;
-  const sfxBtnW = 35;
-  const sfxBtnH = 18;
-
-  const engineBtnX = canvas.width - 80;
-  const engineBtnY = 67;
-  const engineBtnW = 35;
-  const engineBtnH = 18;
-
-  // Draw button backgrounds (subtle borders for touch targets)
-  ctx.strokeStyle = soundManager.isSfxMuted() ? '#666' : '#0f0';
-  ctx.lineWidth = 1;
-  ctx.strokeRect(sfxBtnX - 2, sfxBtnY - 12, sfxBtnW + 4, sfxBtnH + 2);
-
-  ctx.strokeStyle = soundManager.isEngineMuted() ? '#666' : '#fa0';
-  ctx.strokeRect(engineBtnX - 2, engineBtnY - 12, engineBtnW + 4, engineBtnH + 2);
-
-  // Mobile control buttons (upper right, below Lives indicator)
-  if (showTouchButtons) {
-    const buttons = getControlButtonBounds();
-
-    // Draw three buttons
-    drawControlButton(buttons.sfx, '♪', !soundManager.isSfxMuted(), '#0f0');
-    drawControlButton(buttons.engine, 'ENG', !soundManager.isEngineMuted(), '#fa0');
-    drawControlButton(buttons.pause, '||', true, '#0af');
-
-    // Reset text alignment for other rendering
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'alphabetic';
+    // Engine indicator
+    ctx.fillStyle = soundManager.isEngineMuted() ? '#666' : '#fa0';
+    const engineText = soundManager.isEngineMuted() ? '[E] OFF' : '[E] ON';
+    ctx.fillText(engineText, canvas.width - 80, 72);
   }
 
-  // Movement buttons (mobile only)
+  // Mobile control buttons (bottom of screen)
   if (showTouchButtons) {
-    const leftBtnX = 10;
-    const leftBtnY = canvas.height - 70;
-    const leftBtnW = 60;
-    const leftBtnH = 60;
+    const moveButtons = getMovementButtonBounds();
+    const controlButtons = getControlButtonBounds();
 
-    const rightBtnX = canvas.width - 70;
-    const rightBtnY = canvas.height - 70;
-    const rightBtnW = 60;
-    const rightBtnH = 60;
-
-    // Left button
-    ctx.strokeStyle = '#0af'; // Cyan color
-    ctx.lineWidth = 2;
-    ctx.strokeRect(leftBtnX, leftBtnY, leftBtnW, leftBtnH);
-
-    ctx.fillStyle = '#0af';
-    ctx.font = 'bold 24px monospace';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('←', leftBtnX + leftBtnW/2, leftBtnY + leftBtnH/2);
-
-    // Right button
+    // Movement buttons (left and right)
     ctx.strokeStyle = '#0af';
     ctx.lineWidth = 2;
-    ctx.strokeRect(rightBtnX, rightBtnY, rightBtnW, rightBtnH);
+    ctx.fillStyle = 'rgba(0, 170, 255, 0.2)';
 
+    // Left button
+    ctx.fillRect(moveButtons.left.x, moveButtons.left.y, moveButtons.left.w, moveButtons.left.h);
+    ctx.strokeRect(moveButtons.left.x, moveButtons.left.y, moveButtons.left.w, moveButtons.left.h);
     ctx.fillStyle = '#0af';
-    ctx.font = 'bold 24px monospace';
+    ctx.font = 'bold 32px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('→', rightBtnX + rightBtnW/2, rightBtnY + rightBtnH/2);
+    ctx.fillText('←', moveButtons.left.x + moveButtons.left.w/2, moveButtons.left.y + moveButtons.left.h/2);
+
+    // Right button
+    ctx.fillStyle = 'rgba(0, 170, 255, 0.2)';
+    ctx.fillRect(moveButtons.right.x, moveButtons.right.y, moveButtons.right.w, moveButtons.right.h);
+    ctx.strokeRect(moveButtons.right.x, moveButtons.right.y, moveButtons.right.w, moveButtons.right.h);
+    ctx.fillStyle = '#0af';
+    ctx.fillText('→', moveButtons.right.x + moveButtons.right.w/2, moveButtons.right.y + moveButtons.right.h/2);
+
+    // Control buttons (center)
+    drawControlButton(controlButtons.sfx, '♪', !soundManager.isSfxMuted(), '#0f0');
+    drawControlButton(controlButtons.engine, 'ENG', !soundManager.isEngineMuted(), '#fa0');
+    drawControlButton(controlButtons.pause, '||', true, '#0af');
 
     // Reset text alignment for other rendering
     ctx.textAlign = 'left';
