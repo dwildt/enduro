@@ -103,6 +103,23 @@ This split allows core game logic to be unit tested in Node.js while keeping bro
 - Mute states persist in localStorage (enduro_sfx_muted, enduro_engine_muted)
 - Mobile touch controls: visual buttons in upper right corner below lives indicator
 
+**Car Color Selection System**
+- 5 SVG sprite sheet variants (blue, purple, red, white, green) in assets/images/
+- Pre-game color selection screen shown on first load (no saved preference)
+- Color preference persisted in localStorage (key: `enduro_car_color`)
+- Ways to change color:
+  - R key: Opens color selector on restart
+  - C key: Opens color selector on game over screen
+  - "Change Color (C)" button on game over screen (click or touch)
+- Keyboard navigation in color selector:
+  - Arrow keys or WASD: Navigate between colors
+  - Enter or Space: Confirm selection and start game
+- Dynamic sprite loading based on selected color via `initializeCarWithColor(color)`
+- Each color variant maintains same 4-frame wheel animation structure
+- `getCarSpritePath(color)` helper returns correct sprite sheet path
+- `startGame()` function initializes car with selected color and starts game immediately
+- `highlightedColorIndex` tracks keyboard navigation position
+
 **Obstacle Spawning (main.js:233-250)**
 - Probabilistic spawn each frame: `Math.random() < spawnRate * dt`
 - Random lane selection with minimum gap enforcement (configurable per phase)

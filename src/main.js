@@ -135,6 +135,17 @@ function detectSwipe(deltaX, threshold) {
   return deltaX > 0 ? 'right' : 'left';
 }
 
+// Color selection system
+const AVAILABLE_COLORS = ['blue', 'purple', 'red', 'white', 'green'];
+let selectedColor = localStorage.getItem('enduro_car_color') || 'blue'; // Default to blue
+let showColorSelection = !localStorage.getItem('enduro_car_color'); // Show on first load only
+let colorSelectionActive = false; // True when color picker is open
+let highlightedColorIndex = AVAILABLE_COLORS.indexOf(selectedColor); // For keyboard navigation
+
+function getCarSpritePath(color) {
+  return `assets/images/car-sprite-${color}.svg`;
+}
+
 // sprite images (8-bit SVGs)
 const carImg = new Image();
 let carImgLoaded = false;
@@ -146,16 +157,7 @@ let obstacleImgLoaded = false;
 obstacleImg.onload = () => { obstacleImgLoaded = true; };
 obstacleImg.src = 'assets/images/obstacle.svg';
 
-// Sprite animations
-const carAnimation = new SpriteAnimation({
-  imagePath: 'assets/images/car-sprite.svg',
-  frameWidth: 64,
-  frameHeight: 128,
-  frameCount: 4,
-  fps: 10,
-  loop: true
-});
-
+// Obstacle sprite animation (doesn't change)
 const obstacleAnimation = new SpriteAnimation({
   imagePath: 'assets/images/obstacle-sprite.svg',
   frameWidth: 64,
@@ -164,13 +166,31 @@ const obstacleAnimation = new SpriteAnimation({
   fps: 8,
   loop: true
 });
-
-// Load animations
-carAnimation.load();
 obstacleAnimation.load();
 
-// Create car with animation
-const car = new Car(1, lanePositions, carAnimation);
+// Dynamic car initialization function
+function initializeCarWithColor(color) {
+  const carAnimation = new SpriteAnimation({
+    imagePath: getCarSpritePath(color),
+    frameWidth: 64,
+    frameHeight: 128,
+    frameCount: 4,
+    fps: 10,
+    loop: true
+  });
+
+  carAnimation.load();
+
+  // Update global car instance
+  car.animation = carAnimation;
+}
+
+// Create car with default blue color
+const car = new Car(1, lanePositions, null);
+// Initialize with blue by default (will be overridden by color selection if shown)
+if (!showColorSelection) {
+  initializeCarWithColor(selectedColor);
+}
 
 // Sound manager
 const soundManager = new SoundManager();
@@ -201,6 +221,53 @@ window.addEventListener('keydown', (e) => {
   // Initialize audio on first keypress (browser requirement)
   if (!soundManager.audioContext) {
     soundManager.init();
+  }
+
+  // Color selection keyboard navigation
+  if (showColorSelection || colorSelectionActive) {
+    if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+      highlightedColorIndex = (highlightedColorIndex - 1 + AVAILABLE_COLORS.length) % AVAILABLE_COLORS.length;
+      selectedColor = AVAILABLE_COLORS[highlightedColorIndex];
+      e.preventDefault();
+      return;
+    }
+    if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+      highlightedColorIndex = (highlightedColorIndex + 1) % AVAILABLE_COLORS.length;
+      selectedColor = AVAILABLE_COLORS[highlightedColorIndex];
+      e.preventDefault();
+      return;
+    }
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+      // Move up in grid (3 colors per row)
+      highlightedColorIndex = (highlightedColorIndex - 3 + AVAILABLE_COLORS.length) % AVAILABLE_COLORS.length;
+      selectedColor = AVAILABLE_COLORS[highlightedColorIndex];
+      e.preventDefault();
+      return;
+    }
+    if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+      // Move down in grid (3 colors per row)
+      highlightedColorIndex = (highlightedColorIndex + 3) % AVAILABLE_COLORS.length;
+      selectedColor = AVAILABLE_COLORS[highlightedColorIndex];
+      e.preventDefault();
+      return;
+    }
+    if (e.key === 'Enter' || e.key === ' ') {
+      if (selectedColor) {
+        startGame();
+      }
+      e.preventDefault();
+      return;
+    }
+    // Block other inputs during color selection
+    e.preventDefault();
+    return;
+  }
+
+  // C key to open color selection (only when game over)
+  if ((e.key === 'c' || e.key === 'C') && !running) {
+    colorSelectionActive = true;
+    highlightedColorIndex = AVAILABLE_COLORS.indexOf(selectedColor);
+    return;
   }
 
   // Mute toggle: M for SFX
@@ -252,8 +319,11 @@ window.addEventListener('keyup', (e) => {
   if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = false; }
   if(e.key === 'ArrowRight' || e.key === 'd') { inputState.right = false; }
   if(e.key === 'r' || e.key === 'R') {
-    // restart on R
-    resetGame();
+    // Show color selection instead of immediate restart
+    colorSelectionActive = true;
+    highlightedColorIndex = AVAILABLE_COLORS.indexOf(selectedColor);
+    paused = true;
+    soundManager.stopEngine();
   }
 });
 
@@ -266,6 +336,73 @@ canvas.addEventListener('pointerdown', (ev) => {
   // Initialize audio on first touch if needed
   if (!soundManager.audioContext) {
     soundManager.init();
+  }
+
+  // Color selection click handling
+  if (showColorSelection || colorSelectionActive) {
+    const boxSize = 50;
+    const gap = 15;
+    const centerX = canvas.width / 2;
+
+    // Row 1: blue, purple, red
+    const row1Colors = ['blue', 'purple', 'red'];
+    const row1StartX = centerX - (boxSize * 1.5 + gap);
+    const row1Y = 140;
+
+    for (let i = 0; i < row1Colors.length; i++) {
+      const boxX = row1StartX + i * (boxSize + gap);
+      if (x >= boxX && x <= boxX + boxSize && y >= row1Y && y <= row1Y + boxSize) {
+        selectedColor = row1Colors[i];
+        ev.preventDefault();
+        return;
+      }
+    }
+
+    // Row 2: white, green
+    const row2Colors = ['white', 'green'];
+    const row2StartX = centerX - (boxSize / 2 + gap / 2);
+    const row2Y = row1Y + boxSize + 35;
+
+    for (let i = 0; i < row2Colors.length; i++) {
+      const boxX = row2StartX + i * (boxSize + gap);
+      if (x >= boxX && x <= boxX + boxSize && y >= row2Y && y <= row2Y + boxSize) {
+        selectedColor = row2Colors[i];
+        ev.preventDefault();
+        return;
+      }
+    }
+
+    // Start button
+    if (selectedColor) {
+      const btnY = canvas.height - 120;
+      const btnWidth = 160;
+      const btnHeight = 40;
+      const btnX = centerX - btnWidth/2;
+
+      if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+        startGame();
+        ev.preventDefault();
+        return;
+      }
+    }
+
+    ev.preventDefault();
+    return;
+  }
+
+  // Game over "Change Color" button click
+  if (!running) {
+    const btnY = canvas.height/2 + 30;
+    const btnWidth = 180;
+    const btnHeight = 35;
+    const btnX = canvas.width/2 - btnWidth/2;
+
+    if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
+      colorSelectionActive = true;
+      highlightedColorIndex = AVAILABLE_COLORS.indexOf(selectedColor);
+      ev.preventDefault();
+      return;
+    }
   }
 
   // On mobile, ONLY use visible buttons (no tap zones)
@@ -515,7 +652,125 @@ function update(dt){
   }
 }
 
+function renderColorSelection() {
+  // Dark overlay
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // Title
+  ctx.fillStyle = '#0f0';
+  ctx.font = '24px monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  ctx.fillText('CHOOSE YOUR CAR', canvas.width/2, 80);
+
+  // Color box settings
+  const boxSize = 50;
+  const gap = 15;
+  const centerX = canvas.width / 2;
+
+  // Define color display info
+  const colorInfo = {
+    blue: { name: 'BLUE', color: '#00AACC' },
+    purple: { name: 'PURPLE', color: '#AA44CC' },
+    red: { name: 'RED', color: '#CC4444' },
+    white: { name: 'WHITE', color: '#EEEEEE' },
+    green: { name: 'GREEN', color: '#44CC44' }
+  };
+
+  // Row 1: blue, purple, red (3 colors)
+  const row1Colors = ['blue', 'purple', 'red'];
+  const row1StartX = centerX - (boxSize * 1.5 + gap);
+  const row1Y = 140;
+
+  row1Colors.forEach((color, i) => {
+    const x = row1StartX + i * (boxSize + gap);
+    const isSelected = (selectedColor === color);
+
+    // Draw box background
+    ctx.fillStyle = colorInfo[color].color;
+    ctx.fillRect(x, row1Y, boxSize, boxSize);
+
+    // Draw selection highlight
+    if (isSelected) {
+      ctx.strokeStyle = '#0f0';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x - 2, row1Y - 2, boxSize + 4, boxSize + 4);
+    } else {
+      ctx.strokeStyle = '#666';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, row1Y, boxSize, boxSize);
+    }
+
+    // Draw color name
+    ctx.fillStyle = '#fff';
+    ctx.font = '10px monospace';
+    ctx.fillText(colorInfo[color].name, x + boxSize/2, row1Y + boxSize + 15);
+  });
+
+  // Row 2: white, green (2 colors)
+  const row2Colors = ['white', 'green'];
+  const row2StartX = centerX - (boxSize / 2 + gap / 2);
+  const row2Y = row1Y + boxSize + 35;
+
+  row2Colors.forEach((color, i) => {
+    const x = row2StartX + i * (boxSize + gap);
+    const isSelected = (selectedColor === color);
+
+    // Draw box background
+    ctx.fillStyle = colorInfo[color].color;
+    ctx.fillRect(x, row2Y, boxSize, boxSize);
+
+    // Draw selection highlight
+    if (isSelected) {
+      ctx.strokeStyle = '#0f0';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x - 2, row2Y - 2, boxSize + 4, boxSize + 4);
+    } else {
+      ctx.strokeStyle = '#666';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(x, row2Y, boxSize, boxSize);
+    }
+
+    // Draw color name
+    ctx.fillStyle = '#fff';
+    ctx.font = '10px monospace';
+    ctx.fillText(colorInfo[color].name, x + boxSize/2, row2Y + boxSize + 15);
+  });
+
+  // Instructions
+  ctx.fillStyle = '#aaa';
+  ctx.font = '12px monospace';
+  ctx.fillText('Arrows/WASD to navigate', centerX, row2Y + boxSize + 45);
+  ctx.fillText('Enter/Space to start', centerX, row2Y + boxSize + 60);
+
+  // Start button (only if color is selected)
+  if (selectedColor) {
+    const btnY = canvas.height - 120;
+    const btnWidth = 160;
+    const btnHeight = 40;
+    const btnX = centerX - btnWidth/2;
+
+    ctx.fillStyle = '#0af';
+    ctx.fillRect(btnX, btnY, btnWidth, btnHeight);
+
+    ctx.fillStyle = '#000';
+    ctx.font = 'bold 18px monospace';
+    ctx.fillText('START GAME', centerX, btnY + 26);
+  }
+
+  // Reset text alignment
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'alphabetic';
+}
+
 function render(interp){
+  // Show color selection screen if active
+  if (showColorSelection || colorSelectionActive) {
+    renderColorSelection();
+    return;
+  }
+
   // background colors based on phase
   const phaseId = levelManager.getCurrentPhase().id;
   const phaseColors = {
@@ -724,10 +979,53 @@ function render(interp){
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = '#fff';
     ctx.font = '24px monospace';
-    ctx.fillText('GAME OVER', canvas.width/2 - 70, canvas.height/2 - 10);
+    ctx.textAlign = 'center';
+    ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2 - 30);
     ctx.font = '16px monospace';
-    ctx.fillText('Score: '+Math.floor(score), canvas.width/2 - 40, canvas.height/2 + 20);
-    ctx.fillText('Press R to restart', canvas.width/2 - 70, canvas.height/2 + 50);
+    ctx.fillText('Score: '+Math.floor(score), canvas.width/2, canvas.height/2);
+
+    // Change Color button
+    const btnY = canvas.height/2 + 30;
+    const btnWidth = 180;
+    const btnHeight = 35;
+    const btnX = canvas.width/2 - btnWidth/2;
+
+    ctx.fillStyle = '#0af';
+    ctx.fillRect(btnX, btnY, btnWidth, btnHeight);
+    ctx.fillStyle = '#000';
+    ctx.fillText('Change Color (C)', canvas.width/2, btnY + 23);
+
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Press R to restart', canvas.width/2, btnY + 65);
+
+    // Reset text alignment
+    ctx.textAlign = 'left';
+  }
+}
+
+function startGame() {
+  if (!selectedColor) return;
+
+  // Save color preference
+  localStorage.setItem('enduro_car_color', selectedColor);
+
+  // Initialize car with selected color
+  initializeCarWithColor(selectedColor);
+
+  // Close color selection
+  showColorSelection = false;
+  colorSelectionActive = false;
+
+  // Reset game state
+  resetGame();
+
+  // Ensure game is running and not paused
+  running = true;
+  paused = false;
+
+  // Start engine if not muted
+  if (!soundManager.isEngineMuted()) {
+    soundManager.startEngine(false);
   }
 }
 
@@ -742,9 +1040,14 @@ function resetGame(){
   pickupSpawnTimer = 0;
   score = 0;
   elapsedTime = 0;
-  running = true;
+
+  // Don't set running = true if in color selection
+  if (!showColorSelection && !colorSelectionActive) {
+    running = true;
+  }
+
   soundManager.stopEngine();
-  if (!soundManager.isEngineMuted()) {
+  if (!soundManager.isEngineMuted() && !showColorSelection && !colorSelectionActive) {
     soundManager.startEngine(false);
   }
   console.log('resetGame called');
