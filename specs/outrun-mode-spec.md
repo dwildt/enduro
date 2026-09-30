@@ -33,7 +33,7 @@ Pure logic (unit tested in Node):
   2. Mountain Pass → MOUNTAIN PASS (afternoon sky, rocks, pines)
   3. Desert Highway → DESERT HIGHWAY (sand, cactus, mesas)
   4. Night City Sprint → NIGHT CITY (neon skyline, buildings, lamps)
-- `world.js` — `World` game state: speed eases to `baseSpeed * 6000`, smooth lane interpolation, score (10 pts/s, x2 with boost), traffic spawn using phase `spawnRate` and `minGap` (px × 20 → world units), z/x overlap collisions, lives, power-ups every 10s (shield 5s, boost 8s, beeps at 3/2/1s). `update(dt)` returns events: `hit`, `gameover`, `checkpoint`, `powerup`, `beep`, `skid`. A hit removes the other car and drops speed to 30%.
+- `world.js` — `World` game state: speed eases to `baseSpeed * 6000`, smooth lane interpolation, score (10 pts/s, x2 with boost), traffic spawn using phase `spawnRate` and `minGap` (px × 20 → world units), z/x overlap collisions, lives, power-ups every 10s (shield 5s; boost 8s = x2 score and x1.4 car speed via `BOOST_SPEED_MULTIPLIER`; beeps at 3/2/1s). Traffic speed uses the non-boosted phase speed. `update(dt)` returns events: `hit`, `gameover`, `checkpoint`, `powerup`, `beep`, `skid`. A hit removes the other car and drops speed to 30%.
 
 Rendering and platform (PixiJS):
 - `OutRunRenderer.js` — layers: banded sky + striped sun + 2 tiling parallax layers per theme (cross-faded over 2s on checkpoints); road drawn front-to-back in one `Graphics` with hill clipping (near edge clipped to `maxY`), alternating rumble/grass/lane stripes and distance fog; pooled sprites (scenery, traffic, pickups) placed back-to-front; rear-view player car with steer frames, bounce, hit blink and shield tint.

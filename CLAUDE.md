@@ -97,7 +97,7 @@ Pseudo-3D racer inspired by OutRun (Mega Drive), rendered by PixiJS at 320x224 a
 **Power-Up System (Pickup.js)**
 - Two power-up types: invulnerability (blue) and score boost (orange)
 - Invulnerability: 5 seconds of collision immunity with visual flash effect
-- Score boost: 8 seconds of 5x score multiplier + boosted engine sound
+- Score boost: 8 seconds of 2x score multiplier + 1.4x road speed (obstacles/pickups approach faster) + boosted engine sound
 - Power-ups spawn periodically and move down the road like obstacles
 - Timer countdown with audio beeps at 3s, 2s, 1s remaining
 

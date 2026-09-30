@@ -19,6 +19,7 @@ export const PICKUP_INTERVAL = 10;
 export const INVULN_DURATION = 5;
 export const SCOREBOOST_DURATION = 8;
 export const SCORE_MULTIPLIER = 2;
+export const BOOST_SPEED_MULTIPLIER = 1.4; // car goes faster while the score boost is active
 export const SKID_CURVE = 5;             // curve strength that makes the tyres squeal
 
 export class World {
@@ -48,7 +49,8 @@ export class World {
   }
 
   get playerZ(){ return this.distance + PLAYER_Z_OFFSET; }
-  get maxSpeed(){ return this.levelManager.getDifficulty().baseSpeed * SPEED_PER_BASE; }
+  get phaseSpeed(){ return this.levelManager.getDifficulty().baseSpeed * SPEED_PER_BASE; }
+  get maxSpeed(){ return this.phaseSpeed * (this.powerUpType === 'scoreboost' ? BOOST_SPEED_MULTIPLIER : 1); }
   get kmh(){ return Math.round(this.speed / (2 * SPEED_PER_BASE) * MAX_KMH); }
   get isInvulnerable(){ return this.invulTimer > 0 || this.powerUpType === 'invuln'; }
 
@@ -127,7 +129,7 @@ export class World {
     const tooClose = this.traffic.some(car => car.lane === lane && Math.abs(car.z - z) < minGap);
     if(tooClose) return;
     // traffic drives forward slower than the player, so the player catches up
-    const speed = this.maxSpeed * (0.35 + this.random() * 0.25);
+    const speed = this.phaseSpeed * (0.35 + this.random() * 0.25);
     this.traffic.push({ lane, x: LANE_X[lane], z, speed, variant: Math.floor(this.random() * 4) });
   }
 

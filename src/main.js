@@ -36,6 +36,7 @@ let powerUpTimer = 0; // seconds remaining
 const invulnDuration = 5; // 5 seconds of invulnerability
 const scoreBoostDuration = 8; // 8 seconds of 2x score
 const scoreMultiplier = 2; // 2x multiplier when active
+const boostSpeedMultiplier = 1.4; // road moves faster while the score boost is active
 
 // Detect mobile/narrow viewport for showing touch buttons
 function isMobileViewport() {
@@ -593,8 +594,9 @@ function update(dt){
     }
   }
 
-  // update obstacles
-  obstacles.forEach(o => o.update(dt));
+  // update obstacles (faster while boosted)
+  const roadDt = powerUpType === 'scoreboost' ? dt * boostSpeedMultiplier : dt;
+  obstacles.forEach(o => o.update(roadDt));
   // remove offscreen
   for(let i = obstacles.length - 1; i >= 0; i--){
     if(obstacles[i].isOffscreen(canvas.height)) obstacles.splice(i,1);
@@ -610,7 +612,7 @@ function update(dt){
   }
 
   // Update pickups
-  pickups.forEach(p => p.update(dt));
+  pickups.forEach(p => p.update(roadDt));
   // Remove offscreen pickups
   for(let i = pickups.length - 1; i >= 0; i--){
     if(pickups[i].isOffscreen(canvas.height)) pickups.splice(i,1);

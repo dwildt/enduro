@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { World, SPEED_PER_BASE, HIT_INVUL_SECONDS, SPAWN_AHEAD, MIN_GAP_SCALE, INVULN_DURATION, SCOREBOOST_DURATION, PICKUP_INTERVAL } from '../src/outrun/world.js';
+import { World, SPEED_PER_BASE, BOOST_SPEED_MULTIPLIER, HIT_INVUL_SECONDS, SPAWN_AHEAD, MIN_GAP_SCALE, INVULN_DURATION, SCOREBOOST_DURATION, PICKUP_INTERVAL } from '../src/outrun/world.js';
 import { buildTrack } from '../src/outrun/track.js';
 import { LANE_X } from '../src/outrun/road.js';
 
@@ -82,9 +82,13 @@ assert.strictEqual(w.pickups[0].type, 'scoreboost');
 w.pickups[0].z = w.playerZ; w.pickups[0].x = w.playerX;
 assert.ok(w.update(DT).includes('powerup'));
 assert.strictEqual(w.powerUpType, 'scoreboost');
-events = run(w, SCOREBOOST_DURATION + 0.1);
+run(w, 1);
+assert.strictEqual(w.speed, SPEED_PER_BASE * BOOST_SPEED_MULTIPLIER, 'boost makes the car faster');
+events = run(w, SCOREBOOST_DURATION - 1 + 0.1);
 assert.strictEqual(events.filter(e => e === 'beep').length, 3);
 assert.strictEqual(w.powerUpType, null);
+run(w, 1);
+assert.strictEqual(w.speed, SPEED_PER_BASE, 'speed returns to normal after the boost');
 
 // invulnerability power-up ignores traffic
 w = new World(track, never);
