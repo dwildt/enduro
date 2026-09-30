@@ -263,10 +263,18 @@ window.addEventListener('keydown', (e) => {
     return;
   }
 
-  // C key to open color selection (only when game over)
-  if ((e.key === 'c' || e.key === 'C') && !running) {
+  // C restarts (racing, paused or game over) by opening the color selection
+  if (e.key === 'c' || e.key === 'C') {
     colorSelectionActive = true;
     highlightedColorIndex = AVAILABLE_COLORS.indexOf(selectedColor);
+    paused = true;
+    soundManager.stopEngine();
+    return;
+  }
+
+  // Enter retries with the same car after game over
+  if (e.key === 'Enter' && !running) {
+    startGame();
     return;
   }
 
@@ -318,13 +326,6 @@ window.addEventListener('keydown', (e) => {
 window.addEventListener('keyup', (e) => {
   if(e.key === 'ArrowLeft' || e.key === 'a') { inputState.left = false; }
   if(e.key === 'ArrowRight' || e.key === 'd') { inputState.right = false; }
-  if(e.key === 'r' || e.key === 'R') {
-    // Show color selection instead of immediate restart
-    colorSelectionActive = true;
-    highlightedColorIndex = AVAILABLE_COLORS.indexOf(selectedColor);
-    paused = true;
-    soundManager.stopEngine();
-  }
 });
 
 // Pointer / click zones - includes mobile audio controls and movement buttons
@@ -970,7 +971,12 @@ function render(interp){
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = '#fff';
     ctx.font = '24px monospace';
-    ctx.fillText('PAUSED', canvas.width/2 - 40, canvas.height/2);
+    ctx.textAlign = 'center';
+    ctx.fillText('PAUSED', canvas.width/2, canvas.height/2);
+    ctx.font = '14px monospace';
+    ctx.fillStyle = '#aaa';
+    ctx.fillText('P continue  C restart', canvas.width/2, canvas.height/2 + 30);
+    ctx.textAlign = 'left';
   }
 
   // game over overlay
@@ -996,7 +1002,7 @@ function render(interp){
     ctx.fillText('Change Color (C)', canvas.width/2, btnY + 23);
 
     ctx.fillStyle = '#fff';
-    ctx.fillText('Press R to restart', canvas.width/2, btnY + 65);
+    ctx.fillText('Press Enter to retry', canvas.width/2, btnY + 65);
 
     // Reset text alignment
     ctx.textAlign = 'left';
