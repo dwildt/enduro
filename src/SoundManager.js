@@ -130,6 +130,16 @@ export default class SoundManager {
     this.engineGain.gain.linearRampToValueAtTime(volume, time + 0.3);
   }
 
+  // OutRun mode: engine pitch follows the car speed (ratio 0..1)
+  setEngineSpeed(ratio) {
+    if (!this.engineOscillator || !this.audioContext) return;
+    this.engineOscillator.frequency.setTargetAtTime(55 + ratio * 110, this.audioContext.currentTime, 0.1);
+  }
+
+  playSkid() {
+    this._playTone(1300, 0.25, 'square', 0.04);
+  }
+
   stopEngine() {
     if (this.engineOscillator) {
       this.engineOscillator.stop();
