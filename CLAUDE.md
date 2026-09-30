@@ -56,7 +56,7 @@ Pseudo-3D racer inspired by OutRun (Mega Drive), rendered by PixiJS at 320x224 a
 - `sprites.js`: procedural pixel-art textures (cars, scenery, backdrops)
 - `hud.js` / `screens.js`: HUD (score, time to checkpoint, stage, lives, tachometer) and menus (car color → radio/music select → race → game over + local top 5 in `enduro_outrun_ranking`)
 - `index.js`: Pixi app, fixed-step loop, state machine, keyboard/touch input
-- Keys: ←/→ or A/D lanes, P/Space pause, C restart/change car, Enter retry after game over, M sfx, E engine, R radio (music on/off), V CRT scanlines, ESC menu
+- Keys: ←/→ or A/D lanes, P/Space pause menu (Continue / Restart / Menu), arrows + Enter in menus, game over menu (Retry / Car), M music, E engine, C car sounds (SFX), V CRT scanlines, ESC menu; R is unused
 
 ### Music (src/audio/)
 - `MusicSequencer.js`: Web Audio step sequencer with 2-operator FM voices + noise drums (mute persisted in `enduro_music_muted`)
@@ -113,8 +113,8 @@ Pseudo-3D racer inspired by OutRun (Mega Drive), rendered by PixiJS at 320x224 a
 - Overlays: pause, game over, phase transitions, flash effects
 
 **Input Handling (main.js:68-97)**
-- Keyboard: Arrow keys or A/D for lane switching, Space/P for pause, C for restart (opens color selector), Enter to retry after game over
-- Audio controls: M for SFX mute toggle, E for engine sound toggle
+- Keyboard: Arrow keys or A/D for lane switching, Space/P opens the pause menu (CONTINUE / RESTART / MENU); game over menu (RETRY / CHANGE COLOR); arrows/WASD + Enter/Space select, click/tap also works (`PAUSE_OPTIONS`, `GAME_OVER_OPTIONS`, `selectMenuOption()`)
+- Audio controls: C for car sounds (SFX) mute toggle, E for engine sound toggle (M/R unused in classic)
 - Mouse: Click left/right half of canvas to move lanes
 - Touch: Tap zones for mobile (same as mouse), touch buttons for audio controls (upper right)
 - Input ignored when paused or game over
@@ -133,8 +133,8 @@ Pseudo-3D racer inspired by OutRun (Mega Drive), rendered by PixiJS at 320x224 a
 - Pre-game color selection screen shown on first load (no saved preference)
 - Color preference persisted in localStorage (key: `enduro_car_color`)
 - Ways to change color:
-  - C key: Opens color selector (restart) while racing, paused or on game over
-  - "Change Color (C)" button on game over screen (click or touch)
+  - RESTART option in the pause menu
+  - CHANGE COLOR option in the game over menu (keyboard, click or touch)
 - Keyboard navigation in color selector:
   - Arrow keys or WASD: Navigate between colors
   - Enter or Space: Confirm selection and start game

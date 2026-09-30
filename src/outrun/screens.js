@@ -7,6 +7,17 @@ import { makePlayerCar } from './sprites.js';
 export const COLORS = ['blue', 'purple', 'red', 'white', 'green'];
 const RANKING_KEY = 'enduro_outrun_ranking';
 
+export const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'MENU'];
+export const GAME_OVER_OPTIONS = ['RETRY', 'CAR'];
+
+// button rectangles (also used for touch hit-testing): game over side by side, pause stacked
+export function menuBounds(options){
+  if(options === GAME_OVER_OPTIONS){
+    return options.map((_, i) => ({ x: (i === 0 ? WIDTH / 4 + 10 : WIDTH * 3 / 4 - 10) - 60, y: 164, w: 120, h: 22 }));
+  }
+  return options.map((_, i) => ({ x: WIDTH / 2 - 60, y: 96 + i * 28, w: 120, h: 22 }));
+}
+
 export function loadRanking(){
   try { return JSON.parse(localStorage.getItem(RANKING_KEY)) || []; } catch(_e){ return []; }
 }
@@ -77,7 +88,18 @@ export class Screens {
     label(this.root, '< >  ENTER TO RACE', WIDTH / 2, 164, { color: 0xc0c0c0, anchorX: 0.5 });
   }
 
-  showGameOver(score, rank){
+  // selected option is lit, the others are dimmed grey
+  menu(options, index){
+    menuBounds(options).forEach((b, i) => {
+      const selected = i === index;
+      this.root.addChild(new Graphics().rect(b.x, b.y, b.w, b.h)
+        .fill(selected ? 0xff5ab4 : 0x000000)
+        .stroke({ color: selected ? 0xfff3a0 : 0x555566, width: 2 }));
+      label(this.root, (selected ? '> ' : '') + options[i], b.x + b.w / 2, b.y + 7, { color: selected ? 0x1a0033 : 0x808080, anchorX: 0.5 });
+    });
+  }
+
+  showGameOver(score, rank, index){
     this.clear();
     this.panel(30, 170, 0.75);
     label(this.root, 'GAME OVER', WIDTH / 2, 40, { size: 16, color: 0xff4040, anchorX: 0.5 });
@@ -87,20 +109,14 @@ export class Screens {
       const color = i === rank ? 0xffe040 : 0xffffff;
       label(this.root, `${i + 1}. ${String(r.score).padStart(6, ' ')}  ST${r.stage}`, WIDTH / 2, 98 + i * 12, { color, anchorX: 0.5 });
     });
-    // two tap targets for touch screens
-    const btn = (x, text) => {
-      this.root.addChild(new Graphics().rect(x - 60, 164, 120, 22).fill(0x000000).stroke({ color: 0xff5ab4, width: 2 }));
-      label(this.root, text, x, 171, { anchorX: 0.5 });
-    };
-    btn(WIDTH / 4 + 10, 'ENTER RETRY');
-    btn(WIDTH * 3 / 4 - 10, 'C  CAR');
+    this.menu(GAME_OVER_OPTIONS, index);
     label(this.root, 'ESC MENU', WIDTH / 2, 192, { color: 0x909090, anchorX: 0.5 });
   }
 
-  showPause(){
+  showPause(index){
     this.clear();
     this.panel(0, HEIGHT, 0.5);
-    label(this.root, 'PAUSE', WIDTH / 2, HEIGHT / 2 - 8, { size: 16, anchorX: 0.5 });
-    label(this.root, 'P CONTINUE  C RESTART', WIDTH / 2, HEIGHT / 2 + 16, { color: 0xc0c0c0, anchorX: 0.5 });
+    label(this.root, 'PAUSE', WIDTH / 2, 64, { size: 16, anchorX: 0.5 });
+    this.menu(PAUSE_OPTIONS, index);
   }
 }

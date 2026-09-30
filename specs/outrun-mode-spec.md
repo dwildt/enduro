@@ -38,7 +38,7 @@ Pure logic (unit tested in Node):
 Rendering and platform (PixiJS):
 - `OutRunRenderer.js` — layers: banded sky + striped sun + 2 tiling parallax layers per theme (cross-faded over 2s on checkpoints); road drawn front-to-back in one `Graphics` with hill clipping (near edge clipped to `maxY`), alternating rumble/grass/lane stripes and distance fog; pooled sprites (scenery, traffic, pickups) placed back-to-front; rear-view player car with steer frames, bounce, hit blink and shield tint.
 - `sprites.js` — procedural pixel-art textures drawn on small canvases: player car in the 5 existing colors × 3 steer frames, 4 traffic variants (incl. truck), pickups, palm/pine/rock/cactus/sign/building/lamp, sky and parallax backdrops per theme.
-- `hud.js` — pixel-font HUD: SCORE, TIME (seconds to next checkpoint, `--` in the last phase), STAGE, lives as mini cars, power-up timer, tachometer + km/h + LO/HI gear, audio indicators (`M E R`, uppercase = on), banners ("GET READY... GO!", "CHECKPOINT!" + theme name), hit flash.
+- `hud.js` — pixel-font HUD: SCORE, TIME (seconds to next checkpoint, `--` in the last phase), STAGE, lives as mini cars, power-up timer, tachometer + km/h + LO/HI gear, audio indicators (`M E C` = music, engine, car sounds; uppercase = on), banners ("GET READY... GO!", "CHECKPOINT!" + theme name), hit flash.
 - `screens.js` — car color select → radio (music) select with FM dial → race → game over with local top 5 (`enduro_outrun_ranking`); pause screen.
 - `index.js` — Pixi app, fixed 60 Hz update loop, state machine (`color | radio | race | paused | gameover`), attract-mode road behind menus, keyboard/pointer input, touch buttons on coarse-pointer or narrow screens, CRT overlay.
 
@@ -50,23 +50,29 @@ Rendering and platform (PixiJS):
 ## Controls (standardized across modes)
 | Key | CLASSIC | OUTRUN |
 |-----|---------|--------|
-| ←/→ or A/D | change lane | change lane / navigate menus |
-| P / Space | pause / resume | pause / resume (Space also confirms in menus) |
-| C | restart (opens color select) — racing, paused or game over | restart (car select) — racing, paused or game over |
-| Enter | confirm color / retry after game over | confirm / retry after game over |
-| M / E | SFX / engine | SFX / engine |
-| R | — | radio (music) on/off |
+| ←/→ or A/D | change lane / navigate menus | change lane / navigate menus |
+| ↑/↓ or W/S | navigate menus | navigate menus |
+| P / Space | open pause menu (P also continues) | open pause menu (P also continues) |
+| Enter / Space | select menu option | select menu option |
+| M | — (no music) | music on/off |
+| E | engine on/off | engine on/off |
+| C | car sounds (SFX) on/off | car sounds (SFX) on/off |
+| R | — (free) | — (free) |
 | V | — | CRT scanlines on/off (`enduro_crt`) |
 | Esc | — | back to mode select |
 
-Touch (OUTRUN): `<` / `>` buttons at the bottom corners and `II` pause while racing; tap left/right thirds to navigate menus and the center to confirm; game over has RETRY and CAR buttons.
+**Menus (no shortcut keys):**
+- Pause: CONTINUE / RESTART (car select) / MENU (mode select)
+- Game over: RETRY (same car) / CAR (CHANGE COLOR in classic)
 
-Pause screens in both modes show `P continue  C restart`.
+The selected option is highlighted and the others are dimmed; options can also be clicked/tapped.
+
+Touch (OUTRUN): `<` / `>` buttons at the bottom corners and `II` pause while racing; tap left/right thirds to navigate the car/radio screens and the center to confirm; tap pause/game over options directly.
 
 ## Deviations from the original plan
 - Sprites are procedural (canvas-drawn pixel art) instead of new SVG files — no asset pipeline changes and easy per-color variants.
 - CRT effect is a CSS overlay (scanlines + vignette) instead of `pixi-filters`, which looks better on the upscaled canvas; the dependency was removed.
-- Music toggle moved from N to **R** (Radio); restart moved from R to **C** in both modes.
+- Key scheme revised after playtesting: **M** music, **E** engine, **C** car sounds (SFX); restart and car change moved into the pause/game over menus; **R** left free. (Intermediate versions used N/R for music and C/R for restart.)
 
 ## Testing
 - `tests/test_road.mjs` — easing, height continuity, loop closure, stripes, `findSegment` wrap, projection (bottom/center, perspective, camera offset), themes.

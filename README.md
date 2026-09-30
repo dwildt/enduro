@@ -30,13 +30,12 @@ Enduro is a browser-based obstacle racing game inspired by the classic Atari End
 | Input | Action |
 |-------|--------|
 | **Arrow Keys** or **A/D** | Switch lanes left/right |
-| **Space** or **P** | Pause/unpause game |
-| **C** | Restart (opens car color selection) |
-| **Enter** | Retry after game over |
-| **M** | Toggle sound effects |
+| **Space** or **P** | Pause menu: Continue / Restart / Menu |
+| **Arrows** + **Enter** | Choose an option in the pause and game over menus (Retry / Change car) |
+| **M** | Toggle music (OutRun mode) |
 | **E** | Toggle engine sound |
-| **R** | Toggle radio/music (OutRun mode) |
-| **V** | Toggle CRT scanlines (OutRun mode) |
+| **C** | Toggle car sounds (sound effects) |
+| **V** | Toggle CRT scanlines — old TV look (OutRun mode) |
 | **Esc** | Back to mode select (OutRun mode) |
 | **Mouse Click** | Click left/right side to switch lanes |
 

@@ -113,7 +113,7 @@ export class Hud {
     this.gear.set(world.kmh < 120 ? 'LO' : 'HI');
 
     const on = (flag, name) => (flag ? name : name.toLowerCase());
-    this.audio.set(audioState ? `${on(audioState.sfx, 'M')} ${on(audioState.engine, 'E')} ${on(audioState.music, 'R')}` : '', 0xc0c0c0);
+    this.audio.set(audioState ? `${on(audioState.music, 'M')} ${on(audioState.engine, 'E')} ${on(audioState.sfx, 'C')}` : '', 0xc0c0c0);
 
     // banner blinks while visible
     this.bannerTimer = Math.max(0, this.bannerTimer - dt);

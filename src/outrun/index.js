@@ -4,7 +4,7 @@ import { buildTrack, getTheme } from './track.js';
 import { World, SPEED_PER_BASE } from './world.js';
 import { OutRunRenderer, WIDTH, HEIGHT } from './OutRunRenderer.js';
 import { Hud, label, FONT } from './hud.js';
-import { Screens, COLORS, saveScore } from './screens.js';
+import { Screens, COLORS, saveScore, PAUSE_OPTIONS, GAME_OVER_OPTIONS, menuBounds } from './screens.js';
 import SoundManager from '../SoundManager.js';
 import MusicSequencer from '../audio/MusicSequencer.js';
 import { TRACKS } from '../audio/tracks.js';
@@ -57,6 +57,9 @@ export async function startOutRun(root){
   let time = 0;
   let screenKey = '';
   let lastRank = -1;
+  let menuIndex = 0; // selected option in the pause / game over menus
+
+  const menuOptions = () => (state === 'paused' ? PAUSE_OPTIONS : state === 'gameover' ? GAME_OVER_OPTIONS : null);
 
   function applyCarColor(){
     renderer.setCarColor(COLORS[colorIndex]);
@@ -73,6 +76,7 @@ export async function startOutRun(root){
   function setState(next){
     state = next;
     screenKey = '';
+    menuIndex = 0;
     if(next === 'race' && !sound.isEngineMuted()) sound.startEngine(false);
     if(next !== 'race') sound.stopEngine();
     if(next === 'radio') music.play(TRACKS[trackIndex]);
@@ -116,26 +120,35 @@ export async function startOutRun(root){
 
   // --- input ---
   const actions = {
+    prev(){ const m = menuOptions(); if(m) menuIndex = (menuIndex + m.length - 1) % m.length; },
+    next(){ const m = menuOptions(); if(m) menuIndex = (menuIndex + 1) % m.length; },
     left(){
-      if(state === 'race'){ if(world.moveLeft()) sound.playLaneChange(); }
+      if(menuOptions()) actions.prev();
+      else if(state === 'race'){ if(world.moveLeft()) sound.playLaneChange(); }
       else if(state === 'color'){ colorIndex = (colorIndex + COLORS.length - 1) % COLORS.length; applyCarColor(); }
       else if(state === 'radio'){ trackIndex = (trackIndex + TRACKS.length - 1) % TRACKS.length; music.play(TRACKS[trackIndex]); }
     },
     right(){
-      if(state === 'race'){ if(world.moveRight()) sound.playLaneChange(); }
+      if(menuOptions()) actions.next();
+      else if(state === 'race'){ if(world.moveRight()) sound.playLaneChange(); }
       else if(state === 'color'){ colorIndex = (colorIndex + 1) % COLORS.length; applyCarColor(); }
       else if(state === 'radio'){ trackIndex = (trackIndex + 1) % TRACKS.length; music.play(TRACKS[trackIndex]); }
     },
     confirm(){
       if(state === 'color') setState('radio');
-      else if(state === 'radio' || state === 'gameover') startRace();
+      else if(state === 'radio') startRace();
+      else if(menuOptions()) actions.select(menuOptions()[menuIndex]);
+    },
+    select(option){
+      if(option === 'CONTINUE'){ setState('race'); music.play(TRACKS[trackIndex]); }
+      else if(option === 'RESTART' || option === 'CAR') setState('color');
+      else if(option === 'RETRY') startRace();
+      else if(option === 'MENU') window.location.reload(); // back to the mode select screen
     },
     pause(){
       if(state === 'race') setState('paused');
-      else if(state === 'paused'){ setState('race'); music.play(TRACKS[trackIndex]); }
-    },
-    // restart: back to car select (works while racing, paused or after game over)
-    changeCar(){ if(state !== 'color' && state !== 'radio') setState('color'); }
+      else if(state === 'paused') actions.select('CONTINUE');
+    }
   };
 
   window.addEventListener('keydown', (e) => {
@@ -143,13 +156,14 @@ export async function startOutRun(root){
     const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
     if(k === 'ArrowLeft' || k === 'a') actions.left();
     else if(k === 'ArrowRight' || k === 'd') actions.right();
+    else if(k === 'ArrowUp' || k === 'w') actions.prev();
+    else if(k === 'ArrowDown' || k === 's') actions.next();
     else if(k === 'Enter') actions.confirm();
-    else if(k === ' ') (state === 'race' || state === 'paused') ? actions.pause() : actions.confirm();
+    else if(k === ' ') state === 'race' ? actions.pause() : actions.confirm();
     else if(k === 'p') actions.pause();
-    else if(k === 'c') actions.changeCar();
-    else if(k === 'm') sound.setSfxMuted(!sound.isSfxMuted());
-    else if(k === 'e') toggleEngine();
-    else if(k === 'r') music.setMuted(!music.isMuted()); // R = radio on/off
+    else if(k === 'm') music.setMuted(!music.isMuted());          // M = music
+    else if(k === 'e') toggleEngine();                            // E = engine
+    else if(k === 'c') sound.setSfxMuted(!sound.isSfxMuted());    // C = car sounds (SFX)
     else if(k === 'v'){ crtOn = !crtOn; crt.hidden = !crtOn; localStorage.setItem('enduro_crt', String(crtOn)); }
     else if(k === 'Escape') window.location.reload(); // back to the mode select screen
     else return;
@@ -167,11 +181,12 @@ export async function startOutRun(root){
       if(hitBtn) actions[hitBtn]();
       return;
     }
-    if(state === 'gameover'){
-      if(y > 160) (x < WIDTH / 2 ? actions.confirm() : actions.changeCar());
+    const menu = menuOptions();
+    if(menu){
+      const i = menuBounds(menu).findIndex(b => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+      if(i >= 0){ menuIndex = i; actions.select(menu[i]); }
       return;
     }
-    if(state === 'paused'){ actions.pause(); return; }
     if(x < WIDTH / 3) actions.left();
     else if(x > WIDTH * 2 / 3) actions.right();
     else if(state !== 'race') actions.confirm();
@@ -206,15 +221,16 @@ export async function startOutRun(root){
     hud.root.visible = state !== 'color' && state !== 'radio';
     hud.update(world, frame, { sfx: !sound.isSfxMuted(), engine: !sound.isEngineMuted(), music: !music.isMuted() }, time);
     touch.container.visible = state === 'race' && isTouchLayout();
+    if(state !== 'race') hud.bannerTitle.visible = hud.bannerSub.visible = false; // don't cover menus
 
     // menus are rebuilt only when their content changes (a few times per second)
-    const key = `${state}:${colorIndex}:${trackIndex}:${Math.floor(time * 4)}`;
+    const key = `${state}:${colorIndex}:${trackIndex}:${menuIndex}:${Math.floor(time * 4)}`;
     if(key !== screenKey){
       screenKey = key;
       if(state === 'color') screens.showColor(colorIndex, time);
       else if(state === 'radio') screens.showRadio(TRACKS, trackIndex, time);
-      else if(state === 'paused') screens.showPause();
-      else if(state === 'gameover') screens.showGameOver(world.score, lastRank);
+      else if(state === 'paused') screens.showPause(menuIndex);
+      else if(state === 'gameover') screens.showGameOver(world.score, lastRank, menuIndex);
       else screens.clear();
     }
   });

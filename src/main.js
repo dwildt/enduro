@@ -211,6 +211,48 @@ let running = true;
 let paused = false;
 let flashTimer = 0; // visual flash on hit
 
+// Pause and game over menus (same options as the OutRun mode)
+const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'MENU'];
+const GAME_OVER_OPTIONS = ['RETRY', 'CHANGE COLOR'];
+let menuIndex = 0;
+
+function currentMenuOptions() {
+  if (!running) return GAME_OVER_OPTIONS;
+  if (paused) return PAUSE_OPTIONS;
+  return null;
+}
+
+function getMenuOptionBounds(count) {
+  const w = 200, h = 34, gap = 12;
+  const x = canvas.width / 2 - w / 2;
+  const y0 = canvas.height / 2 + 20;
+  return Array.from({ length: count }, (_, i) => ({ x, y: y0 + i * (h + gap), w, h }));
+}
+
+function setPaused(value) {
+  paused = value;
+  menuIndex = 0;
+  if (paused) {
+    soundManager.stopEngine();
+  } else if (!soundManager.isEngineMuted()) {
+    soundManager.startEngine(powerUpType === 'scoreboost');
+  }
+}
+
+function openColorSelection() {
+  colorSelectionActive = true;
+  highlightedColorIndex = AVAILABLE_COLORS.indexOf(selectedColor);
+  paused = true;
+  soundManager.stopEngine();
+}
+
+function selectMenuOption(option) {
+  if (option === 'CONTINUE') setPaused(false);
+  else if (option === 'RESTART' || option === 'CHANGE COLOR') openColorSelection();
+  else if (option === 'RETRY') startGame();
+  else if (option === 'MENU') window.location.reload(); // back to the mode select screen
+}
+
 let last = performance.now();
 const TICK = 1000/60;
 let accumulator = 0;
@@ -263,23 +305,33 @@ window.addEventListener('keydown', (e) => {
     return;
   }
 
-  // C restarts (racing, paused or game over) by opening the color selection
-  if (e.key === 'c' || e.key === 'C') {
-    colorSelectionActive = true;
-    highlightedColorIndex = AVAILABLE_COLORS.indexOf(selectedColor);
-    paused = true;
-    soundManager.stopEngine();
-    return;
+  // Pause / game over menu: arrows or WASD navigate, Enter/Space select, P continues
+  const menu = currentMenuOptions();
+  if (menu) {
+    const k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (k === 'ArrowUp' || k === 'ArrowLeft' || k === 'w' || k === 'a') {
+      menuIndex = (menuIndex - 1 + menu.length) % menu.length;
+      e.preventDefault();
+      return;
+    }
+    if (k === 'ArrowDown' || k === 'ArrowRight' || k === 's' || k === 'd') {
+      menuIndex = (menuIndex + 1) % menu.length;
+      e.preventDefault();
+      return;
+    }
+    if (k === 'Enter' || k === ' ') {
+      selectMenuOption(menu[menuIndex]);
+      e.preventDefault();
+      return;
+    }
+    if (k === 'p' && running) {
+      setPaused(false);
+      return;
+    }
   }
 
-  // Enter retries with the same car after game over
-  if (e.key === 'Enter' && !running) {
-    startGame();
-    return;
-  }
-
-  // Mute toggle: M for SFX
-  if(e.key === 'm' || e.key === 'M') {
+  // Car sounds toggle (SFX): C
+  if(e.key === 'c' || e.key === 'C') {
     soundManager.setSfxMuted(!soundManager.isSfxMuted());
     return;
   }
@@ -296,18 +348,10 @@ window.addEventListener('keydown', (e) => {
     return;
   }
 
-  // Pause toggle: Space or P
+  // Pause: Space or P opens the pause menu
   if(e.key === 'p' || e.key === 'P' || e.key === ' ') {
     if(!running) return; // don't pause when game over
-    paused = !paused;
-
-    // Stop/restart engine when pausing/unpausing
-    if(paused){
-      soundManager.stopEngine();
-    } else if(!soundManager.isEngineMuted()){
-      const isBoosted = powerUpType === 'scoreboost';
-      soundManager.startEngine(isBoosted);
-    }
+    setPaused(true);
     return;
   }
   // When paused ignore input
@@ -391,16 +435,14 @@ canvas.addEventListener('pointerdown', (ev) => {
     return;
   }
 
-  // Game over "Change Color" button click
-  if (!running) {
-    const btnY = canvas.height/2 + 30;
-    const btnWidth = 180;
-    const btnHeight = 35;
-    const btnX = canvas.width/2 - btnWidth/2;
-
-    if (x >= btnX && x <= btnX + btnWidth && y >= btnY && y <= btnY + btnHeight) {
-      colorSelectionActive = true;
-      highlightedColorIndex = AVAILABLE_COLORS.indexOf(selectedColor);
+  // Pause / game over menu option clicks
+  const menu = currentMenuOptions();
+  if (menu) {
+    const bounds = getMenuOptionBounds(menu.length);
+    const i = bounds.findIndex(b => x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h);
+    if (i >= 0) {
+      menuIndex = i;
+      selectMenuOption(menu[i]);
       ev.preventDefault();
       return;
     }
@@ -459,15 +501,7 @@ canvas.addEventListener('pointerdown', (ev) => {
     if (x >= controlButtons.pause.x && x <= controlButtons.pause.x + controlButtons.pause.w &&
         y >= controlButtons.pause.y && y <= controlButtons.pause.y + controlButtons.pause.h) {
       if (!running) return; // Don't pause when game over
-      paused = !paused;
-
-      // Stop/restart engine when pausing/unpausing
-      if (paused) {
-        soundManager.stopEngine();
-      } else if (!soundManager.isEngineMuted()) {
-        const isBoosted = powerUpType === 'scoreboost';
-        soundManager.startEngine(isBoosted);
-      }
+      setPaused(!paused);
       ev.preventDefault();
       return;
     }
@@ -621,6 +655,7 @@ function update(dt){
         console.log('Hit! lives=', lives);
         if(lives <= 0){
           running = false;
+          menuIndex = 0;
           soundManager.playGameOver();
           soundManager.stopEngine();
         }
@@ -765,6 +800,22 @@ function renderColorSelection() {
   ctx.textBaseline = 'alphabetic';
 }
 
+// selected option is filled, the others are dimmed
+function drawMenu(options) {
+  getMenuOptionBounds(options.length).forEach((b, i) => {
+    const selected = i === menuIndex;
+    ctx.fillStyle = selected ? '#0af' : 'rgba(0,0,0,0.6)';
+    ctx.fillRect(b.x, b.y, b.w, b.h);
+    ctx.strokeStyle = selected ? '#fff' : '#555';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(b.x, b.y, b.w, b.h);
+    ctx.fillStyle = selected ? '#000' : '#888';
+    ctx.font = 'bold 16px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText((selected ? '> ' : '') + options[i], canvas.width/2, b.y + 23);
+  });
+}
+
 function render(interp){
   // Show color selection screen if active
   if (showColorSelection || colorSelectionActive) {
@@ -889,7 +940,7 @@ function render(interp){
     // SFX indicator
     ctx.fillStyle = soundManager.isSfxMuted() ? '#666' : '#0f0';
     ctx.font = '12px monospace';
-    const sfxText = soundManager.isSfxMuted() ? '[M] OFF' : '[M] ON';
+    const sfxText = soundManager.isSfxMuted() ? '[C] OFF' : '[C] ON';
     ctx.fillText(sfxText, canvas.width - 80, 58);
 
     // Engine indicator
@@ -966,16 +1017,14 @@ function render(interp){
   }
 
   // pause overlay
-  if(paused){
+  if(paused && running){
     ctx.fillStyle = 'rgba(0,0,0,0.5)';
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.fillStyle = '#fff';
     ctx.font = '24px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('PAUSED', canvas.width/2, canvas.height/2);
-    ctx.font = '14px monospace';
-    ctx.fillStyle = '#aaa';
-    ctx.fillText('P continue  C restart', canvas.width/2, canvas.height/2 + 30);
+    ctx.fillText('PAUSED', canvas.width/2, canvas.height/2 - 20);
+    drawMenu(PAUSE_OPTIONS);
     ctx.textAlign = 'left';
   }
 
@@ -986,23 +1035,10 @@ function render(interp){
     ctx.fillStyle = '#fff';
     ctx.font = '24px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2 - 30);
+    ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2 - 40);
     ctx.font = '16px monospace';
-    ctx.fillText('Score: '+Math.floor(score), canvas.width/2, canvas.height/2);
-
-    // Change Color button
-    const btnY = canvas.height/2 + 30;
-    const btnWidth = 180;
-    const btnHeight = 35;
-    const btnX = canvas.width/2 - btnWidth/2;
-
-    ctx.fillStyle = '#0af';
-    ctx.fillRect(btnX, btnY, btnWidth, btnHeight);
-    ctx.fillStyle = '#000';
-    ctx.fillText('Change Color (C)', canvas.width/2, btnY + 23);
-
-    ctx.fillStyle = '#fff';
-    ctx.fillText('Press Enter to retry', canvas.width/2, btnY + 65);
+    ctx.fillText('Score: '+Math.floor(score), canvas.width/2, canvas.height/2 - 10);
+    drawMenu(GAME_OVER_OPTIONS);
 
     // Reset text alignment
     ctx.textAlign = 'left';
