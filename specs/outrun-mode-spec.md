@@ -11,7 +11,7 @@ Reference: OutRun (Mega Drive) gameplay footage — https://youtu.be/4W30B4Cbsfc
 - **Gameplay:** full pseudo-3D, keeping the existing rules: 3 logical lanes, 3 lives with 1.5s invulnerability after a hit, the two power-ups (shield, score boost) and the 4 LevelManager phases.
 - **Stack:** PixiJS v8 (WebGL) for rendering, Vite for dev server, bundling and production build. No game engine; the pseudo-3D renderer is hand-written.
 - **Coexistence:** a new selectable mode; the classic mode is lazy-loaded as-is.
-- **Audio:** procedural chiptune with the Web Audio API (3 original tracks, no copyrighted music).
+- **Audio:** procedural chiptune with the Web Audio API — original tracks and rock arrangements of public-domain classical pieces only (no copyrighted music; style-inspired originals instead).
 - **Resolution:** 320x224 (Mega Drive resolution), upscaled with pixelated CSS.
 
 ## Architecture
@@ -44,7 +44,18 @@ Rendering and platform (PixiJS):
 
 ### Audio (`src/audio/`, `src/SoundManager.js`)
 - `MusicSequencer.js` — look-ahead Web Audio step sequencer; 2-operator FM voices (lead, bass) and noise/sine drums; mute persisted in `enduro_music_muted`.
-- `tracks.js` — SUNSET DRIVE, OCEAN BREEZE, NEON NIGHTS; 16 tokens per bar (`E5` note, `-` hold, `.` rest; drums `k s h`).
+- `tracks.js` — 7 radio stations, 16 tokens per bar (`E5` note, `-` hold, `.` rest; drums `k` kick, `s` snare, `h` hat, `x` scratch); each has `name` and `genre`; optional `guitar` channel (distorted power chord: root + fifth + octave sawtooths → waveshaper → lowpass) and `bpmEnd`/`bpmStep` (tempo rises every loop):
+
+  | Station | Genre | Source |
+  |---|---|---|
+  | SUNSET DRIVE | synth pop | original |
+  | OCEAN BREEZE | latin fusion | original |
+  | NEON NIGHTS | synthwave | original |
+  | THUNDER HIGHWAY | hard rock (80s arena) | original |
+  | IRON GROOVE | funk metal (syncopated riff, stop hits, scratches) | original |
+  | MOUNTAIN KING | rock, speeds up 108 → 200 bpm | Grieg, In the Hall of the Mountain King (public domain) |
+  | TOCCATA IN D | organ intro + hard rock section | J.S. Bach, Toccata in D minor BWV 565 (public domain) |
+- Radio screen: FM dial sweeps 88.1–107.9 across the stations; shows the station name, genre and one dot per station.
 - `SoundManager.js` — new `setEngineSpeed(ratio)` (engine pitch follows speed; boost adds +0.3) and `playSkid()`; existing SFX reused (hit, checkpoint, power-up, timer beep, game over).
 
 ## Controls (standardized across modes)
@@ -85,7 +96,7 @@ Both modes (and the mode select) are shown inside an arcade cabinet built with H
 ## Testing
 - `tests/test_road.mjs` — easing, height continuity, loop closure, stripes, `findSegment` wrap, projection (bottom/center, perspective, camera offset), themes.
 - `tests/test_world.mjs` — speed ramp, lane clamping/interpolation, scoring, hits/invulnerability/game over, lane separation, `minGap` spawning, pickups and beeps, shield, checkpoint + speed increase, reset.
-- `tests/test_music.mjs` — note frequencies, holds/rests parsing, every bar has 16 valid steps.
+- `tests/test_music.mjs` — note frequencies, holds/rests parsing, every bar has 16 valid steps, valid drum hits, aligned channel loops, unique names/genres that fit the screen, tempo ramp clamps at `bpmEnd`.
 - Manual: `npm run dev` — both modes, theme transitions, collisions, power-ups, pause/restart, radio tracks and mutes, mobile viewport; `npm run build && npm run preview` before pushing.
 
 ## Future ideas

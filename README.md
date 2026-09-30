@@ -22,7 +22,7 @@ Both modes share the same rules: three lanes, lives, power-ups and four progress
 
 - 🕹️ **Arcade cabinet** around the screen (marquee, CRT bezel, control panel), themed per mode
 - 🌅 **OutRun mode** with pseudo-3D road, 4 themed stages (coast, mountains, desert, neon city) and a local top 5
-- 📻 **Radio select** with 3 original FM-style chiptune tracks (procedural Web Audio, no audio files)
+- 📻 **Radio select** with 7 FM-style stations (procedural Web Audio, no audio files): synth pop, latin fusion, synthwave, hard rock, funk metal and rock arrangements of Grieg and Bach
 - 🎮 **8-bit pixel-art visual style** with retro color palettes
 - ⌨️ **Multiple control schemes** - keyboard, mouse, and touch support
 - 🏁 **4 progressive phases** with increasing difficulty and themed environments

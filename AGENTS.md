@@ -103,7 +103,8 @@ Rendering and flow (Pixi):
 
 ### Audio
 - `SoundManager.js` — procedural Web Audio SFX (hit, checkpoint, game over, power-up, lane change, timer beep, skid) and engine (`startEngine`, `updateEngineBoost`, `setEngineSpeed`).
-- `audio/MusicSequencer.js` + `audio/tracks.js` — FM step sequencer and 3 original tracks (16 tokens per bar).
+- `audio/MusicSequencer.js` + `audio/tracks.js` — FM step sequencer with an optional distorted power-chord `guitar` channel, noise drums (`k s h x`) and tempo ramps (`bpmEnd`/`bpmStep`); 7 radio stations (16 tokens per bar, each with `name` + `genre`).
+- **Music copyright rule:** only original compositions or arrangements of public-domain pieces (e.g. Grieg, Bach). Never transcribe or arrange copyrighted songs, even as MIDI/chiptune; "in the style of" originals are fine.
 - Mutes persisted: `enduro_sfx_muted`, `enduro_engine_muted`, `enduro_music_muted`.
 
 ### Controls (same in both modes)

@@ -67,24 +67,28 @@ export class Screens {
     label(this.root, '< >  ENTER', WIDTH / 2, 152, { color: 0xc0c0c0, anchorX: 0.5 });
   }
 
+  // radio faceplate: the dial sweeps 88.1-107.9 FM across the stations; shows name, genre and a dot per station
   showRadio(tracks, index, time){
     this.clear();
     this.panel(40, 140);
     label(this.root, 'SELECT MUSIC', WIDTH / 2, 50, { color: 0xffe040, anchorX: 0.5 });
-    // radio faceplate with a frequency dial
+    const last = Math.max(1, tracks.length - 1);
     const radio = new Graphics()
       .roundRect(40, 66, 240, 40, 4).fill(0x2a2a2a).stroke({ color: 0x888888, width: 2 })
       .rect(50, 74, 220, 12).fill(0x0a1a10);
     for(let i = 0; i <= 20; i++) radio.rect(52 + i * 10.8, 80 + (i % 5 ? 3 : 0), 1, i % 5 ? 3 : 6).fill(0x40ff80);
-    const needleX = 70 + index * 90;
-    radio.rect(needleX, 72, 2, 16).fill(0xff3030);
+    radio.rect(54 + index * (212 / last), 72, 2, 16).fill(0xff3030);
     this.root.addChild(radio);
-    label(this.root, `FM ${(88.1 + index * 7.4).toFixed(1)}`, WIDTH / 2, 92, { color: 0x40ff80, anchorX: 0.5 });
-    tracks.forEach((t, i) => {
-      const selected = i === index;
-      const blink = selected && Math.floor(time * 3) % 2 === 0;
-      label(this.root, `${selected ? '>' : ' '} ${t.name}`, 70, 116 + i * 14, { color: selected ? (blink ? 0xffffff : 0xff5ab4) : 0x909090 });
-    });
+    label(this.root, `FM ${(88.1 + index * (19.8 / last)).toFixed(1)}`, WIDTH / 2, 92, { color: 0x40ff80, anchorX: 0.5 });
+
+    const blink = Math.floor(time * 3) % 2 === 0;
+    const track = tracks[index];
+    label(this.root, `< ${track.name} >`, WIDTH / 2, 116, { color: blink ? 0xffffff : 0xff5ab4, anchorX: 0.5 });
+    label(this.root, track.genre, WIDTH / 2, 130, { color: 0x60e0ff, anchorX: 0.5 });
+    const dots = new Graphics();
+    const dotsX = WIDTH / 2 - (tracks.length * 10) / 2;
+    tracks.forEach((_, i) => dots.rect(dotsX + i * 10 + 2, 146, 6, 6).fill(i === index ? 0xff5ab4 : 0x555566));
+    this.root.addChild(dots);
     label(this.root, '< >  ENTER TO RACE', WIDTH / 2, 164, { color: 0xc0c0c0, anchorX: 0.5 });
   }
 
