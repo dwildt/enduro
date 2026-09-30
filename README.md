@@ -6,15 +6,23 @@
 
 ## About
 
-Enduro is a browser-based obstacle racing game inspired by the classic Atari Enduro. Built with vanilla JavaScript and HTML5 Canvas, it features an 8-bit pixel-art aesthetic and progressive difficulty across four themed phases.
+Enduro is a browser-based racing game inspired by the classic Atari Enduro, presented inside a retro arcade cabinet. Pick one of two modes on the title screen:
 
-- **Zero dependencies** - Plain ES modules, no frameworks
-- **Retro aesthetic** - 8-bit pixel-art visuals with pixelated rendering
-- **Cross-platform** - Responsive controls for desktop and mobile
-- **CI/CD** - Automated testing and deployment via GitHub Actions
+- **CLASSIC** — the original 2D top-down lane racer (HTML5 Canvas, 8-bit pixel art).
+- **OUTRUN** — a pseudo-3D rear-view racer inspired by OutRun on the Sega Mega Drive: curves, hills, sunset horizons, roadside scenery, arcade HUD and FM-style chiptune radio (PixiJS).
+
+Both modes share the same rules: three lanes, lives, power-ups and four progressive phases.
+
+- **Light stack** - Vanilla JavaScript ES modules, PixiJS for the OutRun renderer, Vite for dev/build; no game framework
+- **Retro aesthetic** - Pixel-art rendering, Mega Drive resolution (320x224) in OutRun mode, optional CRT scanlines
+- **Cross-platform** - Keyboard, mouse and touch; cabinet layout adapts to notebooks and phones
+- **CI/CD** - Automated lint, tests, build and deployment via GitHub Actions
 
 ## Features
 
+- 🕹️ **Arcade cabinet** around the screen (marquee, CRT bezel, control panel), themed per mode
+- 🌅 **OutRun mode** with pseudo-3D road, 4 themed stages (coast, mountains, desert, neon city) and a local top 5
+- 📻 **Radio select** with 3 original FM-style chiptune tracks (procedural Web Audio, no audio files)
 - 🎮 **8-bit pixel-art visual style** with retro color palettes
 - ⌨️ **Multiple control schemes** - keyboard, mouse, and touch support
 - 🏁 **4 progressive phases** with increasing difficulty and themed environments
@@ -37,30 +45,33 @@ Enduro is a browser-based obstacle racing game inspired by the classic Atari End
 | **C** | Toggle car sounds (sound effects) |
 | **V** | Toggle CRT scanlines — old TV look (OutRun mode) |
 | **Esc** | Back to mode select (OutRun mode) |
-| **Mouse Click** | Click left/right side to switch lanes |
+| **Mouse Click** | Click left/right side to switch lanes; click menu options |
+
+The mode select screen uses **↑/↓** + **Enter** (or click). **R** is currently unused.
 
 ### Mobile / Touch Devices
 | Input | Action |
 |-------|--------|
-| **On-screen buttons** | Tap left/right arrows at bottom corners |
-| **Swipe left/right** | Swipe horizontally to change lanes |
-| **Tap left/right side** | Tap screen halves to change lanes |
-| **Audio buttons** | Tap [M] and [E] in upper right for sound controls |
+| **On-screen buttons** | Tap left/right arrows at the bottom corners to change lanes |
+| **Pause button** | CLASSIC: bottom center (next to the sound buttons); OUTRUN: top-left, below the score |
+| **Sound buttons** | CLASSIC: bottom center (car sounds and engine) |
+| **Menus** | Tap the options directly (pause, game over, mode select); in OutRun car/radio screens tap left/right thirds to browse and the center to confirm |
+| **Swipe left/right** | CLASSIC on larger touch screens: swipe to change lanes |
 
-**Note:** On-screen movement buttons appear automatically on narrow viewports (phones/tablets under 768px width).
+**Note:** On-screen buttons appear automatically on touch devices and narrow viewports (under 768px width). On phones the cabinet is slimmer (portrait) or reduced to the bezel (landscape).
 
 ## Power-ups
 
 Collect power-ups to gain temporary advantages:
 
 - 🛡️ **Shield (Blue)** - 5 seconds of invulnerability
-- ⚡ **Boost (Orange)** - 8 seconds of 2x score multiplier
+- ⚡ **Boost (Orange)** - 8 seconds of 2x score multiplier and 1.4x speed
 
 Power-ups spawn every 10 seconds in random lanes. The HUD shows the active power-up and remaining time.
 
 ## Gameplay
 
-Navigate through traffic by switching between three lanes. Avoid obstacles to survive and progress through four increasingly challenging phases:
+Navigate through traffic by switching between three lanes. Avoid obstacles to survive and progress through four increasingly challenging phases (in OutRun mode each phase is a stage with its own scenery: Coconut Coast, Mountain Pass, Desert Highway, Night City):
 
 ### Phase 1: Country Roads
 - **Duration:** 20 seconds
@@ -99,8 +110,8 @@ Navigate through traffic by switching between three lanes. Avoid obstacles to su
 
 ### Prerequisites
 
-- Node.js (for running tests and ESLint)
-- Modern browser with ES module support
+- Node.js 22 (same as CI) for Vite, tests and ESLint
+- Modern browser with ES modules and WebGL (OutRun mode)
 
 ### Getting Started
 
@@ -108,9 +119,9 @@ Navigate through traffic by switching between three lanes. Avoid obstacles to su
 # Install dependencies
 npm install
 
-# Start local development server
-npm start
-# Game will be available at http://localhost:3000
+# Start local development server (Vite)
+npm run dev
+# Game will be available at http://localhost:5173
 
 # Run tests
 npm test
@@ -120,37 +131,70 @@ npm run lint
 
 # Pre-commit check (recommended)
 npm run lint && npm test
+
+# Production build (dist/) and local preview
+npm run build && npm run preview
 ```
+
+### Tech Stack
+
+| Layer | Technology | Version | Used for |
+|-------|------------|---------|----------|
+| Language | JavaScript (ES modules) | ES2021 | All game code; `"type": "module"` |
+| CLASSIC rendering | HTML5 Canvas 2D | — | Top-down mode (`src/main.js`), SVG sprite sheets |
+| OUTRUN rendering | [PixiJS](https://pixijs.com/) | ^8.21 | WebGL renderer, sprites, text, tiling backgrounds (`src/outrun/`) |
+| Audio | Web Audio API | — | Procedural SFX, engine and FM music sequencer (no audio files) |
+| UI shell | HTML + CSS | — | Mode select and arcade cabinet (CSS variables, `min()`/`calc()`, container queries) |
+| Fonts | Press Start 2P (Google Fonts) | — | Pixel font for cabinet, menus and OutRun HUD |
+| Dev server / build | [Vite](https://vite.dev/) | ^7.3 | `npm run dev`, bundling PixiJS, `dist/` build (`base: './'`) |
+| Tests | Node.js built-in `assert` + `tests/run-tests.js` | Node 22 | Unit tests for pure logic (`.js` CommonJS, `.mjs` ES modules) |
+| Lint | ESLint | ^8.57 | `eslint:recommended`, semicolons, single quotes |
+| CI/CD | GitHub Actions + GitHub Pages | — | Lint, test, build and deploy on push to `main` |
+
+#### Patterns for future evolution
+
+- **Pure logic first:** game rules, geometry and data go in DOM/Pixi-free ES modules (e.g. `src/outrun/road.js`, `world.js`) with `tests/test_*.mjs` tests. Rendering and input stay thin on top.
+- **Events out of the simulation:** world updates return events (`hit`, `checkpoint`, ...) that the UI maps to sounds, banners and effects.
+- **Fixed 60 Hz update loop** with an accumulator; rendering runs every animation frame.
+- **Procedural assets** where possible (Pixi textures drawn on canvases, Web Audio sounds and music) to avoid asset pipelines.
+- **Shared rules** come from `LevelManager` (phases, speed, spawn rate, min gap); new modes should reuse it.
+- **Layout in CSS:** the cabinet sizes the screen; canvases are scaled, so map pointer coordinates to canvas pixels.
+- **Persist preferences** in `localStorage` with the `enduro_` prefix.
+- **Specs and issues:** new features start with a spec in `specs/` and one GitHub issue per delivery (see [AGENTS.md](AGENTS.md)).
 
 ### Project Structure
 
 ```
 enduro/
-├── index.html              # Game entry point
-├── styles.css              # Pixelated rendering styles
+├── index.html              # Cabinet markup + mode select, loads src/boot.js
+├── styles.css              # Cabinet, mode select, CRT overlay (responsive)
+├── vite.config.js          # Vite build config (dist/, base ./)
+├── public/assets/          # Static assets served at assets/...
+│   ├── manifest.json
+│   └── images/             # SVG sprite sheets (classic mode)
 ├── src/
-│   ├── main.js            # Game loop and core logic
-│   ├── entities/
-│   │   ├── Car.js         # Player car class
-│   │   └── Obstacle.js    # Obstacle car class
-│   ├── levelManager.js    # Phase progression system
-│   ├── collision.cjs      # Collision detection
-│   ├── spawner.cjs        # Obstacle spawning logic
-│   └── ...                # Additional game modules
-├── assets/
-│   └── images/            # SVG sprite assets
-├── tests/                 # Unit tests
-└── .github/
-    └── workflows/
-        └── deploy.yml     # CI/CD pipeline
+│   ├── boot.js             # Mode select, lazy-loads a mode
+│   ├── main.js             # CLASSIC mode: loop, input, rendering
+│   ├── entities/           # Car, Obstacle, Pickup (classic)
+│   ├── levelManager.js     # Shared phases/difficulty (.cjs copy for tests)
+│   ├── SoundManager.js     # Web Audio SFX and engine
+│   ├── audio/              # FM music sequencer + tracks
+│   ├── outrun/             # OUTRUN mode (road, track, world, renderer, HUD, screens)
+│   └── *.cjs               # Legacy testable units (collision, spawner, score, ...)
+├── tests/                  # Unit tests (test_*.js CommonJS, test_*.mjs ESM)
+├── specs/                  # Feature specifications
+├── AGENTS.md               # Instructions for AI coding agents
+└── .github/workflows/deploy.yml  # CI/CD pipeline
 ```
 
 ### Asset Management
 
 #### Asset Directory Structure
 
+Classic mode sprites live in `public/assets/` (served at `assets/...`). OutRun mode textures are procedural (`src/outrun/sprites.js`).
+
 ```
-assets/
+public/assets/
 ├── manifest.json          # Asset registry with metadata
 └── images/
     ├── car-sprite.svg            # Player car sprite sheet (192x128, 3 frames)
@@ -175,7 +219,7 @@ assets/
 
 **Manifest Format:**
 
-The `assets/manifest.json` file lists all game assets with metadata:
+The `public/assets/manifest.json` file lists all game assets with metadata:
 
 ```json
 {
@@ -220,11 +264,14 @@ AssetLoader is tested in CommonJS format. See `tests/test_assets.js` for example
 
 ### Architecture
 
-- **Game Loop:** Fixed timestep at 60 FPS using accumulator pattern
-- **Entities:** ES6 classes for Car and Obstacle with lane-based positioning
-- **Rendering:** HTML5 Canvas with `imageSmoothingEnabled: false` for pixel-art
-- **Testing:** Unit tests for core logic (collision, spawning, scoring)
-- **Module System:** ES modules (.js) for browser, CommonJS (.cjs) for Node tests
+- **Boot:** `src/boot.js` shows the mode select and lazy-loads CLASSIC (`src/main.js`) or OUTRUN (`src/outrun/index.js`)
+- **Game Loop:** Fixed timestep at 60 FPS using accumulator pattern (both modes)
+- **CLASSIC:** Canvas 2D with `imageSmoothingEnabled: false`, ES6 entity classes with lane-based positioning
+- **OUTRUN:** segment-based pseudo-3D road projected with PixiJS at 320x224, upscaled with pixelated CSS
+- **Testing:** Unit tests for core logic (collision, spawning, scoring, levels, road projection, world rules, music data)
+- **Module System:** ES modules (.js) in the browser; legacy CommonJS (.cjs) units and ESM `.mjs` tests in Node
+
+Detailed architecture: [AGENTS.md](AGENTS.md) and [specs/outrun-mode-spec.md](specs/outrun-mode-spec.md).
 
 ## Manual Mobile Testing Checklist
 
@@ -243,23 +290,23 @@ Test on actual mobile device or Chrome DevTools device emulation:
 - [ ] Short swipes (< 50px) don't trigger movement
 - [ ] Swiping works during gameplay (not paused)
 
-**Fallback Tap Zones:**
-- [ ] Tapping left screen half moves left
-- [ ] Tapping right screen half moves right
-- [ ] Audio buttons still work (upper right corner)
+**Buttons and Menus:**
+- [ ] CLASSIC sound/pause buttons work (bottom center)
+- [ ] OUTRUN pause button works (top-left) and does not cover the car
+- [ ] Pause and game over options respond to taps in both modes
 
 **Responsiveness:**
-- [ ] Game scales properly on small screens
-- [ ] No horizontal scrolling
+- [ ] Cabinet fits without scrolling in portrait (slim) and landscape (bezel only)
+- [ ] Game scales properly on small screens and taps hit the right targets
 - [ ] Touch buttons positioned correctly at different screen sizes
 
 ## Deployment
 
 The game automatically deploys to GitHub Pages when changes are pushed to the `main` branch:
 
-1. GitHub Actions workflow runs ESLint and tests
-2. Static files are bundled into an artifact
-3. Artifact is deployed to GitHub Pages
+1. GitHub Actions workflow (Node 22) runs ESLint and tests
+2. Vite builds the game into `dist/`
+3. `dist/` is deployed to GitHub Pages
 4. Site is live at https://dwildt.github.io/enduro
 
 ### Deployment Status
@@ -271,7 +318,7 @@ Check the [Actions tab](https://github.com/dwildt/enduro/actions) for deployment
 1. Ensure tests and linter pass before committing: `npm run lint && npm test`
 2. Follow the trunk-based development workflow (work on `main`)
 3. All `git push` operations must be done manually by the repository owner
-4. See [CLAUDE.md](CLAUDE.md) for AI-assisted development guidelines
+4. AI-assisted development: see [AGENTS.md](AGENTS.md) (used by Claude Code via CLAUDE.md and by GitHub Copilot)
 
 ## License
 
@@ -279,4 +326,4 @@ This project is part of a 100 Days of Code challenge.
 
 ---
 
-Inspired by the classic Atari Enduro. Built with vanilla JavaScript.
+Inspired by the classic Atari Enduro and Sega's OutRun. Built with vanilla JavaScript and PixiJS.
