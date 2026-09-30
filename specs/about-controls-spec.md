@@ -14,9 +14,9 @@ Two small cabinet features:
 ## About screen
 
 ### Content (English, like the rest of the UI)
-- Title `ENDURO` + version `v1.0.0`, linked to `https://github.com/dwildt/enduro/releases/tag/v<version>`.
+- Title `ENDURO` + version `v1.0.0`, linked to the repository `https://github.com/dwildt/enduro`.
 - One line about the game: browser racer inspired by Atari Enduro and Sega OutRun, built during #100DaysOfCode.
-- Author: **Daniel Wildt**, Porto Alegre, Brazil. A short bio based on the GitHub profile (dev, entrepreneur, mentor, drummer, content creator), with links to the GitHub profile and the YouTube channel.
+- Author: **Daniel Wildt**, Porto Alegre, Brazil. A short bio based on the GitHub profile (dev, entrepreneur, mentor, drummer, content creator), with links to the GitHub profile (`https://github.com/dwildt`), LinkedIn (`https://www.linkedin.com/in/danielwildt`) and YouTube (`https://youtube.com/danielwildt`). No link to the game page (the player is already on it).
 - "Like it? Star the source code on GitHub": `https://github.com/dwildt/enduro`.
 - "Support the author on GitHub Sponsors": `https://github.com/sponsors/dwildt`.
 - Music note: original compositions and public-domain arrangements.
