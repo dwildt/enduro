@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { World, SPEED_PER_BASE, BOOST_SPEED_MULTIPLIER, HIT_INVUL_SECONDS, SPAWN_AHEAD, MIN_GAP_SCALE, INVULN_DURATION, SCOREBOOST_DURATION, PICKUP_INTERVAL } from '../src/outrun/world.js';
+import { World, LANE_CHANGE_MIN_AHEAD, LANE_CHANGE_MAX_AHEAD, HIT_X, SPEED_PER_BASE, BOOST_SPEED_MULTIPLIER, HIT_INVUL_SECONDS, SPAWN_AHEAD, MIN_GAP_SCALE, INVULN_DURATION, SCOREBOOST_DURATION, PICKUP_INTERVAL } from '../src/outrun/world.js';
 import { buildTrack } from '../src/outrun/track.js';
 import { LANE_X } from '../src/outrun/road.js';
 
@@ -103,6 +103,20 @@ assert.ok(events.includes('checkpoint'));
 assert.strictEqual(w.levelManager.getCurrentPhase().id, 2);
 run(w, 1);
 assert.strictEqual(w.speed, SPEED_PER_BASE * 1.3);
+
+// traffic far ahead changes lanes in later phases; a car mid-change hits by its current x
+w = new World(track, () => 0);
+w.levelManager.currentIndex = 3;
+w.traffic.push({ lane: 1, x: LANE_X[1], z: w.playerZ + (LANE_CHANGE_MIN_AHEAD + LANE_CHANGE_MAX_AHEAD) / 2, speed: 0, variant: 0 });
+w.spawnTraffic = () => {};
+w.update(DT);
+assert.ok(w.traffic[0].change, 'car starts signaling');
+w = new World(track, never);
+w.lane = 0; w.playerX = LANE_X[0];
+w.traffic.push({ lane: 1, x: LANE_X[1], z: w.playerZ, speed: 0, variant: 0,
+  change: { from: 1, to: 0, dir: -1, signal: 0, t: 0.8 } });
+assert.ok(w.update(DT).includes('hit'), 'hit while the other car is still between lanes');
+assert.ok(Math.abs(w.playerX - LANE_X[1]) > HIT_X, 'the car\'s own lane alone would not hit');
 
 // reset restores the initial state
 w.reset();

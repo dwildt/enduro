@@ -80,6 +80,15 @@ export function makeTraffic(){
   return TRAFFIC_COLORS.map((color, i) => canvasTexture(64, 32, ctx => drawCar(ctx, color, 0, i === 3)));
 }
 
+// traffic frames with the left (-1) or right (1) tail light blinking amber, indexed by dir then variant
+export function makeTrafficBlink(){
+  const blink = dir => TRAFFIC_COLORS.map((color, i) => canvasTexture(64, 32, ctx => {
+    drawCar(ctx, color, 0, i === 3);
+    rect(ctx, '#ffb000', dir < 0 ? 5 : 43, 15, 16, 8);
+  }));
+  return { '-1': blink(-1), '1': blink(1) };
+}
+
 export function makePickups(){
   const orb = (color, label) => canvasTexture(20, 20, ctx => {
     ctx.fillStyle = shade(color, 0.6);

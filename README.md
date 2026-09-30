@@ -29,7 +29,7 @@ Both modes share the same rules: three lanes, lives, power-ups and four progress
 - ❤️ **Lives system** with invulnerability timer after hits
 - 🎯 **Time-based scoring** - survive longer to score higher
 - 🏆 **Local top 5 ranking** per mode, shown on the game over screen
-- 🚗 **Lane-based gameplay** with smart obstacle spawning
+- 🚗 **Lane-based gameplay** with smart obstacle spawning and traffic that signals and changes lanes in later phases
 - ✅ **Unit tested** core game logic
 - 🚀 **Auto-deployed** to GitHub Pages on every push
 

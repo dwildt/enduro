@@ -94,15 +94,16 @@ Rendering and flow (Pixi):
 ### Shared game rules
 - `levelManager.js` (ESM) and `levelManager.cjs` (tests) define 4 phases:
 
-  | Phase | Duration | Speed | Spawn | minGap |
-  |---|---|---|---|---|
-  | Country Roads | 20s | 1.0x | 0.4 | 120 |
-  | Mountain Pass | 40s | 1.3x | 0.6 | 100 |
-  | Desert Highway | 80s | 1.6x | 0.8 | 80 |
-  | Night City Sprint | infinite | 2.0x | 1.0 | 60 |
+  | Phase | Duration | Speed | Spawn | minGap | Lane changes |
+  |---|---|---|---|---|---|
+  | Country Roads | 20s | 1.0x | 0.4 | 120 | 0 |
+  | Mountain Pass | 40s | 1.3x | 0.6 | 100 | 0.06 |
+  | Desert Highway | 80s | 1.6x | 0.8 | 80 | 0.12 |
+  | Night City Sprint | infinite | 2.0x | 1.0 | 60 | 0.2 |
 
 - Lives 3, 1.5s invulnerability after a hit, score 10 pts/s.
 - `ranking.js` — local top 5 per mode (`loadRanking(key)`, `saveScore(key, score, stage)` returns the 0-based rank or -1); keys `enduro_classic_ranking` and `enduro_outrun_ranking`.
+- `laneChange.js` — traffic lane changes for both modes: per car per second chance `laneChangeRate`, only inside a window ahead of the player (CLASSIC >= 300 px; OUTRUN 9000-18000 world units), into a free adjacent lane (`minGap`); blinker for 0.6s (`car.change.dir`), then a 0.8s smoothstep slide. Collisions use the car's current x.
 - Power-ups every 10s: shield (5s) and score boost (8s: 2x score + 1.4x speed); beeps at 3/2/1s.
 
 ### Audio

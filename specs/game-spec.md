@@ -97,6 +97,7 @@ Transitions
 - Types: slow car, fast car, stationary object, zig-zag mover, obstacle clusters
 - Spawn logic: lane-based spawner with randomness weighted by phase difficulty
 - Behavior: deterministic/simple AI (fixed speed, occasional lane changes)
+- Implemented (#22): lane changes shared with OUTRUN in `src/laneChange.js`. Rate per phase (`laneChangeRate` 0 / 0.06 / 0.12 / 0.2 per car per second); a change starts only >= 300 px ahead of the player and into a free adjacent lane, blinks amber for 0.6s, then slides for 0.8s. Stationary objects, zig-zag movers and clusters were not implemented.
 
 ## Assets
 - Minimal placeholder sprites (rectangle + simple car icon) to start

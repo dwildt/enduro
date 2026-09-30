@@ -9,6 +9,7 @@ export default class Obstacle {
     this.height = 48;
     this.type = 'car';
     this.animation = animation;
+    this.change = null; // lane change in progress (see laneChange.js)
   }
 
   update(dt){

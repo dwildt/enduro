@@ -4,7 +4,7 @@ import {
   project, SEGMENT_LENGTH, ROAD_WIDTH, CAMERA_HEIGHT, DRAW_DISTANCE
 } from './road.js';
 import { getTheme } from './track.js';
-import { makeBackdrop, makeScenery, makeTraffic, makePickups, makePlayerCar, WORLD_WIDTH } from './sprites.js';
+import { makeBackdrop, makeScenery, makeTraffic, makeTrafficBlink, makePickups, makePlayerCar, WORLD_WIDTH } from './sprites.js';
 
 export const WIDTH = 320;
 export const HEIGHT = 224;
@@ -50,6 +50,7 @@ export class OutRunRenderer {
 
     this.scenery = makeScenery();
     this.trafficTex = makeTraffic();
+    this.trafficBlinkTex = makeTrafficBlink();
     this.pickupTex = makePickups();
     this.carFrames = makePlayerCar('blue');
     this.bgOffset = 0;
@@ -154,7 +155,12 @@ export class OutRunRenderer {
       if(!bySegment.has(n)) bySegment.set(n, []);
       bySegment.get(n).push({ obj, tex, worldW });
     };
-    world.traffic.forEach(car => addObj(car, this.trafficTex[car.variant], car.variant === 3 ? WORLD_WIDTH.truck : WORLD_WIDTH.car));
+    // cars about to change lanes blink the tail light on that side
+    const blinkOn = Math.floor(this.time * 6) % 2 === 0;
+    world.traffic.forEach(car => {
+      const tex = car.change && blinkOn ? this.trafficBlinkTex[car.change.dir][car.variant] : this.trafficTex[car.variant];
+      addObj(car, tex, car.variant === 3 ? WORLD_WIDTH.truck : WORLD_WIDTH.car);
+    });
     world.pickups.forEach(p => addObj(p, this.pickupTex[p.type], WORLD_WIDTH.pickup));
 
     for(let n = DRAW_DISTANCE - 1; n > 0; n--){

@@ -2,6 +2,7 @@
 // Pure logic (no rendering/audio); update() returns a list of events for the UI to react to.
 import { LevelManager } from '../levelManager.js';
 import { SEGMENT_LENGTH, DRAW_DISTANCE, PLAYER_Z_OFFSET, LANE_X } from './road.js';
+import { updateLaneChanges } from '../laneChange.js';
 
 export const SPEED_PER_BASE = 6000;      // world units/s at baseSpeed 1.0
 export const ACCELERATION = 4000;        // world units/s^2 towards the phase speed
@@ -11,6 +12,9 @@ export const HIT_Z = 300;                // world z overlap for collisions
 export const SPAWN_AHEAD = DRAW_DISTANCE * SEGMENT_LENGTH * 0.7;
 export const MIN_GAP_SCALE = 20;         // converts LevelManager minGap (px) into world units
 export const MAX_KMH = 290;
+// traffic changes lanes only in this window ahead of the player: close enough to see the blinker, far enough to react
+export const LANE_CHANGE_MIN_AHEAD = 9000;
+export const LANE_CHANGE_MAX_AHEAD = 18000;
 
 export const START_LIVES = 3;
 export const HIT_INVUL_SECONDS = 1.5;
@@ -105,6 +109,10 @@ export class World {
 
     this.spawnTraffic(dt, diff);
     for(const car of this.traffic) car.z += car.speed * dt;
+    updateLaneChanges(this.traffic, dt, {
+      random: this.random, rate: diff.laneChangeRate, laneX: LANE_X, minGap: diff.minGap * MIN_GAP_SCALE,
+      minAhead: LANE_CHANGE_MIN_AHEAD, maxAhead: LANE_CHANGE_MAX_AHEAD, ahead: car => car.z - this.playerZ
+    });
     this.traffic = this.traffic.filter(car => car.z > this.playerZ - HIT_Z * 2);
 
     this.pickupTimer += dt;

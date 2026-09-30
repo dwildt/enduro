@@ -20,10 +20,13 @@ let lanePositions = computeLanePositions();
 import Obstacle from './entities/Obstacle.js';
 import { LevelManager } from './levelManager.js';
 import { loadRanking, saveScore } from './ranking.js';
+import { updateLaneChanges } from './laneChange.js';
 const obstacles = []; // active obstacles array
 
 const levelManager = new LevelManager();
 let phaseOverlayTimer = 0;
+
+const LANE_CHANGE_MIN_AHEAD = 300; // obstacles closer than this (px) keep their lane
 
 const RANKING_KEY = 'enduro_classic_ranking';
 let lastRank = -1; // position of the last run in the top 5, -1 if outside
@@ -601,6 +604,10 @@ function update(dt){
   // update obstacles (faster while boosted)
   const roadDt = powerUpType === 'scoreboost' ? dt * boostSpeedMultiplier : dt;
   obstacles.forEach(o => o.update(roadDt));
+  updateLaneChanges(obstacles, dt, {
+    random: Math.random, rate: diff.laneChangeRate, laneX: lanePositions, minGap: diff.minGap,
+    minAhead: LANE_CHANGE_MIN_AHEAD, ahead: o => car.y - o.y
+  });
   // remove offscreen
   for(let i = obstacles.length - 1; i >= 0; i--){
     if(obstacles[i].isOffscreen(canvas.height)) obstacles.splice(i,1);
@@ -898,6 +905,13 @@ function render(interp){
       else if(speed < 150) ctx.fillStyle = '#ff5';
       else ctx.fillStyle = '#f55';
       ctx.fillRect(o.x - o.width/2, o.y - o.height/2, o.width, o.height);
+    }
+    // blinker on the side the car is moving to
+    if(o.change && Math.floor(performance.now() / 160) % 2 === 0){
+      const bx = o.change.dir < 0 ? o.x - o.width/2 - 2 : o.x + o.width/2 - 4;
+      ctx.fillStyle = '#fb0';
+      ctx.fillRect(bx, o.y - o.height/2 + 2, 6, 6);
+      ctx.fillRect(bx, o.y + o.height/2 - 8, 6, 6);
     }
   });
 
