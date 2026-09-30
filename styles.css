@@ -15,3 +15,8 @@ html,body{height:100%;margin:0;background:#111;color:#fff;font-family:monospace;
 #mode-select button{font:inherit;font-size:14px;width:220px;padding:14px 0;color:#fff;background:rgba(20,0,40,.6);
   border:3px solid #ff3d7f;cursor:pointer}
 #mode-select button.active,#mode-select button:hover,#mode-select button:focus-visible{background:#ff3d7f;color:#1a0033;outline:none}
+
+/* OutRun mode CRT look: scanlines + vignette over the upscaled canvas (toggle with V) */
+#outrun-root .crt{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;
+  background:repeating-linear-gradient(rgba(0,0,0,.18) 0 1px,transparent 1px 3px),
+    radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.45) 100%)}

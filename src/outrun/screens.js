@@ -1,0 +1,106 @@
+// Menu screens for the OutRun mode: car color, radio (music) select and game over ranking.
+import { Container, Graphics, Sprite } from 'pixi.js';
+import { WIDTH, HEIGHT } from './OutRunRenderer.js';
+import { label } from './hud.js';
+import { makePlayerCar } from './sprites.js';
+
+export const COLORS = ['blue', 'purple', 'red', 'white', 'green'];
+const RANKING_KEY = 'enduro_outrun_ranking';
+
+export function loadRanking(){
+  try { return JSON.parse(localStorage.getItem(RANKING_KEY)) || []; } catch(_e){ return []; }
+}
+
+// store the score in the local top 5; returns its rank (0-based) or -1
+export function saveScore(score, stage){
+  const entry = { score: Math.floor(score), stage, at: Date.now() };
+  const ranking = [...loadRanking(), entry].sort((a, b) => b.score - a.score).slice(0, 5);
+  localStorage.setItem(RANKING_KEY, JSON.stringify(ranking));
+  return ranking.indexOf(entry);
+}
+
+export class Screens {
+  constructor(stage){
+    this.root = new Container();
+    stage.addChild(this.root);
+    this.cars = COLORS.map(c => makePlayerCar(c)['0']);
+  }
+
+  clear(){
+    this.root.removeChildren().forEach(c => c.destroy({ children: true }));
+  }
+
+  panel(y, h, alpha = 0.7){
+    const g = new Graphics().rect(0, y, WIDTH, h).fill({ color: 0x000000, alpha });
+    this.root.addChild(g);
+    return g;
+  }
+
+  showColor(index, time){
+    this.clear();
+    this.panel(40, 130);
+    label(this.root, 'CHOOSE YOUR CAR', WIDTH / 2, 52, { color: 0xffe040, anchorX: 0.5 });
+    const slot = 60, startX = WIDTH / 2 - slot * 2;
+    this.cars.forEach((tex, i) => {
+      const s = new Sprite(tex);
+      s.anchor.set(0.5);
+      const selected = i === index;
+      s.scale.set(selected ? 0.9 : 0.7);
+      s.position.set(startX + i * slot, 100 - (selected && Math.floor(time * 4) % 2 ? 1 : 0));
+      s.alpha = selected ? 1 : 0.6;
+      this.root.addChild(s);
+    });
+    const box = new Graphics().rect(startX + index * slot - 30, 80, 60, 40).stroke({ color: 0xff5ab4, width: 2 });
+    this.root.addChild(box);
+    label(this.root, COLORS[index].toUpperCase(), WIDTH / 2, 132, { anchorX: 0.5 });
+    label(this.root, '< >  ENTER', WIDTH / 2, 152, { color: 0xc0c0c0, anchorX: 0.5 });
+  }
+
+  showRadio(tracks, index, time){
+    this.clear();
+    this.panel(40, 140);
+    label(this.root, 'SELECT MUSIC', WIDTH / 2, 50, { color: 0xffe040, anchorX: 0.5 });
+    // radio faceplate with a frequency dial
+    const radio = new Graphics()
+      .roundRect(40, 66, 240, 40, 4).fill(0x2a2a2a).stroke({ color: 0x888888, width: 2 })
+      .rect(50, 74, 220, 12).fill(0x0a1a10);
+    for(let i = 0; i <= 20; i++) radio.rect(52 + i * 10.8, 80 + (i % 5 ? 3 : 0), 1, i % 5 ? 3 : 6).fill(0x40ff80);
+    const needleX = 70 + index * 90;
+    radio.rect(needleX, 72, 2, 16).fill(0xff3030);
+    this.root.addChild(radio);
+    label(this.root, `FM ${(88.1 + index * 7.4).toFixed(1)}`, WIDTH / 2, 92, { color: 0x40ff80, anchorX: 0.5 });
+    tracks.forEach((t, i) => {
+      const selected = i === index;
+      const blink = selected && Math.floor(time * 3) % 2 === 0;
+      label(this.root, `${selected ? '>' : ' '} ${t.name}`, 70, 116 + i * 14, { color: selected ? (blink ? 0xffffff : 0xff5ab4) : 0x909090 });
+    });
+    label(this.root, '< >  ENTER TO RACE', WIDTH / 2, 164, { color: 0xc0c0c0, anchorX: 0.5 });
+  }
+
+  showGameOver(score, rank){
+    this.clear();
+    this.panel(30, 170, 0.75);
+    label(this.root, 'GAME OVER', WIDTH / 2, 40, { size: 16, color: 0xff4040, anchorX: 0.5 });
+    label(this.root, `SCORE ${Math.floor(score)}`, WIDTH / 2, 64, { anchorX: 0.5 });
+    label(this.root, 'BEST SCORES', WIDTH / 2, 84, { color: 0x60e0ff, anchorX: 0.5 });
+    loadRanking().forEach((r, i) => {
+      const color = i === rank ? 0xffe040 : 0xffffff;
+      label(this.root, `${i + 1}. ${String(r.score).padStart(6, ' ')}  ST${r.stage}`, WIDTH / 2, 98 + i * 12, { color, anchorX: 0.5 });
+    });
+    // two tap targets for touch screens
+    const btn = (x, text) => {
+      this.root.addChild(new Graphics().rect(x - 60, 164, 120, 22).fill(0x000000).stroke({ color: 0xff5ab4, width: 2 }));
+      label(this.root, text, x, 171, { anchorX: 0.5 });
+    };
+    btn(WIDTH / 4 + 10, 'ENTER RETRY');
+    btn(WIDTH * 3 / 4 - 10, 'C  CAR');
+    label(this.root, 'ESC MENU', WIDTH / 2, 192, { color: 0x909090, anchorX: 0.5 });
+  }
+
+  showPause(){
+    this.clear();
+    this.panel(0, HEIGHT, 0.5);
+    label(this.root, 'PAUSE', WIDTH / 2, HEIGHT / 2 - 8, { size: 16, anchorX: 0.5 });
+    label(this.root, 'P CONTINUE  C RESTART', WIDTH / 2, HEIGHT / 2 + 16, { color: 0xc0c0c0, anchorX: 0.5 });
+  }
+}
