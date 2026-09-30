@@ -20,7 +20,7 @@ Both modes share the same rules: three lanes, lives, power-ups and four progress
 
 ## Features
 
-- 🕹️ **Arcade cabinet** around the screen (woodgrain, marquee with per-mode stripes, CRT bezel, control panel) and a cover-art title screen mixing the Atari box art and the OutRun sunset
+- 🕹️ **Arcade cabinet** around the screen (woodgrain, marquee with per-mode stripes, CRT bezel, control panel that shows the controls of the current mode on desktop) and a cover-art title screen mixing the Atari box art and the OutRun sunset
 - ℹ️ **About screen** (title screen and pause menu) with version, author links, a GitHub star link and GitHub Sponsors
 - 🌅 **OutRun mode** with pseudo-3D road, 4 themed stages (coast, mountains, desert, neon city) and a local top 5
 - 📻 **Radio select** with 7 FM-style stations (procedural Web Audio, no audio files): synth pop, latin fusion, synthwave, hard rock, funk metal and rock arrangements of Grieg and Bach
@@ -37,6 +37,9 @@ Both modes share the same rules: three lanes, lives, power-ups and four progress
 ## Controls
 
 ### Desktop
+
+On notebook/desktop the cabinet control panel shows the keys for the current mode.
+
 | Input | Action |
 |-------|--------|
 | **Arrow Keys** or **A/D** | Switch lanes left/right |

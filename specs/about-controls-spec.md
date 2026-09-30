@@ -52,6 +52,7 @@ Two small cabinet features:
 
 ## Status
 - About screen implemented (#51). The card is compacted to fit the 4:3 notebook screen without scrolling; the CLOSE button gets focus without scrolling the card.
+- Controls legend implemented (#52). The title screen keeps the INSERT COIN slot (no card for select); arrow keys use a system monospace font because Press Start 2P has no arrow glyphs.
 
 ## Testing
 - Unit: `VERSION` fallback (`tests/test_version.mjs` or inside an existing test), if there is logic to test.

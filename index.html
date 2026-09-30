@@ -110,10 +110,26 @@
         </div>
       </div>
     </div>
-    <div class="control-panel" aria-hidden="true">
-      <div class="joystick"><span class="stick"></span></div>
-      <div class="buttons"><span class="btn btn-a"></span><span class="btn btn-b"></span></div>
-      <div class="coin"><span class="slot"></span><span class="coin-label">INSERT COIN</span></div>
+    <!-- control panel doubles as the instruction card: [data-show] lists the modes where a label appears (styles.css) -->
+    <div class="control-panel">
+      <div class="ctl">
+        <div class="joystick" aria-hidden="true"><span class="stick"></span></div>
+        <span class="ctl-label" data-show="select"><kbd class="arrows">&uarr;&darr;</kbd> SELECT</span>
+        <span class="ctl-label" data-show="classic outrun"><kbd class="arrows">&larr;&rarr;</kbd> LANE</span>
+      </div>
+      <div class="ctl">
+        <div class="buttons" aria-hidden="true"><span class="btn btn-a"></span><span class="btn btn-b"></span></div>
+        <span class="ctl-label" data-show="select"><kbd>ENTER</kbd> START</span>
+        <span class="ctl-label" data-show="classic outrun"><kbd>ENTER</kbd> OK <kbd>P</kbd> PAUSE</span>
+      </div>
+      <div class="coin" data-show="select" aria-hidden="true"><span class="slot"></span><span class="coin-label">INSERT COIN</span></div>
+      <ul class="legend" data-show="classic outrun">
+        <li data-show="outrun"><kbd>M</kbd> MUSIC</li>
+        <li><kbd>E</kbd> ENGINE</li>
+        <li><kbd>C</kbd> SFX</li>
+        <li data-show="outrun"><kbd>V</kbd> CRT</li>
+        <li data-show="outrun"><kbd>ESC</kbd> EXIT</li>
+      </ul>
     </div>
   </div>
   <script type="module" src="src/boot.js"></script>

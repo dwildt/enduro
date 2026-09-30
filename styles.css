@@ -55,7 +55,7 @@ body{background:radial-gradient(ellipse at 50% 30%,#2e2219 0%,#120d09 60%,#06040
 #outrun-root{position:absolute;inset:0;background:#000;touch-action:none}
 #outrun-root canvas{image-rendering:pixelated}
 
-/* control panel (decorative) */
+/* control panel: arcade instruction card with the controls of the current mode */
 .control-panel{height:var(--panel-h);width:calc(var(--screen-w) + 2 * var(--bezel) + 2 * var(--side));max-width:100vw;
   box-sizing:border-box;display:flex;align-items:center;justify-content:space-around;
   border-radius:6px 6px 10px 10px;border-top:3px solid var(--trim);
@@ -76,6 +76,20 @@ body{background:radial-gradient(ellipse at 50% 30%,#2e2219 0%,#120d09 60%,#06040
 .slot{width:10px;height:28px;border-radius:3px;background:#000;box-shadow:0 0 0 4px #555,0 0 10px rgba(255,90,90,.8)}
 .coin-label{font-size:7px;color:#ff6060;animation:blink 1.2s steps(2) infinite}
 @keyframes blink{50%{opacity:0}}
+.ctl{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%;
+  box-sizing:border-box;padding-bottom:8px}
+.ctl-label,.legend{font-size:8px;color:#f5f0e0;white-space:nowrap}
+.control-panel kbd{font:inherit;display:inline-block;padding:3px 4px 2px;margin-right:2px;color:#111;background:#f5f0e0;
+  border-radius:3px;box-shadow:0 2px 0 var(--trim)}
+/* the pixel font has no arrow glyphs */
+.control-panel kbd.arrows{font:bold 11px/8px monospace;padding:3px 4px}
+.legend{list-style:none;margin:0;padding:8px 10px;display:grid;grid-template-columns:repeat(2,auto);gap:8px 12px;
+  border:2px solid var(--trim);border-radius:4px;background:rgba(0,0,0,.35)}
+#cabinet[data-mode="classic"] .legend{grid-template-columns:auto}
+/* show only the labels of the current mode */
+#cabinet[data-mode="select"] .control-panel [data-show]:not([data-show~="select"]),
+#cabinet[data-mode="classic"] .control-panel [data-show]:not([data-show~="classic"]),
+#cabinet[data-mode="outrun"] .control-panel [data-show]:not([data-show~="outrun"]){display:none}
 
 /* ---------- Responsive layouts ---------- */
 /* phones in portrait: slim marquee, thin bezel, no control panel (touch controls live on screen) */
