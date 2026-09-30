@@ -25,6 +25,11 @@ Both share the same rules: 3 lanes, 3 lives, 2 power-ups, 4 phases from `LevelMa
 2. **Issues:** one GitHub issue per delivery (`gh issue create`), in English, with sections `## Description`, `## Requirements`, `## Acceptance Criteria` (checkboxes); link the spec. Labels: `enhancement`, `bug` or `documentation`.
 3. **Commits:** one commit per issue, Conventional Commits (`feat:`, `fix:`, `docs:`, `style:`, `chore:`), a short body with the key changes, and `Closes #N`. If a working file mixes two issues, stage each part separately.
 4. **Docs:** update `AGENTS.md`, the README and the spec when behavior, controls or stack change.
+5. **Changelog:** add user-visible changes under `## [Unreleased]` in `CHANGELOG.md` (with the issue number).
+
+## Releases
+
+SemVer tags `vX.Y.Z` with a `CHANGELOG.md` section each; full checklist in the README ("Releases"). Agents may run the checks, move `Unreleased` into the new version, bump with `npm version X.Y.Z --no-git-tag-version`, commit `chore(release): vX.Y.Z` and create the annotated tag locally. Pushing the tag and publishing the GitHub Release are done by the owner.
 
 ## Commands
 

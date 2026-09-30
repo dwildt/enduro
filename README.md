@@ -321,6 +321,31 @@ The game automatically deploys to GitHub Pages when changes are pushed to the `m
 
 Check the [Actions tab](https://github.com/dwildt/enduro/actions) for deployment status and logs.
 
+## Releases
+
+Versions follow [Semantic Versioning](https://semver.org/) and are recorded in [CHANGELOG.md](CHANGELOG.md) ([Keep a Changelog](https://keepachangelog.com/) format).
+
+- `feat:` commits bump MINOR, `fix:` bump PATCH; breaking gameplay or saved-data changes bump MAJOR.
+- While working, add an entry under `## [Unreleased]` (`Added` / `Changed` / `Fixed` / `Removed`) with the issue number.
+
+Release checklist:
+
+1. All issues planned for the release are closed.
+2. `npm run lint && npm test` pass.
+3. `npm run verify:ui -- --preview` passes and the screenshots look right.
+4. In `CHANGELOG.md`, move the `Unreleased` entries into `## [X.Y.Z] - YYYY-MM-DD` and update the compare links at the bottom.
+5. Bump the version: `npm version X.Y.Z --no-git-tag-version` (updates `package.json` and `package-lock.json`).
+6. Commit `chore(release): vX.Y.Z` and tag it: `git tag -a vX.Y.Z -m "vX.Y.Z"`.
+7. Owner pushes and publishes the GitHub Release with the changelog section as notes:
+
+```bash
+git push && git push origin vX.Y.Z
+awk '/^## \[X.Y.Z\]/{f=1;next} /^## \[/{f=0} f' CHANGELOG.md > /tmp/notes.md
+gh release create vX.Y.Z --title "vX.Y.Z" --notes-file /tmp/notes.md
+```
+
+Agents may prepare steps 1-6 locally; pushing and publishing stay with the owner.
+
 ## Contributing
 
 1. Ensure tests and linter pass before committing: `npm run lint && npm test`
