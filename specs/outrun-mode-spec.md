@@ -88,7 +88,8 @@ Touch (OUTRUN): `<` / `>` buttons at the bottom corners and `II` pause at the to
 ## Arcade cabinet
 Both modes (and the mode select) are shown inside an arcade cabinet built with HTML/CSS:
 - Marquee (backlit "ENDURO" + mode name), bezel with CRT glass reflection, decorative control panel (joystick, 2 buttons, INSERT COIN slot).
-- Themes: OUTRUN / select = neon sunset (magenta trim); CLASSIC = Atari woodgrain with orange/red stripes.
+- Same Atari-style woodgrain cabinet for every mode; only the marquee stripes change: select red/orange/yellow (road of the 1983 box art), CLASSIC orange/red, OUTRUN cyan/magenta/purple (magenta trim).
+- Mode select screen: cover-art layout mixing the Atari box art and the OutRun sunset — green background, white title, yellow "SELECT MODE", selected button red with yellow border and unselected buttons dimmed cream, inline SVG art (grid paper, night sky with moon fading into a striped sunset with a palm, red/orange/yellow road, player car), footer "8-BIT CLASSIC / 16-BIT OUTRUN". No third-party logos or brand names.
 - The screen keeps the game ratio (select 4:3, classic 3:4, outrun 10:7) and takes the largest size that fits the viewport minus the cabinet chrome (CSS `min()`/`calc()` with `100dvh`/`100vw`).
 - Layouts: notebook/desktop full cabinet; phone portrait slim marquee + thin bezel, no control panel (touch controls are on screen); short/landscape phone screens bezel only.
 - Classic pointer/touch coordinates are scaled from the displayed size to canvas pixels.

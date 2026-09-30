@@ -19,12 +19,72 @@
     </header>
     <div class="bezel">
       <div class="screen">
+        <!-- title screen: cover-art layout (Atari box art meets the OutRun sunset) -->
         <div id="mode-select" hidden>
-          <h1 class="logo">ENDURO</h1>
-          <p class="subtitle">SELECT MODE</p>
-          <button type="button" data-mode="classic">CLASSIC</button>
-          <button type="button" data-mode="outrun">OUTRUN</button>
-          <p class="hint">&uarr;&darr; + ENTER</p>
+          <div class="title-block">
+            <h1 class="logo">ENDURO</h1>
+            <p class="subtitle">SELECT MODE</p>
+          </div>
+          <div class="menu">
+            <button type="button" data-mode="classic">CLASSIC</button>
+            <button type="button" data-mode="outrun">OUTRUN</button>
+            <p class="hint">&uarr;&darr; + ENTER</p>
+          </div>
+          <div class="art" aria-hidden="true">
+            <svg viewBox="0 0 240 190" preserveAspectRatio="xMidYMid slice">
+              <defs>
+                <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                  <rect width="10" height="10" fill="#f4efe3"/>
+                  <path d="M10 0H0V10" fill="none" stroke="#cfc6b2" stroke-width="0.6"/>
+                </pattern>
+                <linearGradient id="sky" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0" stop-color="#16204a"/>
+                  <stop offset=".45" stop-color="#3b2a6b"/>
+                  <stop offset=".72" stop-color="#c8456a"/>
+                  <stop offset="1" stop-color="#f59a4a"/>
+                </linearGradient>
+              </defs>
+              <rect width="240" height="190" fill="url(#grid)"/>
+              <!-- sky: night with moon and stars (Atari) fading into a striped sunset (OutRun) -->
+              <rect width="240" height="72" fill="url(#sky)"/>
+              <g fill="#fff">
+                <rect x="12" y="44" width="2" height="2"/><rect x="48" y="12" width="2" height="2"/>
+                <rect x="66" y="36" width="1.5" height="1.5"/><rect x="84" y="18" width="2" height="2"/>
+                <rect x="22" y="58" width="1.5" height="1.5"/><rect x="104" y="8" width="1.5" height="1.5"/>
+              </g>
+              <circle cx="30" cy="22" r="8" fill="#f4efe3"/>
+              <circle cx="34" cy="19" r="7" fill="#16204a"/>
+              <circle cx="198" cy="72" r="22" fill="#ffcf5a"/>
+              <g fill="#e2566a"><rect x="174" y="57" width="48" height="1.5"/><rect x="174" y="62" width="48" height="2"/><rect x="174" y="67" width="48" height="2.5"/></g>
+              <path d="M0 72 L18 64 L34 68 L52 60 L70 67 L92 62 L112 69 L130 65 L150 70 L170 66 L186 72 Z" fill="#4b2c5e"/>
+              <!-- palm tree silhouette -->
+              <g fill="#2a1a3a" transform="translate(-16 0)">
+                <path d="M226 72 C225 60 224 50 227 40 L229 40 C227 50 228 60 229 72 Z"/>
+                <path d="M228 40 C220 34 212 36 206 42 C214 38 221 39 228 42 Z"/>
+                <path d="M228 40 C236 33 243 35 246 40 C239 37 234 38 228 42 Z"/>
+                <path d="M228 40 C224 30 216 28 210 30 C218 31 223 34 228 41 Z"/>
+                <path d="M228 40 C233 30 240 28 244 31 C238 31 233 35 229 41 Z"/>
+              </g>
+              <!-- rainbow road -->
+              <path d="M0 190 C60 150 95 105 142 72 L147.3 72 C114 103.3 90.7 146.7 55 190 Z" fill="#d23a2a"/>
+              <path d="M55 190 C90.7 146.7 114 103.3 147.3 72 L152.7 72 C133 101.7 121.3 143.3 110 190 Z" fill="#ff9a1f"/>
+              <path d="M110 190 C121.3 143.3 133 101.7 152.7 72 L158 72 C152 100 152 140 165 190 Z" fill="#ffe45c"/>
+              <g fill="none" stroke="#2b5fb4" stroke-width="3.5" stroke-dasharray="6 5">
+                <path d="M-2 186 C58 146 93 101 140 70"/>
+                <path d="M169 190 C156 140 156 100 161 72"/>
+              </g>
+              <!-- rival car near the horizon and the player's red car -->
+              <g transform="translate(146 84)"><rect width="9" height="4" fill="#f4efe3"/><rect x="2" y="-2" width="5" height="2" fill="#f4efe3"/><rect x="1" y="4" width="2" height="1.5" fill="#222"/><rect x="6" y="4" width="2" height="1.5" fill="#222"/></g>
+              <g transform="translate(62 146)">
+                <rect x="2" y="16" width="9" height="12" rx="2" fill="#222"/><rect x="37" y="16" width="9" height="12" rx="2" fill="#222"/>
+                <rect x="4" y="8" width="40" height="14" rx="2" fill="#d23a2a"/>
+                <rect x="12" y="2" width="24" height="8" rx="2" fill="#b02a1e"/><rect x="15" y="4" width="18" height="4" fill="#1d2a4a"/>
+                <rect x="7" y="12" width="7" height="3" fill="#ffe45c"/><rect x="34" y="12" width="7" height="3" fill="#ffe45c"/>
+                <rect x="20" y="15" width="8" height="4" fill="#f4efe3"/>
+              </g>
+            </svg>
+          </div>
+          <p class="footer">8-BIT CLASSIC / 16-BIT OUTRUN</p>
         </div>
         <canvas id="game" width="480" height="640" hidden></canvas>
         <div id="outrun-root" hidden></div>

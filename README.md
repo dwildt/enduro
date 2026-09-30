@@ -20,7 +20,7 @@ Both modes share the same rules: three lanes, lives, power-ups and four progress
 
 ## Features
 
-- 🕹️ **Arcade cabinet** around the screen (marquee, CRT bezel, control panel), themed per mode
+- 🕹️ **Arcade cabinet** around the screen (woodgrain, marquee with per-mode stripes, CRT bezel, control panel) and a cover-art title screen mixing the Atari box art and the OutRun sunset
 - 🌅 **OutRun mode** with pseudo-3D road, 4 themed stages (coast, mountains, desert, neon city) and a local top 5
 - 📻 **Radio select** with 7 FM-style stations (procedural Web Audio, no audio files): synth pop, latin fusion, synthwave, hard rock, funk metal and rock arrangements of Grieg and Bach
 - 🎮 **8-bit pixel-art visual style** with retro color palettes

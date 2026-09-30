@@ -1,5 +1,5 @@
 html,body{height:100%;margin:0;color:#fff;font-family:monospace;overflow:hidden}
-body{background:radial-gradient(ellipse at 50% 30%,#2a1840 0%,#0d0716 60%,#050308 100%)}
+body{background:radial-gradient(ellipse at 50% 30%,#2e2219 0%,#120d09 60%,#060403 100%)}
 [hidden]{display:none!important}
 
 /* ---------- Arcade cabinet ----------
@@ -12,28 +12,30 @@ body{background:radial-gradient(ellipse at 50% 30%,#2a1840 0%,#0d0716 60%,#05030
   --chrome-h:calc(2 * var(--side) + 2 * var(--bezel) + 2 * var(--margin));
   --screen-h:min(calc(100dvh - var(--chrome-v)), calc((100vw - var(--chrome-h)) / var(--ratio)), 900px);
   --screen-w:calc(var(--screen-h) * var(--ratio));
-  --trim:#ff3d7f; --trim2:#00e5ff; --wood:#2a1238; --wood2:#170a22;
+  /* woodgrain cabinet (Atari 2600 style) for every mode; the marquee stripes change per mode */
+  --wood:#5a3418; --wood2:#3a200c; --trim:#ff9a1f;
+  --stripe1:#ffe45c; --stripe2:#ff9a1f; --stripe3:#d23a2a; --glow:rgba(255,154,31,.35);
 
   position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
   display:flex;flex-direction:column;align-items:center;gap:var(--gap);
   padding:var(--gap) var(--side);
   border-radius:14px 14px 6px 6px;
-  background:linear-gradient(90deg,var(--wood2),var(--wood) 12%,var(--wood) 88%,var(--wood2));
-  box-shadow:0 0 0 3px #000,0 0 0 5px var(--trim),0 0 28px rgba(255,61,127,.35),0 30px 60px rgba(0,0,0,.7);
+  background:repeating-linear-gradient(92deg,rgba(0,0,0,.12) 0 3px,transparent 3px 11px),
+    linear-gradient(90deg,var(--wood2),var(--wood) 12%,var(--wood) 88%,var(--wood2));
+  box-shadow:0 0 0 3px #000,0 0 0 5px var(--trim),0 30px 60px rgba(0,0,0,.7);
 }
-#cabinet[data-mode="classic"]{--ratio:0.75}
-#cabinet[data-mode="outrun"]{--ratio:1.4286}
+#cabinet[data-mode="classic"]{--ratio:0.75;--stripe1:#ff9a1f;--stripe2:#ff5a1f;--stripe3:#d0302a}
+#cabinet[data-mode="outrun"]{--ratio:1.4286;--trim:#ff3d7f;--stripe1:#00e5ff;--stripe2:#ff3d7f;--stripe3:#7a2cff;--glow:rgba(255,61,127,.4)}
 
-/* marquee: backlit title sign */
+/* marquee: backlit sign with three color stripes at the bottom */
 .marquee{height:var(--marquee-h);width:calc(var(--screen-w) + 2 * var(--bezel));box-sizing:border-box;
-  display:flex;align-items:center;justify-content:center;gap:14px;overflow:hidden;
-  border-radius:8px;border:3px solid #000;font-family:'Press Start 2P',monospace;
-  background:linear-gradient(#1a0033 0%,#5b1a6b 50%,#ff5a5f 85%,#ffb347 100%);
-  box-shadow:inset 0 0 18px rgba(255,255,255,.35),0 0 16px rgba(255,90,95,.45)}
-.marquee-title{font-size:calc(var(--marquee-h) * .42);letter-spacing:3px;
-  background:linear-gradient(#fff9c4 0%,#ffd54f 45%,#ff6f00 55%,#ff3d7f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(2px 2px 0 #2b1055)}
-.marquee-mode{font-size:calc(var(--marquee-h) * .16);color:#ffe0f0;align-self:flex-end;margin-bottom:calc(var(--marquee-h) * .2)}
+  display:flex;align-items:flex-start;justify-content:center;gap:14px;overflow:hidden;
+  border-radius:8px;border:3px solid #000;font-family:'Press Start 2P',monospace;background:#111;
+  box-shadow:inset 0 calc(var(--marquee-h) * -.18) 0 var(--stripe1),inset 0 calc(var(--marquee-h) * -.3) 0 var(--stripe2),
+    inset 0 calc(var(--marquee-h) * -.42) 0 var(--stripe3),0 0 12px var(--glow)}
+.marquee-title{font-size:calc(var(--marquee-h) * .34);letter-spacing:3px;color:#f5f0e0;text-shadow:2px 2px 0 #000;
+  margin-top:calc(var(--marquee-h) * .12)}
+.marquee-mode{font-size:calc(var(--marquee-h) * .16);color:#f5f0e0;margin-top:calc(var(--marquee-h) * .2)}
 .marquee-mode:empty{display:none}
 
 /* bezel + screen (CRT glass) */
@@ -75,19 +77,6 @@ body{background:radial-gradient(ellipse at 50% 30%,#2a1840 0%,#0d0716 60%,#05030
 .coin-label{font-size:7px;color:#ff6060;animation:blink 1.2s steps(2) infinite}
 @keyframes blink{50%{opacity:0}}
 
-/* ---------- Theme: CLASSIC (Atari 2600 woodgrain + rainbow stripes) ---------- */
-#cabinet[data-mode="classic"]{--trim:#ff9a1f;--wood:#5a3418;--wood2:#3a200c;
-  background:repeating-linear-gradient(92deg,rgba(0,0,0,.12) 0 3px,transparent 3px 11px),
-    linear-gradient(90deg,var(--wood2),var(--wood) 12%,var(--wood) 88%,var(--wood2));
-  box-shadow:0 0 0 3px #000,0 0 0 5px var(--trim),0 30px 60px rgba(0,0,0,.7)}
-#cabinet[data-mode="classic"] .marquee{background:#111;
-  box-shadow:inset 0 calc(var(--marquee-h) * -.18) 0 #ff9a1f,inset 0 calc(var(--marquee-h) * -.3) 0 #ff5a1f,
-    inset 0 calc(var(--marquee-h) * -.42) 0 #d0302a,0 0 12px rgba(255,154,31,.35)}
-#cabinet[data-mode="classic"] .marquee-title{background:none;color:#f5f0e0;filter:none;text-shadow:2px 2px 0 #000;
-  font-size:calc(var(--marquee-h) * .34);align-self:flex-start;margin-top:calc(var(--marquee-h) * .12)}
-#cabinet[data-mode="classic"] .marquee-mode{color:#f5f0e0;align-self:flex-start;margin-top:calc(var(--marquee-h) * .2)}
-#cabinet[data-mode="classic"] .control-panel{border-top-color:#ff9a1f;background:linear-gradient(#1e1e1e,#0c0c0c)}
-
 /* ---------- Responsive layouts ---------- */
 /* phones in portrait: slim marquee, thin bezel, no control panel (touch controls live on screen) */
 @media (max-width: 700px) and (orientation: portrait){
@@ -101,19 +90,30 @@ body{background:radial-gradient(ellipse at 50% 30%,#2a1840 0%,#0d0716 60%,#05030
   .marquee,.control-panel{display:none}
 }
 
-/* ---------- Mode select (title screen, shown inside the cabinet screen) ---------- */
-#mode-select{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.5cqh;
-  font-family:'Press Start 2P',monospace;
-  background:linear-gradient(#1a0033 0%,#5b1a6b 45%,#ff5a5f 70%,#ffb347 85%,#2b1055 85.5%,#0b0420 100%)}
-#mode-select .logo{margin:0 0 1cqh;font-size:min(11cqw,14cqh);letter-spacing:.5cqw;
-  background:linear-gradient(#fff9c4 0%,#ffd54f 45%,#ff6f00 55%,#ff3d7f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(3px 3px 0 #2b1055)}
-#mode-select .subtitle,#mode-select .hint{margin:0;font-size:max(8px,min(2cqw,2.8cqh));color:#ffe0f0}
-/* unselected buttons are dimmed grey; the selected one is lit (JS toggles .active, hover also selects) */
-#mode-select button{font:inherit;font-size:max(9px,min(3cqw,4cqh));width:min(46cqw,260px);padding:min(3cqh,14px) 0;color:#8a8a9a;background:rgba(10,0,20,.45);
-  border:3px solid #55556a;cursor:pointer;outline:none;opacity:.7;transition:transform .1s,opacity .1s}
-#mode-select button.active{background:#ff3d7f;color:#1a0033;border-color:#fff3a0;opacity:1;transform:scale(1.08);
-  box-shadow:0 0 0 3px #1a0033,0 0 18px #ff3d7f}
+/* ---------- Mode select (title screen): box-art layout, Atari cover meets Sega sunset ----------
+   palette: cover green, white title, yellow subtitle, road stripes red/orange/yellow, cream grid paper */
+#mode-select{--green:#3d9a5f;--green-dark:#1f5e3a;--cream:#f4efe3;--red:#d23a2a;--yellow:#ffe45c;
+  position:absolute;inset:0;box-sizing:border-box;padding:4cqh 4cqw 3cqh;
+  display:grid;grid-template-columns:42% 1fr;grid-template-rows:auto 1fr auto;gap:2.5cqh 3cqw;
+  grid-template-areas:"title title" "menu art" "footer footer";
+  font-family:'Press Start 2P',monospace;background:var(--green)}
+#mode-select .title-block{grid-area:title;text-align:center}
+#mode-select .logo{margin:0;font-size:min(12cqw,16cqh);letter-spacing:.6cqw;color:#fff;
+  text-shadow:.6cqw .6cqw 0 var(--green-dark)}
+#mode-select .subtitle{margin:1.5cqh 0 0;font-size:max(8px,min(3cqw,4.4cqh));color:var(--yellow);text-shadow:.3cqw .3cqw 0 var(--green-dark)}
+#mode-select .menu{grid-area:menu;display:flex;flex-direction:column;justify-content:center;gap:3.5cqh}
+#mode-select .art{grid-area:art;min-height:0;border-radius:1.6cqw;overflow:hidden;
+  box-shadow:0 0 0 .6cqw #8b2a2a,.9cqw .9cqw 0 .6cqw var(--green-dark)}
+#mode-select .art svg{display:block;width:100%;height:100%}
+#mode-select .hint{margin:0;text-align:center;font-size:max(7px,min(1.8cqw,2.6cqh));color:var(--cream);opacity:.85}
+#mode-select .footer{grid-area:footer;margin:0;text-align:center;font-size:max(7px,min(2.4cqw,3.4cqh));color:#fff;
+  text-shadow:.3cqw .3cqw 0 var(--green-dark)}
+/* unselected: cream "grid paper" card, dimmed; selected: the red of the car with a yellow border */
+#mode-select button{font:inherit;font-size:max(9px,min(3cqw,4.4cqh));width:100%;padding:min(3.4cqh,16px) 0;
+  color:var(--green-dark);background:var(--cream);border:3px solid var(--green-dark);cursor:pointer;outline:none;
+  opacity:.7;transition:transform .1s,opacity .1s}
+#mode-select button.active{background:var(--red);color:#fff;border-color:var(--yellow);opacity:1;transform:scale(1.05);
+  box-shadow:0 0 0 3px #7a1c12,.8cqw .8cqw 0 3px var(--green-dark)}
 #mode-select button.active::before{content:'\25B6  '}
 
 /* OutRun mode CRT look: scanlines + vignette over the canvas (toggle with V) */

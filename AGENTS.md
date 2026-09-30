@@ -61,7 +61,8 @@ node tests/test_<name>.mjs  # single ES module test
 ### Boot and cabinet (`index.html`, `styles.css`, `src/boot.js`)
 - `boot.js` shows the mode select (saved in localStorage `enduro_mode`) and lazy-loads `src/main.js` (CLASSIC) or `src/outrun/index.js` (OUTRUN).
 - `#cabinet` wraps `.marquee`, `.bezel > .screen` (mode select, `#game`, `#outrun-root`) and a decorative `.control-panel`.
-- `boot.js` sets `#cabinet[data-mode]` (`select` | `classic` | `outrun`), which drives the screen ratio (`--ratio` 4:3, 3:4, 10:7) and the theme (neon sunset / Atari woodgrain).
+- `boot.js` sets `#cabinet[data-mode]` (`select` | `classic` | `outrun`), which drives the screen ratio (`--ratio` 4:3, 3:4, 10:7) and the marquee stripes (`--stripe1..3`: select red/orange/yellow, classic orange/red, outrun cyan/magenta/purple). The cabinet itself is the same Atari-style woodgrain for every mode.
+- Mode select = cover-art layout inspired by the 1983 Enduro box meets the OutRun sunset: green background, white `ENDURO`, yellow subtitle, buttons on the left (selected = red with yellow border, unselected = dimmed cream), inline SVG art on the right (grid paper, night sky with moon → striped sunset with palm, red/orange/yellow road). No third-party logos or brand names.
 - Screen size is pure CSS: `min(viewport height - chrome, (viewport width - chrome) / ratio, 900px)`. Canvases are scaled, so pointer handlers must map coordinates with `canvas.width / rect.width`.
 - Responsive: full cabinet on notebook/desktop; slim marquee + thin bezel without control panel on phone portrait; bezel only on short screens (`max-height: 520px`).
 - Static assets live in `public/assets/` (served at `assets/...`).
