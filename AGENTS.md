@@ -76,6 +76,7 @@ node tests/test_<name>.mjs  # single ES module test
 - Spawn: `Math.random() < spawnRate * dt`, random lane, per-lane `minGap`; speed `baseSpeed * 80 + random(0-60)` px/s.
 - Car color selection: 5 SVG variants, `enduro_car_color`, `initializeCarWithColor()`, `startGame()`.
 - Menus: `PAUSE_OPTIONS` (CONTINUE / RESTART / MENU), `GAME_OVER_OPTIONS` (RETRY / CHANGE COLOR), `selectMenuOption()`.
+- Game over shows the local top 5 (`enduro_classic_ranking`), new entry highlighted.
 
 ### OUTRUN mode (`src/outrun/`)
 Pure logic (unit tested):
@@ -87,7 +88,7 @@ Rendering and flow (Pixi):
 - `OutRunRenderer.js` — backdrops cross-faded per theme, road front-to-back with hill clipping, pooled sprites back-to-front.
 - `sprites.js` — procedural pixel-art textures.
 - `hud.js` — HUD and banners.
-- `screens.js` — car select, radio select, pause and game over menus, local top 5 (`enduro_outrun_ranking`).
+- `screens.js` — car select, radio select, pause and game over menus, local top 5 (`enduro_outrun_ranking`, via `src/ranking.js`).
 - `index.js` — app, loop, state machine (`color | radio | race | paused | gameover`), keyboard and touch input.
 
 ### Shared game rules
@@ -101,6 +102,7 @@ Rendering and flow (Pixi):
   | Night City Sprint | infinite | 2.0x | 1.0 | 60 |
 
 - Lives 3, 1.5s invulnerability after a hit, score 10 pts/s.
+- `ranking.js` — local top 5 per mode (`loadRanking(key)`, `saveScore(key, score, stage)` returns the 0-based rank or -1); keys `enduro_classic_ranking` and `enduro_outrun_ranking`.
 - Power-ups every 10s: shield (5s) and score boost (8s: 2x score + 1.4x speed); beeps at 3/2/1s.
 
 ### Audio

@@ -28,6 +28,7 @@ Both modes share the same rules: three lanes, lives, power-ups and four progress
 - 🏁 **4 progressive phases** with increasing difficulty and themed environments
 - ❤️ **Lives system** with invulnerability timer after hits
 - 🎯 **Time-based scoring** - survive longer to score higher
+- 🏆 **Local top 5 ranking** per mode, shown on the game over screen
 - 🚗 **Lane-based gameplay** with smart obstacle spawning
 - ✅ **Unit tested** core game logic
 - 🚀 **Auto-deployed** to GitHub Pages on every push

@@ -3,6 +3,7 @@ import { Container, Graphics, Sprite } from 'pixi.js';
 import { WIDTH, HEIGHT } from './OutRunRenderer.js';
 import { label } from './hud.js';
 import { makePlayerCar } from './sprites.js';
+import { loadRanking, saveScore as saveRankingScore } from '../ranking.js';
 
 export const COLORS = ['blue', 'purple', 'red', 'white', 'green'];
 const RANKING_KEY = 'enduro_outrun_ranking';
@@ -18,16 +19,9 @@ export function menuBounds(options){
   return options.map((_, i) => ({ x: WIDTH / 2 - 60, y: 96 + i * 28, w: 120, h: 22 }));
 }
 
-export function loadRanking(){
-  try { return JSON.parse(localStorage.getItem(RANKING_KEY)) || []; } catch(_e){ return []; }
-}
-
 // store the score in the local top 5; returns its rank (0-based) or -1
 export function saveScore(score, stage){
-  const entry = { score: Math.floor(score), stage, at: Date.now() };
-  const ranking = [...loadRanking(), entry].sort((a, b) => b.score - a.score).slice(0, 5);
-  localStorage.setItem(RANKING_KEY, JSON.stringify(ranking));
-  return ranking.indexOf(entry);
+  return saveRankingScore(RANKING_KEY, score, stage);
 }
 
 export class Screens {
@@ -109,7 +103,7 @@ export class Screens {
     label(this.root, 'GAME OVER', WIDTH / 2, 40, { size: 16, color: 0xff4040, anchorX: 0.5 });
     label(this.root, `SCORE ${Math.floor(score)}`, WIDTH / 2, 64, { anchorX: 0.5 });
     label(this.root, 'BEST SCORES', WIDTH / 2, 84, { color: 0x60e0ff, anchorX: 0.5 });
-    loadRanking().forEach((r, i) => {
+    loadRanking(RANKING_KEY).forEach((r, i) => {
       const color = i === rank ? 0xffe040 : 0xffffff;
       label(this.root, `${i + 1}. ${String(r.score).padStart(6, ' ')}  ST${r.stage}`, WIDTH / 2, 98 + i * 12, { color, anchorX: 0.5 });
     });

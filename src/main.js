@@ -19,10 +19,14 @@ let lanePositions = computeLanePositions();
 // Obstacles for browser runtime
 import Obstacle from './entities/Obstacle.js';
 import { LevelManager } from './levelManager.js';
+import { loadRanking, saveScore } from './ranking.js';
 const obstacles = []; // active obstacles array
 
 const levelManager = new LevelManager();
 let phaseOverlayTimer = 0;
+
+const RANKING_KEY = 'enduro_classic_ranking';
+let lastRank = -1; // position of the last run in the top 5, -1 if outside
 
 // Pickups for browser runtime
 import Pickup from './entities/Pickup.js';
@@ -659,6 +663,7 @@ function update(dt){
         if(lives <= 0){
           running = false;
           menuIndex = 0;
+          lastRank = saveScore(RANKING_KEY, score, levelManager.getCurrentPhase().id);
           soundManager.playGameOver();
           soundManager.stopEngine();
         }
@@ -1038,9 +1043,15 @@ function render(interp){
     ctx.fillStyle = '#fff';
     ctx.font = '24px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('GAME OVER', canvas.width/2, canvas.height/2 - 40);
+    ctx.fillText('GAME OVER', canvas.width/2, 130);
     ctx.font = '16px monospace';
-    ctx.fillText('Score: '+Math.floor(score), canvas.width/2, canvas.height/2 - 10);
+    ctx.fillText('Score: '+Math.floor(score), canvas.width/2, 165);
+    ctx.fillStyle = '#0af';
+    ctx.fillText('BEST SCORES', canvas.width/2, 205);
+    loadRanking(RANKING_KEY).forEach((r, i) => {
+      ctx.fillStyle = i === lastRank ? '#ff0' : '#fff';
+      ctx.fillText(`${i + 1}. ${String(r.score).padStart(6, ' ')}  PHASE ${r.stage}`, canvas.width/2, 232 + i * 20);
+    });
     drawMenu(GAME_OVER_OPTIONS);
 
     // Reset text alignment

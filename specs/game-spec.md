@@ -35,6 +35,7 @@ Keep modules small and plain ES modules (no build step required).
 - Collision: touching an obstacle reduces life and briefly invulnerable
 - Scoring: points for distance travelled and for successful overtakes; bonus for completing a phase
 - Lives: 3 starting lives; game over at 0
+- Ranking: local top 5 (score + phase reached) in `enduro_classic_ranking`, shown on the game over screen with the new entry highlighted; shared `src/ranking.js` with OUTRUN (#26)
 
 ## Controls (Desktop & Mobile)
 Design goal: make controls intuitive and responsive on both desktop and mobile while keeping input handling centralized (input.js) so the same game logic works for all devices.
