@@ -5,10 +5,21 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Enduro — 8-bit Obstacle Racing</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23111'/%3E%3Ctext x='2' y='12' font-size='12' fill='%230f0' font-family='monospace'%3EE%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <canvas id="game" width="480" height="640"></canvas>
-  <script type="module" src="src/main.js"></script>
+  <div id="mode-select" hidden>
+    <h1 class="logo">ENDURO</h1>
+    <p class="subtitle">SELECT MODE</p>
+    <button type="button" data-mode="classic">CLASSIC</button>
+    <button type="button" data-mode="outrun">OUTRUN</button>
+    <p class="hint">&uarr;&darr; + ENTER</p>
+  </div>
+  <canvas id="game" width="480" height="640" hidden></canvas>
+  <div id="outrun-root" hidden></div>
+  <script type="module" src="src/boot.js"></script>
 </body>
 </html>

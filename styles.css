@@ -1,2 +1,17 @@
 html,body{height:100%;margin:0;background:#111;color:#fff;font-family:monospace;overflow:hidden}
+[hidden]{display:none!important}
 #game{display:block;margin:0 auto;background:#222;image-rendering:pixelated;max-width:100%;height:auto;touch-action:none}
+#outrun-root{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;touch-action:none}
+#outrun-root canvas{image-rendering:pixelated;max-width:100%;max-height:100%}
+
+/* Mode select (title screen) */
+#mode-select{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+  font-family:'Press Start 2P',monospace;
+  background:linear-gradient(#1a0033 0%,#5b1a6b 45%,#ff5a5f 70%,#ffb347 85%,#2b1055 85.5%,#0b0420 100%)}
+#mode-select .logo{margin:0 0 8px;font-size:clamp(28px,9vw,64px);letter-spacing:4px;
+  background:linear-gradient(#fff9c4 0%,#ffd54f 45%,#ff6f00 55%,#ff3d7f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(3px 3px 0 #2b1055)}
+#mode-select .subtitle,#mode-select .hint{margin:0;font-size:10px;color:#ffe0f0}
+#mode-select button{font:inherit;font-size:14px;width:220px;padding:14px 0;color:#fff;background:rgba(20,0,40,.6);
+  border:3px solid #ff3d7f;cursor:pointer}
+#mode-select button.active,#mode-select button:hover,#mode-select button:focus-visible{background:#ff3d7f;color:#1a0033;outline:none}

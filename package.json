@@ -2,12 +2,21 @@
   "name": "enduro",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "start": "npx serve .",
-    "lint": "eslint \"src/**/*.js\" \"tests/**/*.js\" --ext .js",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite",
+    "lint": "eslint --no-error-on-unmatched-pattern \"src/**/*.js\" \"tests/**/*.js\" \"tests/**/*.mjs\" --ext .js,.mjs",
     "test": "node tests/run-tests.js"
   },
   "devDependencies": {
-    "eslint": "^8.57.1"
+    "eslint": "^8.57.1",
+    "vite": "^7.3.6"
+  },
+  "dependencies": {
+    "pixi-filters": "^6.1.5",
+    "pixi.js": "^8.21.0"
   }
 }

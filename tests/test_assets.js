@@ -28,7 +28,7 @@ assert.ok(car && !car.loaded, 'registered asset should not be loaded initially')
 
   // Test 4: Manifest loading
   const loader3 = new AssetLoader();
-  const manifest = await loader3.loadManifest('assets/manifest.json');
+  const manifest = await loader3.loadManifest('public/assets/manifest.json');
   assert.ok(manifest, 'Manifest should be loaded');
   assert.strictEqual(manifest.version, '1.0.0', 'Manifest version should be 1.0.0');
   assert.ok(Array.isArray(manifest.assets), 'Manifest should have assets array');

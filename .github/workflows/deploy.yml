@@ -16,27 +16,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '18'
-      - run: npm ci || true
+          node-version: '22'
+      - run: npm ci
       - run: npm run lint
       - run: npm test
-      - name: Prepare docs site from repo
-        run: |
-          echo "Preparing docs/ from repository root"
-          rm -rf docs || true
-          mkdir -p docs
-          # copy site static files into docs/
-          cp -R index.html styles.css assets src docs/ || true
-          # if docs/index.html should be different, update here
-          ls -la docs
-      - name: Verify docs directory
-        run: |
-          if [ ! -d ./docs ]; then echo "docs/ directory missing" && false; fi
-          ls -la docs
+      - run: npm run build
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./docs
+          path: ./dist
 
   deploy:
     needs: build
