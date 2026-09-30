@@ -10,10 +10,12 @@ Enduro is a vanilla JavaScript browser game inspired by Atari Enduro. It's a 2D 
 
 ### Core Commands
 ```bash
-npm install            # Install dependencies (ESLint)
+npm install            # Install dependencies (ESLint, Vite, PixiJS)
 npm run lint           # Run ESLint on src/ and tests/
 npm test               # Run unit tests via Node.js test runner
-npm start              # Start local preview server (npx serve .)
+npm run dev            # Start Vite dev server (npm start is an alias)
+npm run build          # Production build into dist/ (deployed to GitHub Pages)
+npm run preview        # Serve the production build locally
 ```
 
 ### Pre-commit Workflow
@@ -36,6 +38,29 @@ The codebase uses a dual-module approach:
 - **CommonJS (.cjs)**: Testable logic units for Node.js (collision.cjs, spawner.cjs, score.cjs, etc.)
 
 This split allows core game logic to be unit tested in Node.js while keeping browser code in ES modules.
+
+`package.json` has `"type": "module"`; `tests/package.json` keeps the tests folder CommonJS. ES module tests use the `.mjs` extension (`tests/test_*.mjs`) and are loaded by `run-tests.js` via `import()`.
+
+### Game Modes and Boot
+- `index.html` loads `src/boot.js`: a DOM title screen to pick **CLASSIC** or **OUTRUN** (saved in localStorage `enduro_mode`).
+- CLASSIC lazy-loads `src/main.js` unchanged (top-down canvas game described below).
+- OUTRUN lazy-loads `src/outrun/index.js` (PixiJS pseudo-3D mode). ESC returns to the title screen.
+- Static assets live in `public/assets/` (served at `assets/...` by Vite).
+
+### OutRun Mode (src/outrun/)
+Pseudo-3D racer inspired by OutRun (Mega Drive), rendered by PixiJS at 320x224 and upscaled with pixelated CSS.
+- `road.js` (pure): segment-based road (curves/hills with easing), `findSegment`, `project()`; constants such as `SEGMENT_LENGTH`, `ROAD_WIDTH`, `LANE_X` (3 lanes at -2/3, 0, 2/3 of the road half-width)
+- `track.js` (pure): looping course `buildTrack()` + one theme per LevelManager phase (`THEMES`: palette + scenery kinds)
+- `world.js` (pure): player lane/speed, traffic spawn (spawnRate/minGap), z/x collisions, lives, power-ups, score; `update(dt)` returns events (`hit`, `gameover`, `checkpoint`, `powerup`, `beep`, `skid`)
+- `OutRunRenderer.js`: sky/parallax backdrops per theme (cross-faded on checkpoints), road drawn front-to-back with hill clipping, pooled sprites back-to-front
+- `sprites.js`: procedural pixel-art textures (cars, scenery, backdrops)
+- `hud.js` / `screens.js`: HUD (score, time to checkpoint, stage, lives, tachometer) and menus (car color → radio/music select → race → game over + local top 5 in `enduro_outrun_ranking`)
+- `index.js`: Pixi app, fixed-step loop, state machine, keyboard/touch input
+- Keys: ←/→ or A/D lanes, P/Space pause, C restart/change car, Enter retry after game over, M sfx, E engine, R radio (music on/off), V CRT scanlines, ESC menu
+
+### Music (src/audio/)
+- `MusicSequencer.js`: Web Audio step sequencer with 2-operator FM voices + noise drums (mute persisted in `enduro_music_muted`)
+- `tracks.js`: 3 original tracks as 16-steps-per-bar token strings (tested in `tests/test_music.mjs`)
 
 ### Core Game Structure
 
@@ -88,7 +113,7 @@ This split allows core game logic to be unit tested in Node.js while keeping bro
 - Overlays: pause, game over, phase transitions, flash effects
 
 **Input Handling (main.js:68-97)**
-- Keyboard: Arrow keys or A/D for lane switching, Space/P for pause, R for restart
+- Keyboard: Arrow keys or A/D for lane switching, Space/P for pause, C for restart (opens color selector), Enter to retry after game over
 - Audio controls: M for SFX mute toggle, E for engine sound toggle
 - Mouse: Click left/right half of canvas to move lanes
 - Touch: Tap zones for mobile (same as mouse), touch buttons for audio controls (upper right)
@@ -108,8 +133,7 @@ This split allows core game logic to be unit tested in Node.js while keeping bro
 - Pre-game color selection screen shown on first load (no saved preference)
 - Color preference persisted in localStorage (key: `enduro_car_color`)
 - Ways to change color:
-  - R key: Opens color selector on restart
-  - C key: Opens color selector on game over screen
+  - C key: Opens color selector (restart) while racing, paused or on game over
   - "Change Color (C)" button on game over screen (click or touch)
 - Keyboard navigation in color selector:
   - Arrow keys or WASD: Navigate between colors
@@ -167,9 +191,9 @@ This split allows core game logic to be unit tested in Node.js while keeping bro
 
 **Deploy Workflow (.github/workflows/deploy.yml)**
 - Triggers on push to main
-- Runs lint and tests before deployment
-- Copies static files (index.html, styles.css, assets/, src/) to docs/
-- Deploys docs/ to GitHub Pages using upload-pages-artifact@v3 and deploy-pages@v3
+- Node 22; runs lint and tests before deployment
+- Builds with Vite (`npm run build`, base `./`, bundles in `dist/bundle/`)
+- Deploys dist/ to GitHub Pages using upload-pages-artifact@v3 and deploy-pages@v4
 - Requires Pages enabled with Actions deployment method
 
 ## Development Notes
