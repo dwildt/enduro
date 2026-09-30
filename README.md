@@ -148,7 +148,7 @@ npm run build && npm run preview
 | Fonts | Press Start 2P (Google Fonts) | — | Pixel font for cabinet, menus and OutRun HUD |
 | Dev server / build | [Vite](https://vite.dev/) | ^7.3 | `npm run dev`, bundling PixiJS, `dist/` build (`base: './'`) |
 | Tests | Node.js built-in `assert` + `tests/run-tests.js` | Node 22 | Unit tests for pure logic (`.js` CommonJS, `.mjs` ES modules) |
-| Lint | ESLint | ^8.57 | `eslint:recommended`, semicolons, single quotes |
+| Lint | ESLint (flat config, `eslint.config.js`) | ^9.39 | `@eslint/js` recommended, semicolons, single quotes; lints the whole repo |
 | CI/CD | GitHub Actions + GitHub Pages | — | Lint, test, build and deploy on push to `main` |
 
 #### Patterns for future evolution

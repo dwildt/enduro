@@ -10,8 +10,6 @@ class Spawner {
   // simulate dt seconds and return array of spawned obstacles {lane,type}
   update(dt){
     const spawns = [];
-    // simple single-event probability per step
-    const prob = this.rate * dt;
     // allow multiple checks for dt > 1s
     let steps = Math.ceil(dt / 0.1);
     const subdt = dt / steps;

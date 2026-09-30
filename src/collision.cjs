@@ -11,9 +11,9 @@ class PlayerLives {
     this.invulTimer = 0;
   }
 
-  isAlive(){ return this.lives > 0 }
-  isInvulnerable(){ return this.invulTimer > 0 }
-  getLives(){ return this.lives }
+  isAlive(){ return this.lives > 0; }
+  isInvulnerable(){ return this.invulTimer > 0; }
+  getLives(){ return this.lives; }
 
   // call every frame with dt in seconds
   update(dt){

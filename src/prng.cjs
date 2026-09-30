@@ -9,6 +9,6 @@ function createLCG(seed){
     nextFloat(){
       return (this.next() >>> 0) / 4294967296;
     }
-  }
+  };
 }
 module.exports = { createLCG };

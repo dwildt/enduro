@@ -31,7 +31,7 @@ Both share the same rules: 3 lanes, 3 lives, 2 power-ups, 4 phases from `LevelMa
 ```bash
 npm install            # dependencies (ESLint, Vite, PixiJS)
 npm run dev            # Vite dev server (npm start is an alias)
-npm run lint           # ESLint on src/ and tests/ (.js, .mjs)
+npm run lint           # ESLint 9 on the whole repo (.js, .mjs, .cjs)
 npm test               # all unit tests (tests/run-tests.js)
 npm run build          # production build into dist/
 npm run preview        # serve dist/ locally
@@ -54,7 +54,7 @@ node tests/test_<name>.mjs  # single ES module test
 - `package.json` is `"type": "module"`: browser code is ES modules (`.js`).
 - Legacy testable units are CommonJS (`src/*.cjs`) with CommonJS tests (`tests/test_*.js`); `tests/package.json` keeps `tests/` CommonJS.
 - New pure logic is ESM without DOM/Pixi imports, tested by `tests/test_*.mjs` (loaded by `run-tests.js` via `import()`). Prefer this for new code.
-- ESLint: `eslint:recommended`, semicolons, single quotes, unused args allowed, `_`-prefixed vars ignored.
+- ESLint 9 flat config (`eslint.config.js`): `@eslint/js` recommended, semicolons, single quotes, unused args allowed, `_`-prefixed vars and caught errors ignored; `*.cjs` and `tests/**/*.js` parsed as CommonJS. Ignores live in the config (no `.eslintignore`).
 
 ### Boot and cabinet (`index.html`, `styles.css`, `src/boot.js`)
 - `boot.js` shows the mode select (saved in localStorage `enduro_mode`) and lazy-loads `src/main.js` (CLASSIC) or `src/outrun/index.js` (OUTRUN).
