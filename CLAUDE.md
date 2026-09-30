@@ -47,6 +47,12 @@ This split allows core game logic to be unit tested in Node.js while keeping bro
 - OUTRUN lazy-loads `src/outrun/index.js` (PixiJS pseudo-3D mode). ESC returns to the title screen.
 - Static assets live in `public/assets/` (served at `assets/...` by Vite).
 
+### Arcade Cabinet (index.html + styles.css)
+- `#cabinet` wraps everything: `.marquee` (backlit title + mode name), `.bezel` > `.screen` (mode select, `#game`, `#outrun-root`), decorative `.control-panel` (joystick, buttons, coin slot).
+- `boot.js` sets `#cabinet[data-mode]` (`select` | `classic` | `outrun`): screen ratio (`--ratio` 4:3, 3:4, 10:7) and theme (OutRun neon sunset; classic Atari woodgrain + stripes).
+- Screen size is pure CSS: `--screen-h = min(viewport height - chrome, (viewport width - chrome) / ratio, 900px)`; canvases fill `.screen` exactly, so pointer handlers must map `clientX/Y` with `canvas.width / rect.width` (both modes do).
+- Responsive: notebook/desktop = full cabinet; phone portrait (`max-width:700px` portrait) = slim marquee, thin bezel, no control panel; short screens (`max-height:520px`) = bezel only.
+
 ### OutRun Mode (src/outrun/)
 Pseudo-3D racer inspired by OutRun (Mega Drive), rendered by PixiJS at 320x224 and upscaled with pixelated CSS.
 - `road.js` (pure): segment-based road (curves/hills with easing), `findSegment`, `project()`; constants such as `SEGMENT_LENGTH`, `ROAD_WIDTH`, `LANE_X` (3 lanes at -2/3, 0, 2/3 of the road half-width)

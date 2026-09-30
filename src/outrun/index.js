@@ -24,20 +24,10 @@ export async function startOutRun(root){
   await app.init({ width: WIDTH, height: HEIGHT, background: 0x000000, antialias: false, resolution: 1, roundPixels: true });
   root.appendChild(app.canvas);
 
-  // CSS upscaling (pixelated) keeps the 320x224 Mega Drive resolution
+  // the arcade cabinet CSS sizes the canvas (pixelated upscaling of the 320x224 Mega Drive resolution)
   const crt = document.createElement('div');
   crt.className = 'crt';
   root.appendChild(crt);
-  const fit = () => {
-    const scale = Math.min(window.innerWidth / WIDTH, window.innerHeight / HEIGHT);
-    const s = scale >= 2 ? Math.floor(scale) : scale;
-    for(const el of [app.canvas, crt]){
-      el.style.width = `${Math.floor(WIDTH * s)}px`;
-      el.style.height = `${Math.floor(HEIGHT * s)}px`;
-    }
-  };
-  fit();
-  window.addEventListener('resize', fit);
   let crtOn = localStorage.getItem('enduro_crt') !== 'false';
   crt.hidden = !crtOn;
 
@@ -243,7 +233,7 @@ function createTouchButtons(stage){
   const buttons = {
     left: { x: margin, y: HEIGHT - size - margin - 30, text: '<' },
     right: { x: WIDTH - size - margin, y: HEIGHT - size - margin - 30, text: '>' },
-    pause: { x: WIDTH / 2 - 14, y: HEIGHT - 26, w: 28, h: 20, text: 'II' }
+    pause: { x: 8, y: 26, w: 28, h: 20, text: 'II' } // below SCORE, away from the car
   };
   for(const b of Object.values(buttons)){
     b.w = b.w || size;

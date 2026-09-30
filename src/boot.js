@@ -17,6 +17,9 @@ async function start(mode){
   localStorage.setItem('enduro_mode', mode);
   window.removeEventListener('keydown', onKey);
   menu.hidden = true;
+  // cabinet adapts its screen ratio and theme to the mode (see styles.css)
+  document.getElementById('cabinet').dataset.mode = mode;
+  document.querySelector('.marquee-mode').textContent = mode.toUpperCase();
 
   if(mode === 'classic'){
     // main.js grabs #game on load, so the canvas must be visible first

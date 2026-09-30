@@ -67,12 +67,20 @@ Rendering and platform (PixiJS):
 
 The selected option is highlighted and the others are dimmed; options can also be clicked/tapped.
 
-Touch (OUTRUN): `<` / `>` buttons at the bottom corners and `II` pause while racing; tap left/right thirds to navigate the car/radio screens and the center to confirm; tap pause/game over options directly.
+Touch (OUTRUN): `<` / `>` buttons at the bottom corners and `II` pause at the top-left (below SCORE) while racing; tap left/right thirds to navigate the car/radio screens and the center to confirm; tap pause/game over options directly.
 
 ## Deviations from the original plan
 - Sprites are procedural (canvas-drawn pixel art) instead of new SVG files — no asset pipeline changes and easy per-color variants.
 - CRT effect is a CSS overlay (scanlines + vignette) instead of `pixi-filters`, which looks better on the upscaled canvas; the dependency was removed.
 - Key scheme revised after playtesting: **M** music, **E** engine, **C** car sounds (SFX); restart and car change moved into the pause/game over menus; **R** left free. (Intermediate versions used N/R for music and C/R for restart.)
+
+## Arcade cabinet
+Both modes (and the mode select) are shown inside an arcade cabinet built with HTML/CSS:
+- Marquee (backlit "ENDURO" + mode name), bezel with CRT glass reflection, decorative control panel (joystick, 2 buttons, INSERT COIN slot).
+- Themes: OUTRUN / select = neon sunset (magenta trim); CLASSIC = Atari woodgrain with orange/red stripes.
+- The screen keeps the game ratio (select 4:3, classic 3:4, outrun 10:7) and takes the largest size that fits the viewport minus the cabinet chrome (CSS `min()`/`calc()` with `100dvh`/`100vw`).
+- Layouts: notebook/desktop full cabinet; phone portrait slim marquee + thin bezel, no control panel (touch controls are on screen); short/landscape phone screens bezel only.
+- Classic pointer/touch coordinates are scaled from the displayed size to canvas pixels.
 
 ## Testing
 - `tests/test_road.mjs` — easing, height continuity, loop closure, stripes, `findSegment` wrap, projection (bottom/center, perspective, camera offset), themes.

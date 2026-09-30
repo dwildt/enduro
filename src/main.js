@@ -375,8 +375,9 @@ window.addEventListener('keyup', (e) => {
 // Pointer / click zones - includes mobile audio controls and movement buttons
 canvas.addEventListener('pointerdown', (ev) => {
   const rect = canvas.getBoundingClientRect();
-  const x = ev.clientX - rect.left;
-  const y = ev.clientY - rect.top;
+  // the canvas is scaled to fit the cabinet screen, so convert to canvas pixels
+  const x = (ev.clientX - rect.left) * canvas.width / rect.width;
+  const y = (ev.clientY - rect.top) * canvas.height / rect.height;
 
   // Initialize audio on first touch if needed
   if (!soundManager.audioContext) {
@@ -528,7 +529,7 @@ canvas.addEventListener('touchstart', (ev) => {
   if (!showTouchButtons && ev.touches.length === 1) {
     const touch = ev.touches[0];
     const rect = canvas.getBoundingClientRect();
-    touchStartX = touch.clientX - rect.left;
+    touchStartX = (touch.clientX - rect.left) * canvas.width / rect.width;
   }
 }, { passive: true });
 
@@ -537,7 +538,7 @@ canvas.addEventListener('touchend', (ev) => {
   if (!showTouchButtons && touchStartX !== null && paused === false && running === true) {
     const touch = ev.changedTouches[0];
     const rect = canvas.getBoundingClientRect();
-    const touchEndX = touch.clientX - rect.left;
+    const touchEndX = (touch.clientX - rect.left) * canvas.width / rect.width;
     const deltaX = touchEndX - touchStartX;
 
     const swipe = detectSwipe(deltaX, SWIPE_THRESHOLD);

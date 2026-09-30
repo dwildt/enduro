@@ -1,25 +1,122 @@
-html,body{height:100%;margin:0;background:#111;color:#fff;font-family:monospace;overflow:hidden}
+html,body{height:100%;margin:0;color:#fff;font-family:monospace;overflow:hidden}
+body{background:radial-gradient(ellipse at 50% 30%,#2a1840 0%,#0d0716 60%,#050308 100%)}
 [hidden]{display:none!important}
-#game{display:block;margin:0 auto;background:#222;image-rendering:pixelated;max-width:100%;height:auto;touch-action:none}
-#outrun-root{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#000;touch-action:none}
-#outrun-root canvas{image-rendering:pixelated;max-width:100%;max-height:100%}
 
-/* Mode select (title screen) */
-#mode-select{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+/* ---------- Arcade cabinet ----------
+   The screen keeps the game's aspect ratio (--ratio = width/height) and takes the largest size
+   that fits the viewport once the cabinet chrome (marquee, bezel, sides, control panel) is subtracted. */
+#cabinet{
+  --ratio:1.3333;
+  --marquee-h:64px; --panel-h:104px; --bezel:22px; --side:26px; --gap:8px; --margin:12px;
+  --chrome-v:calc(var(--marquee-h) + var(--panel-h) + 2 * var(--bezel) + 2 * var(--gap) + 2 * var(--margin));
+  --chrome-h:calc(2 * var(--side) + 2 * var(--bezel) + 2 * var(--margin));
+  --screen-h:min(calc(100dvh - var(--chrome-v)), calc((100vw - var(--chrome-h)) / var(--ratio)), 900px);
+  --screen-w:calc(var(--screen-h) * var(--ratio));
+  --trim:#ff3d7f; --trim2:#00e5ff; --wood:#2a1238; --wood2:#170a22;
+
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:var(--gap);
+  padding:var(--gap) var(--side);
+  border-radius:14px 14px 6px 6px;
+  background:linear-gradient(90deg,var(--wood2),var(--wood) 12%,var(--wood) 88%,var(--wood2));
+  box-shadow:0 0 0 3px #000,0 0 0 5px var(--trim),0 0 28px rgba(255,61,127,.35),0 30px 60px rgba(0,0,0,.7);
+}
+#cabinet[data-mode="classic"]{--ratio:0.75}
+#cabinet[data-mode="outrun"]{--ratio:1.4286}
+
+/* marquee: backlit title sign */
+.marquee{height:var(--marquee-h);width:calc(var(--screen-w) + 2 * var(--bezel));box-sizing:border-box;
+  display:flex;align-items:center;justify-content:center;gap:14px;overflow:hidden;
+  border-radius:8px;border:3px solid #000;font-family:'Press Start 2P',monospace;
+  background:linear-gradient(#1a0033 0%,#5b1a6b 50%,#ff5a5f 85%,#ffb347 100%);
+  box-shadow:inset 0 0 18px rgba(255,255,255,.35),0 0 16px rgba(255,90,95,.45)}
+.marquee-title{font-size:calc(var(--marquee-h) * .42);letter-spacing:3px;
+  background:linear-gradient(#fff9c4 0%,#ffd54f 45%,#ff6f00 55%,#ff3d7f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(2px 2px 0 #2b1055)}
+.marquee-mode{font-size:calc(var(--marquee-h) * .16);color:#ffe0f0;align-self:flex-end;margin-bottom:calc(var(--marquee-h) * .2)}
+.marquee-mode:empty{display:none}
+
+/* bezel + screen (CRT glass) */
+.bezel{padding:var(--bezel);border-radius:12px;
+  background:linear-gradient(145deg,#1b1b22,#08080c);
+  box-shadow:inset 0 0 0 2px #333,inset 0 0 22px #000}
+.screen{position:relative;width:var(--screen-w);height:var(--screen-h);overflow:hidden;background:#000;
+  border-radius:10px;container-type:size;
+  box-shadow:0 0 0 2px #000,0 0 12px rgba(120,200,255,.18)}
+.screen::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(160deg,rgba(255,255,255,.07) 0%,transparent 35%);
+  box-shadow:inset 0 0 30px rgba(0,0,0,.6)}
+
+/* game surfaces fill the screen exactly (pointer mapping uses the displayed size) */
+#game,#outrun-root canvas,#outrun-root .crt{display:block;width:var(--screen-w);height:var(--screen-h)}
+#game{background:#222;image-rendering:pixelated;touch-action:none}
+#outrun-root{position:absolute;inset:0;background:#000;touch-action:none}
+#outrun-root canvas{image-rendering:pixelated}
+
+/* control panel (decorative) */
+.control-panel{height:var(--panel-h);width:calc(var(--screen-w) + 2 * var(--bezel) + 2 * var(--side));max-width:100vw;
+  box-sizing:border-box;display:flex;align-items:center;justify-content:space-around;
+  border-radius:6px 6px 10px 10px;border-top:3px solid var(--trim);
+  background:linear-gradient(#26262e,#121217);
+  box-shadow:inset 0 6px 12px rgba(255,255,255,.06),0 10px 20px rgba(0,0,0,.6);
+  font-family:'Press Start 2P',monospace}
+.joystick{position:relative;width:calc(var(--panel-h) * .5);height:calc(var(--panel-h) * .5);border-radius:50%;
+  background:radial-gradient(circle,#333 0 30%,#111 31%);box-shadow:0 3px 0 #000}
+.stick{position:absolute;left:50%;bottom:45%;width:8px;height:calc(var(--panel-h) * .38);transform:translateX(-50%);
+  background:linear-gradient(90deg,#666,#bbb,#666);border-radius:4px}
+.stick::before{content:'';position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:26px;height:26px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%,#ff8a8a,#d01010 60%,#700 100%)}
+.buttons{display:flex;gap:14px}
+.btn{width:calc(var(--panel-h) * .3);height:calc(var(--panel-h) * .3);border-radius:50%;box-shadow:0 4px 0 #000,inset 0 -4px 6px rgba(0,0,0,.4)}
+.btn-a{background:radial-gradient(circle at 35% 35%,#fff59d,#ffc400 60%,#a07000)}
+.btn-b{background:radial-gradient(circle at 35% 35%,#80e8ff,#00a8e0 60%,#005a80)}
+.coin{display:flex;flex-direction:column;align-items:center;gap:6px}
+.slot{width:10px;height:28px;border-radius:3px;background:#000;box-shadow:0 0 0 4px #555,0 0 10px rgba(255,90,90,.8)}
+.coin-label{font-size:7px;color:#ff6060;animation:blink 1.2s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ---------- Theme: CLASSIC (Atari 2600 woodgrain + rainbow stripes) ---------- */
+#cabinet[data-mode="classic"]{--trim:#ff9a1f;--wood:#5a3418;--wood2:#3a200c;
+  background:repeating-linear-gradient(92deg,rgba(0,0,0,.12) 0 3px,transparent 3px 11px),
+    linear-gradient(90deg,var(--wood2),var(--wood) 12%,var(--wood) 88%,var(--wood2));
+  box-shadow:0 0 0 3px #000,0 0 0 5px var(--trim),0 30px 60px rgba(0,0,0,.7)}
+#cabinet[data-mode="classic"] .marquee{background:#111;
+  box-shadow:inset 0 calc(var(--marquee-h) * -.18) 0 #ff9a1f,inset 0 calc(var(--marquee-h) * -.3) 0 #ff5a1f,
+    inset 0 calc(var(--marquee-h) * -.42) 0 #d0302a,0 0 12px rgba(255,154,31,.35)}
+#cabinet[data-mode="classic"] .marquee-title{background:none;color:#f5f0e0;filter:none;text-shadow:2px 2px 0 #000;
+  font-size:calc(var(--marquee-h) * .34);align-self:flex-start;margin-top:calc(var(--marquee-h) * .12)}
+#cabinet[data-mode="classic"] .marquee-mode{color:#f5f0e0;align-self:flex-start;margin-top:calc(var(--marquee-h) * .2)}
+#cabinet[data-mode="classic"] .control-panel{border-top-color:#ff9a1f;background:linear-gradient(#1e1e1e,#0c0c0c)}
+
+/* ---------- Responsive layouts ---------- */
+/* phones in portrait: slim marquee, thin bezel, no control panel (touch controls live on screen) */
+@media (max-width: 700px) and (orientation: portrait){
+  #cabinet{--marquee-h:40px;--panel-h:0px;--bezel:8px;--side:6px;--gap:6px;--margin:4px;border-radius:10px}
+  .control-panel{display:none}
+  .marquee-mode{display:none}
+}
+/* short screens (phones in landscape, small windows): bezel only */
+@media (max-height: 520px){
+  #cabinet{--marquee-h:0px;--panel-h:0px;--bezel:6px;--side:4px;--gap:0px;--margin:2px;border-radius:8px}
+  .marquee,.control-panel{display:none}
+}
+
+/* ---------- Mode select (title screen, shown inside the cabinet screen) ---------- */
+#mode-select{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3.5cqh;
   font-family:'Press Start 2P',monospace;
   background:linear-gradient(#1a0033 0%,#5b1a6b 45%,#ff5a5f 70%,#ffb347 85%,#2b1055 85.5%,#0b0420 100%)}
-#mode-select .logo{margin:0 0 8px;font-size:clamp(28px,9vw,64px);letter-spacing:4px;
+#mode-select .logo{margin:0 0 1cqh;font-size:min(11cqw,14cqh);letter-spacing:.5cqw;
   background:linear-gradient(#fff9c4 0%,#ffd54f 45%,#ff6f00 55%,#ff3d7f 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
   filter:drop-shadow(3px 3px 0 #2b1055)}
-#mode-select .subtitle,#mode-select .hint{margin:0;font-size:10px;color:#ffe0f0}
+#mode-select .subtitle,#mode-select .hint{margin:0;font-size:max(8px,min(2cqw,2.8cqh));color:#ffe0f0}
 /* unselected buttons are dimmed grey; the selected one is lit (JS toggles .active, hover also selects) */
-#mode-select button{font:inherit;font-size:14px;width:220px;padding:14px 0;color:#8a8a9a;background:rgba(10,0,20,.45);
+#mode-select button{font:inherit;font-size:max(9px,min(3cqw,4cqh));width:min(46cqw,260px);padding:min(3cqh,14px) 0;color:#8a8a9a;background:rgba(10,0,20,.45);
   border:3px solid #55556a;cursor:pointer;outline:none;opacity:.7;transition:transform .1s,opacity .1s}
 #mode-select button.active{background:#ff3d7f;color:#1a0033;border-color:#fff3a0;opacity:1;transform:scale(1.08);
   box-shadow:0 0 0 3px #1a0033,0 0 18px #ff3d7f}
 #mode-select button.active::before{content:'\25B6  '}
 
-/* OutRun mode CRT look: scanlines + vignette over the upscaled canvas (toggle with V) */
-#outrun-root .crt{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none;
+/* OutRun mode CRT look: scanlines + vignette over the canvas (toggle with V) */
+#outrun-root .crt{position:absolute;left:0;top:0;pointer-events:none;
   background:repeating-linear-gradient(rgba(0,0,0,.18) 0 1px,transparent 1px 3px),
     radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.45) 100%)}
