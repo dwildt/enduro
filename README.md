@@ -134,6 +134,9 @@ npm run lint && npm test
 
 # Production build (dist/) and local preview
 npm run build && npm run preview
+
+# Visual smoke test: screenshots of both modes at notebook/phone viewports (.verify-ui/)
+npm run verify:ui
 ```
 
 ### Tech Stack
@@ -148,6 +151,7 @@ npm run build && npm run preview
 | Fonts | Press Start 2P (Google Fonts) | — | Pixel font for cabinet, menus and OutRun HUD |
 | Dev server / build | [Vite](https://vite.dev/) | ^7.3 | `npm run dev`, bundling PixiJS, `dist/` build (`base: './'`) |
 | Tests | Node.js built-in `assert` + `tests/run-tests.js` | Node 22 | Unit tests for pure logic (`.js` CommonJS, `.mjs` ES modules) |
+| UI checks | [Playwright](https://playwright.dev/) + system Chrome | ^1.63 | `npm run verify:ui` screenshots at 3 viewports, fails on console errors/overflow |
 | Lint | ESLint (flat config, `eslint.config.js`) | ^9.39 | `@eslint/js` recommended, semicolons, single quotes; lints the whole repo |
 | CI/CD | GitHub Actions + GitHub Pages | — | Lint, test, build and deploy on push to `main` |
 
@@ -183,6 +187,8 @@ enduro/
 │   └── *.cjs               # Legacy testable units (collision, spawner, score, ...)
 ├── tests/                  # Unit tests (test_*.js CommonJS, test_*.mjs ESM)
 ├── specs/                  # Feature specifications
+├── scripts/verify-ui.js    # Visual smoke test (Playwright)
+├── .claude/skills/         # Claude Code skills (verify-ui)
 ├── AGENTS.md               # Instructions for AI coding agents
 └── .github/workflows/deploy.yml  # CI/CD pipeline
 ```

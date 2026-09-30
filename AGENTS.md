@@ -35,6 +35,7 @@ npm run lint           # ESLint 9 on the whole repo (.js, .mjs, .cjs)
 npm test               # all unit tests (tests/run-tests.js)
 npm run build          # production build into dist/
 npm run preview        # serve dist/ locally
+npm run verify:ui      # browser screenshots of both modes at 3 viewports (see Verification)
 node tests/test_<name>.js   # single CommonJS test
 node tests/test_<name>.mjs  # single ES module test
 ```
@@ -42,11 +43,12 @@ node tests/test_<name>.mjs  # single ES module test
 ## Verification
 
 - Unit tests cover deterministic logic only (collision, spawning, scoring, levels, road projection, world rules, music data).
-- For rendering, input or layout changes, run `npm run dev` and check in a browser (or headless screenshots) at least:
-  - notebook 1366x657, phone portrait 390x844, phone landscape 844x390;
-  - both modes, the mode select, pause and game over menus;
-  - no console errors.
-- Before the owner pushes: `npm run build && npm run preview` to check asset paths in the production build.
+- For rendering, input, HUD/menu or layout changes run the visual smoke test and **look at the screenshots**:
+  - `npm run verify:ui` — starts Vite, drives both modes (menu, race, radio select, pause) at notebook 1366x657, phone portrait 390x844 and phone landscape 844x390 with Playwright, saves `.verify-ui/<viewport>--<scene>.png` + `report.json`, and fails on console errors or page overflow.
+  - Filters: `--scenes classic,outrun-pause`, `--viewports notebook`; `--browser chromium` if Chrome is not installed (`npx playwright install chromium`).
+  - Add a scene to `scripts/verify-ui.js` when a new screen or flow is added.
+- Before the owner pushes: `npm run verify:ui -- --preview` (production build + preview; checks asset paths).
+- Claude Code has this packaged as the `verify-ui` skill (`.claude/skills/verify-ui/`).
 
 ## Architecture
 
