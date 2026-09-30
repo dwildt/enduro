@@ -5,6 +5,7 @@ import { World, SPEED_PER_BASE } from './world.js';
 import { OutRunRenderer, WIDTH, HEIGHT } from './OutRunRenderer.js';
 import { Hud, label, FONT } from './hud.js';
 import { Screens, COLORS, saveScore, PAUSE_OPTIONS, GAME_OVER_OPTIONS, menuBounds } from './screens.js';
+import { openAbout } from '../about.js';
 import SoundManager from '../SoundManager.js';
 import MusicSequencer from '../audio/MusicSequencer.js';
 import { TRACKS } from '../audio/tracks.js';
@@ -133,6 +134,7 @@ export async function startOutRun(root){
       if(option === 'CONTINUE'){ setState('race'); music.play(TRACKS[trackIndex]); }
       else if(option === 'RESTART' || option === 'CAR') setState('color');
       else if(option === 'RETRY') startRace();
+      else if(option === 'ABOUT') openAbout(); // the race stays paused underneath
       else if(option === 'MENU') window.location.reload(); // back to the mode select screen
     },
     pause(){

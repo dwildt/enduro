@@ -21,6 +21,7 @@ import Obstacle from './entities/Obstacle.js';
 import { LevelManager } from './levelManager.js';
 import { loadRanking, saveScore } from './ranking.js';
 import { updateLaneChanges } from './laneChange.js';
+import { openAbout } from './about.js';
 const obstacles = []; // active obstacles array
 
 const levelManager = new LevelManager();
@@ -220,7 +221,7 @@ let paused = false;
 let flashTimer = 0; // visual flash on hit
 
 // Pause and game over menus (same options as the OutRun mode)
-const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'MENU'];
+const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'ABOUT', 'MENU'];
 const GAME_OVER_OPTIONS = ['RETRY', 'CHANGE COLOR'];
 let menuIndex = 0;
 
@@ -258,6 +259,7 @@ function selectMenuOption(option) {
   if (option === 'CONTINUE') setPaused(false);
   else if (option === 'RESTART' || option === 'CHANGE COLOR') openColorSelection();
   else if (option === 'RETRY') startGame();
+  else if (option === 'ABOUT') openAbout(); // the game stays paused underneath
   else if (option === 'MENU') window.location.reload(); // back to the mode select screen
 }
 

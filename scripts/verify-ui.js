@@ -32,7 +32,10 @@ const SCENES = {
   'classic-pause': async (page) => { await startMode(page, 'classic'); await keys(page, ['p', 'ArrowDown']); },
   'outrun-select': async (page) => { await startMode(page, 'outrun'); await keys(page, ['Enter']); },
   'outrun': async (page) => { await startMode(page, 'outrun'); await keys(page, ['Enter', 'Enter']); await page.waitForTimeout(3000); },
-  'outrun-pause': async (page) => { await startMode(page, 'outrun'); await keys(page, ['Enter', 'Enter', 'p', 'ArrowDown']); }
+  'outrun-pause': async (page) => { await startMode(page, 'outrun'); await keys(page, ['Enter', 'Enter', 'p', 'ArrowDown']); },
+  'about': async (page) => { await keys(page, ['ArrowDown', 'ArrowDown', 'Enter']); await page.waitForSelector('#about:not([hidden])'); },
+  'classic-about': async (page) => { await startMode(page, 'classic'); await keys(page, ['p', 'ArrowDown', 'ArrowDown', 'Enter']); await page.waitForSelector('#about:not([hidden])'); },
+  'outrun-about': async (page) => { await startMode(page, 'outrun'); await keys(page, ['Enter', 'Enter', 'p', 'ArrowDown', 'ArrowDown', 'Enter']); await page.waitForSelector('#about:not([hidden])'); }
 };
 
 const { values: args } = parseArgs({

@@ -49,7 +49,7 @@ node tests/test_<name>.mjs  # single ES module test
 
 - Unit tests cover deterministic logic only (collision, spawning, scoring, levels, road projection, world rules, music data).
 - For rendering, input, HUD/menu or layout changes run the visual smoke test and **look at the screenshots**:
-  - `npm run verify:ui` — starts Vite, drives both modes (menu, race, radio select, pause) at notebook 1366x657, phone portrait 390x844 and phone landscape 844x390 with Playwright, saves `.verify-ui/<viewport>--<scene>.png` + `report.json`, and fails on console errors or page overflow.
+  - `npm run verify:ui` — starts Vite, drives both modes (menu, race, radio select, pause, About) at notebook 1366x657, phone portrait 390x844 and phone landscape 844x390 with Playwright, saves `.verify-ui/<viewport>--<scene>.png` + `report.json`, and fails on console errors or page overflow.
   - Filters: `--scenes classic,outrun-pause`, `--viewports notebook`; `--browser chromium` if Chrome is not installed (`npx playwright install chromium`).
   - Add a scene to `scripts/verify-ui.js` when a new screen or flow is added.
 - Before the owner pushes: `npm run verify:ui -- --preview` (production build + preview; checks asset paths).
@@ -65,7 +65,8 @@ node tests/test_<name>.mjs  # single ES module test
 - ESLint 9 flat config (`eslint.config.js`): `@eslint/js` recommended, semicolons, single quotes, unused args allowed, `_`-prefixed vars and caught errors ignored; `*.cjs` and `tests/**/*.js` parsed as CommonJS. Ignores live in the config (no `.eslintignore`).
 
 ### Boot and cabinet (`index.html`, `styles.css`, `src/boot.js`)
-- `boot.js` shows the mode select (saved in localStorage `enduro_mode`) and lazy-loads `src/main.js` (CLASSIC) or `src/outrun/index.js` (OUTRUN).
+- `boot.js` shows the mode select (saved in localStorage `enduro_mode`) and lazy-loads `src/main.js` (CLASSIC) or `src/outrun/index.js` (OUTRUN). Its third item opens About.
+- `about.js` — shared HTML About overlay (`#about`: version, author, GitHub/LinkedIn/YouTube, star and Sponsors links) opened from the title screen and both pause menus; `openAbout({ onClose })` captures the keyboard while open so keys never reach the game. `version.js` exports `VERSION`, injected from `package.json` by Vite `define` (`__APP_VERSION__`).
 - `#cabinet` wraps `.marquee`, `.bezel > .screen` (mode select, `#game`, `#outrun-root`) and a decorative `.control-panel`.
 - `boot.js` sets `#cabinet[data-mode]` (`select` | `classic` | `outrun`), which drives the screen ratio (`--ratio` 4:3, 3:4, 10:7) and the marquee stripes (`--stripe1..3`: select red/orange/yellow, classic orange/red, outrun cyan/magenta/purple). The cabinet itself is the same Atari-style woodgrain for every mode.
 - Mode select = cover-art layout inspired by the 1983 Enduro box meets the OutRun sunset: green background, white `ENDURO`, yellow subtitle, buttons on the left (selected = red with yellow border, unselected = dimmed cream), inline SVG art on the right (grid paper, night sky with moon → striped sunset with palm, red/orange/yellow road). No third-party logos or brand names.
@@ -80,7 +81,7 @@ node tests/test_<name>.mjs  # single ES module test
 - Player fixed at y=540; obstacles spawn at y=-60; AABB collisions (32x48 hitboxes).
 - Spawn: `Math.random() < spawnRate * dt`, random lane, per-lane `minGap`; speed `baseSpeed * 80 + random(0-60)` px/s.
 - Car color selection: 5 SVG variants, `enduro_car_color`, `initializeCarWithColor()`, `startGame()`.
-- Menus: `PAUSE_OPTIONS` (CONTINUE / RESTART / MENU), `GAME_OVER_OPTIONS` (RETRY / CHANGE COLOR), `selectMenuOption()`.
+- Menus: `PAUSE_OPTIONS` (CONTINUE / RESTART / ABOUT / MENU), `GAME_OVER_OPTIONS` (RETRY / CHANGE COLOR), `selectMenuOption()`.
 - Game over shows the local top 5 (`enduro_classic_ranking`), new entry highlighted.
 
 ### OUTRUN mode (`src/outrun/`)
@@ -93,7 +94,7 @@ Rendering and flow (Pixi):
 - `OutRunRenderer.js` — backdrops cross-faded per theme, road front-to-back with hill clipping, pooled sprites back-to-front.
 - `sprites.js` — procedural pixel-art textures.
 - `hud.js` — HUD and banners.
-- `screens.js` — car select, radio select, pause and game over menus, local top 5 (`enduro_outrun_ranking`, via `src/ranking.js`).
+- `screens.js` — car select, radio select, pause (CONTINUE / RESTART / ABOUT / MENU) and game over menus, local top 5 (`enduro_outrun_ranking`, via `src/ranking.js`).
 - `index.js` — app, loop, state machine (`color | radio | race | paused | gameover`), keyboard and touch input.
 
 ### Shared game rules

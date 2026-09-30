@@ -50,6 +50,9 @@ Two small cabinet features:
 - `index.html`: labels inside `.control-panel` (joystick, buttons and a legend card that replaces the "INSERT COIN" slot), with one block per mode.
 - `styles.css`: `#cabinet[data-mode=...]` shows the matching block. The panel stays hidden on phone portrait and on short screens (as today). Remove `aria-hidden` from the panel so the legend text is readable.
 
+## Status
+- About screen implemented (#51). The card is compacted to fit the 4:3 notebook screen without scrolling; the CLOSE button gets focus without scrolling the card.
+
 ## Testing
 - Unit: `VERSION` fallback (`tests/test_version.mjs` or inside an existing test), if there is logic to test.
 - `npm run verify:ui`: new scenes `about` (title → ABOUT), `classic-about` and `outrun-about` (pause → ABOUT). The existing notebook screenshots cover the legend for each mode.

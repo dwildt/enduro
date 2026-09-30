@@ -8,7 +8,7 @@ import { loadRanking, saveScore as saveRankingScore } from '../ranking.js';
 export const COLORS = ['blue', 'purple', 'red', 'white', 'green'];
 const RANKING_KEY = 'enduro_outrun_ranking';
 
-export const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'MENU'];
+export const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'ABOUT', 'MENU'];
 export const GAME_OVER_OPTIONS = ['RETRY', 'CAR'];
 
 // button rectangles (also used for touch hit-testing): game over side by side, pause stacked

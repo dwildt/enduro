@@ -28,6 +28,7 @@
           <div class="menu">
             <button type="button" data-mode="classic">CLASSIC</button>
             <button type="button" data-mode="outrun">OUTRUN</button>
+            <button type="button" data-mode="about" class="about-btn">ABOUT</button>
             <p class="hint">&uarr;&darr; + ENTER</p>
           </div>
           <div class="art" aria-hidden="true">
@@ -88,6 +89,25 @@
         </div>
         <canvas id="game" width="480" height="640" hidden></canvas>
         <div id="outrun-root" hidden></div>
+        <!-- About overlay (src/about.js): opened from the title screen and from both pause menus -->
+        <div id="about" hidden role="dialog" aria-modal="true" aria-labelledby="about-title">
+          <div class="about-card">
+            <h2 id="about-title">ENDURO <a class="about-version" href="https://github.com/dwildt/enduro" target="_blank" rel="noopener">v</a></h2>
+            <p>A browser racer inspired by Atari Enduro and Sega OutRun, built during #100DaysOfCode.</p>
+            <h3>AUTHOR</h3>
+            <p><strong>Daniel Wildt</strong> &middot; Porto Alegre, Brazil<br>Dev, entrepreneur, mentor, drummer and content creator.</p>
+            <p class="about-links">
+              <a href="https://github.com/dwildt" target="_blank" rel="noopener">GITHUB</a>
+              <a href="https://www.linkedin.com/in/danielwildt" target="_blank" rel="noopener">LINKEDIN</a>
+              <a href="https://youtube.com/danielwildt" target="_blank" rel="noopener">YOUTUBE</a>
+            </p>
+            <h3>LIKE IT?</h3>
+            <a class="about-cta star" href="https://github.com/dwildt/enduro" target="_blank" rel="noopener">&#9733; Star the source code on GitHub</a>
+            <a class="about-cta sponsor" href="https://github.com/sponsors/dwildt" target="_blank" rel="noopener">&#9829; Support the author on GitHub Sponsors</a>
+            <p class="about-note">Music: original compositions and public-domain arrangements.</p>
+            <button type="button" class="about-close">CLOSE</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="control-panel" aria-hidden="true">

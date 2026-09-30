@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Added
+- About screen from the title screen and the pause menu of both modes: version, author (GitHub, LinkedIn, YouTube), star the source code and GitHub Sponsors links (#51).
+
 ## [1.0.0] - 2026-09-30
 
 First tagged release: both game modes inside the arcade cabinet.

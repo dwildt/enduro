@@ -116,6 +116,29 @@ body{background:radial-gradient(ellipse at 50% 30%,#2e2219 0%,#120d09 60%,#06040
   box-shadow:0 0 0 3px #7a1c12,.8cqw .8cqw 0 3px var(--green-dark)}
 #mode-select button.active::before{content:'\25B6  '}
 
+#mode-select .about-btn{font-size:max(7px,min(2.2cqw,3.2cqh));padding:min(2cqh,10px) 0}
+
+/* ---------- About overlay: cream card on the cover green, scrolls inside the screen if needed ---------- */
+#about{position:absolute;inset:0;z-index:2;box-sizing:border-box;padding:3cqh 4cqw;overflow-y:auto;
+  display:flex;align-items:safe center;justify-content:center;
+  background:rgba(8,20,12,.82);font-family:'Press Start 2P',monospace;
+  --green:#3d9a5f;--green-dark:#1f5e3a;--cream:#f4efe3;--red:#d23a2a;--yellow:#ffe45c}
+.about-card{box-sizing:border-box;width:min(100%,560px);padding:max(10px,3cqh) max(10px,3cqw);text-align:center;
+  font-size:max(7px,min(2cqw,2.35cqh));line-height:1.5;color:var(--green-dark);background:var(--cream);
+  border:3px solid var(--green-dark);box-shadow:0 0 0 3px var(--yellow),.8cqw .8cqw 0 3px #000}
+.about-card h2{margin:0 0 1cqh;font-size:1.9em;color:var(--red);letter-spacing:2px}
+.about-card h3{margin:1.1em 0 .3em;font-size:1em;color:var(--green)}
+.about-card p{margin:.3em 0}
+.about-card a{color:var(--red);outline:none}
+.about-card a:hover,.about-card a:focus-visible,.about-close:hover,.about-close:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.about-version{font-size:.5em;vertical-align:middle;text-decoration:none;margin-left:.4em}
+.about-links{display:flex;justify-content:center;flex-wrap:wrap;gap:.6em 1.4em}
+.about-cta{display:block;margin:.5em auto;padding:.55em .8em;text-decoration:none;color:#fff!important;border:3px solid var(--green-dark)}
+.about-cta.star{background:var(--green)}
+.about-cta.sponsor{background:var(--red)}
+.about-note{font-size:.85em;opacity:.8;margin-top:1em!important}
+.about-close{font:inherit;margin-top:.8em;padding:.7em 2em;color:#fff;background:var(--green-dark);border:3px solid var(--yellow);cursor:pointer;outline:none}
+
 /* OutRun mode CRT look: scanlines + vignette over the canvas (toggle with V) */
 #outrun-root .crt{position:absolute;left:0;top:0;pointer-events:none;
   background:repeating-linear-gradient(rgba(0,0,0,.18) 0 1px,transparent 1px 3px),

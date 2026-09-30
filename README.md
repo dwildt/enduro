@@ -21,6 +21,7 @@ Both modes share the same rules: three lanes, lives, power-ups and four progress
 ## Features
 
 - 🕹️ **Arcade cabinet** around the screen (woodgrain, marquee with per-mode stripes, CRT bezel, control panel) and a cover-art title screen mixing the Atari box art and the OutRun sunset
+- ℹ️ **About screen** (title screen and pause menu) with version, author links, a GitHub star link and GitHub Sponsors
 - 🌅 **OutRun mode** with pseudo-3D road, 4 themed stages (coast, mountains, desert, neon city) and a local top 5
 - 📻 **Radio select** with 7 FM-style stations (procedural Web Audio, no audio files): synth pop, latin fusion, synthwave, hard rock, funk metal and rock arrangements of Grieg and Bach
 - 🎮 **8-bit pixel-art visual style** with retro color palettes
@@ -39,7 +40,7 @@ Both modes share the same rules: three lanes, lives, power-ups and four progress
 | Input | Action |
 |-------|--------|
 | **Arrow Keys** or **A/D** | Switch lanes left/right |
-| **Space** or **P** | Pause menu: Continue / Restart / Menu |
+| **Space** or **P** | Pause menu: Continue / Restart / About / Menu |
 | **Arrows** + **Enter** | Choose an option in the pause and game over menus (Retry / Change car) |
 | **M** | Toggle music (OutRun mode) |
 | **E** | Toggle engine sound |
@@ -272,7 +273,7 @@ AssetLoader is tested in CommonJS format. See `tests/test_assets.js` for example
 
 ### Architecture
 
-- **Boot:** `src/boot.js` shows the mode select and lazy-loads CLASSIC (`src/main.js`) or OUTRUN (`src/outrun/index.js`)
+- **Boot:** `src/boot.js` shows the mode select and lazy-loads CLASSIC (`src/main.js`) or OUTRUN (`src/outrun/index.js`); `src/about.js` is the shared About overlay
 - **Game Loop:** Fixed timestep at 60 FPS using accumulator pattern (both modes)
 - **CLASSIC:** Canvas 2D with `imageSmoothingEnabled: false`, ES6 entity classes with lane-based positioning
 - **OUTRUN:** segment-based pseudo-3D road projected with PixiJS at 320x224, upscaled with pixelated CSS
