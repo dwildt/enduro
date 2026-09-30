@@ -136,6 +136,7 @@ npm run lint && npm test
 npm run build && npm run preview
 
 # Visual smoke test: screenshots of both modes at notebook/phone viewports (.verify-ui/)
+# Local only, not run in CI by design
 npm run verify:ui
 ```
 

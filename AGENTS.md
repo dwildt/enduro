@@ -48,6 +48,7 @@ node tests/test_<name>.mjs  # single ES module test
   - Filters: `--scenes classic,outrun-pause`, `--viewports notebook`; `--browser chromium` if Chrome is not installed (`npx playwright install chromium`).
   - Add a scene to `scripts/verify-ui.js` when a new screen or flow is added.
 - Before the owner pushes: `npm run verify:ui -- --preview` (production build + preview; checks asset paths).
+- `verify:ui` is local only and not run in CI by design (keeps deploys fast; needs a real browser).
 - Claude Code has this packaged as the `verify-ui` skill (`.claude/skills/verify-ui/`).
 
 ## Architecture
@@ -124,4 +125,4 @@ Rendering and flow (Pixi):
 
 ## CI/CD
 
-`.github/workflows/deploy.yml` runs on push to `main`: Node 22, `npm ci`, lint, test, `npm run build` (Vite, `base: './'`, bundles in `dist/bundle/`), then deploys `dist/` to GitHub Pages.
+`.github/workflows/deploy.yml` runs on push to `main`: Node 22, `npm ci`, lint, test, `npm run build` (Vite, `base: './'`, bundles in `dist/bundle/`), then deploys `dist/` to GitHub Pages. It does not run `verify:ui` (local only, see Verification).
