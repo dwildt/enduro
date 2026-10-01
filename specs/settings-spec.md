@@ -32,6 +32,11 @@ Players who already changed an option keep their saved choice; only players with
 - OUTRUN (`outrun/index.js`, `screens.js`): pause option `⚙ SETTINGS` with all four options; the menu spacing is tightened so 5 items fit in 224px.
 - `boot.js`: SETTINGS item with all four options (writes prefs only).
 
+## Issues
+- #54 — `src/prefs.js` and all-on audio defaults (do first).
+- #53 — Settings screen (title and pause menus).
+- #55 — CLASSIC on-screen `♪` button renamed `SFX`.
+
 ## Testing
 - `tests/test_prefs.mjs`: defaults with empty storage (all on), saved values win, set/get round trip, corrupt values.
 - `npm run verify:ui`: scenes `settings` (title), `classic-settings` and `outrun-settings` (pause), at 3 viewports; check that the 5-item pause menus fit.
