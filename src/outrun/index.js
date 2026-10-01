@@ -6,6 +6,7 @@ import { OutRunRenderer, WIDTH, HEIGHT } from './OutRunRenderer.js';
 import { Hud, label, FONT } from './hud.js';
 import { Screens, COLORS, saveScore, PAUSE_OPTIONS, GAME_OVER_OPTIONS, menuBounds } from './screens.js';
 import { openAbout } from '../about.js';
+import { openSettings } from '../settings.js';
 import { getPref, setPref } from '../prefs.js';
 import SoundManager from '../SoundManager.js';
 import MusicSequencer from '../audio/MusicSequencer.js';
@@ -85,6 +86,14 @@ export async function startOutRun(root){
     setState('race');
   }
 
+  // Settings changes apply live; the engine restarts on CONTINUE if it is on
+  function applySetting(name, on){
+    if(name === 'music') music.setMuted(!on);
+    if(name === 'engine') sound.setEngineMuted(!on);
+    if(name === 'sfx') sound.setSfxMuted(!on);
+    if(name === 'crt'){ crtOn = on; crt.hidden = !on; }
+  }
+
   function toggleEngine(){
     sound.setEngineMuted(!sound.isEngineMuted());
     if(!sound.isEngineMuted() && state === 'race') sound.startEngine(false);
@@ -136,6 +145,7 @@ export async function startOutRun(root){
       else if(option === 'RESTART' || option === 'CAR') setState('color');
       else if(option === 'RETRY') startRace();
       else if(option === 'ABOUT') openAbout(); // the race stays paused underneath
+      else if(option === 'SETTINGS') openSettings({ onChange: applySetting });
       else if(option === 'MENU') window.location.reload(); // back to the mode select screen
     },
     pause(){

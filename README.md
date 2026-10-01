@@ -21,6 +21,7 @@ Both modes share the same rules: three lanes, lives, power-ups and four progress
 ## Features
 
 - 🕹️ **Arcade cabinet** around the screen (woodgrain, marquee with per-mode stripes, CRT bezel, control panel that shows the controls of the current mode on desktop) and a cover-art title screen mixing the Atari box art and the OutRun sunset
+- ⚙️ **Settings screen** (title screen and pause menu) to turn music, engine, car sounds and CRT scanlines on/off, also on phones
 - ℹ️ **About screen** (title screen and pause menu) with version, author links, a GitHub star link and GitHub Sponsors
 - 🌅 **OutRun mode** with pseudo-3D road, 4 themed stages (coast, mountains, desert, neon city) and a local top 5
 - 📻 **Radio select** with 7 FM-style stations (procedural Web Audio, no audio files): synth pop, latin fusion, synthwave, hard rock, funk metal and rock arrangements of Grieg and Bach
@@ -43,7 +44,7 @@ On notebook/desktop the cabinet control panel shows the keys for the current mod
 | Input | Action |
 |-------|--------|
 | **Arrow Keys** or **A/D** | Switch lanes left/right |
-| **Space** or **P** | Pause menu: Continue / Restart / About / Menu |
+| **Space** or **P** | Pause menu: Continue / Restart / Settings / About / Menu |
 | **Arrows** + **Enter** | Choose an option in the pause and game over menus (Retry / Change car) |
 | **M** | Toggle music (OutRun mode) |
 | **E** | Toggle engine sound (on by default) |
@@ -60,6 +61,7 @@ The mode select screen uses **↑/↓** + **Enter** (or click). **R** is current
 | **On-screen buttons** | Tap left/right arrows at the bottom corners to change lanes |
 | **Pause button** | CLASSIC: bottom center (next to the sound buttons); OUTRUN: top-left, below the score |
 | **Sound buttons** | CLASSIC: bottom center (car sounds and engine) |
+| **Settings** | Both modes: pause → SETTINGS to turn music, engine, car sounds and CRT on/off |
 | **Menus** | Tap the options directly (pause, game over, mode select); in OutRun car/radio screens tap left/right thirds to browse and the center to confirm |
 | **Swipe left/right** | CLASSIC on larger touch screens: swipe to change lanes |
 

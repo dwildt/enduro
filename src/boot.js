@@ -1,7 +1,8 @@
-// Title screen: choose between the classic top-down game and the OutRun-style pseudo-3D mode (or open About)
+// Title screen: choose between the classic top-down game and the OutRun-style pseudo-3D mode (or open Settings/About)
 import { openAbout } from './about.js';
+import { openSettings } from './settings.js';
 
-const MODES = ['classic', 'outrun', 'about'];
+const MODES = ['classic', 'outrun', 'settings', 'about'];
 const menu = document.getElementById('mode-select');
 const buttons = Array.from(menu.querySelectorAll('button[data-mode]'));
 
@@ -16,6 +17,7 @@ function highlight(index){
 async function start(mode){
   if(started) return;
   if(mode === 'about'){ openAbout(); return; }
+  if(mode === 'settings'){ openSettings(); return; } // modes read the saved prefs when they load
   started = true;
   localStorage.setItem('enduro_mode', mode);
   window.removeEventListener('keydown', onKey);

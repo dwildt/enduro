@@ -10,6 +10,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 - About screen from the title screen and the pause menu of both modes: version, author (GitHub, LinkedIn, YouTube), star the source code and GitHub Sponsors links (#51).
+- Settings screen from the title screen and the pause menu of both modes: music, engine, car sounds and CRT toggles, usable on phones (#53).
 - Controls legend on the cabinet control panel (notebook/desktop), per mode (#52).
 
 ## [1.0.0] - 2026-09-30

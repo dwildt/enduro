@@ -32,6 +32,9 @@ Players who already changed an option keep their saved choice; only players with
 - OUTRUN (`outrun/index.js`, `screens.js`): pause option `⚙ SETTINGS` with all four options; the menu spacing is tightened so 5 items fit in 224px.
 - `boot.js`: SETTINGS item with all four options (writes prefs only).
 
+## Status
+- Settings implemented (#53). Deviations: canvas pause menus show `SETTINGS` without the gear (canvas fonts have no reliable gear glyph; the HTML title button and overlay title show it in a system font). On short screens (OUTRUN in phone portrait) the toggles go in 2 columns so BACK stays visible. `overlay.js` holds the keyboard/focus behavior shared with About.
+
 ## Issues
 - #54 — `src/prefs.js` and all-on audio defaults (do first).
 - #53 — Settings screen (title and pause menus).

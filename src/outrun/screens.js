@@ -8,7 +8,7 @@ import { loadRanking, saveScore as saveRankingScore } from '../ranking.js';
 export const COLORS = ['blue', 'purple', 'red', 'white', 'green'];
 const RANKING_KEY = 'enduro_outrun_ranking';
 
-export const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'ABOUT', 'MENU'];
+export const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'SETTINGS', 'ABOUT', 'MENU'];
 export const GAME_OVER_OPTIONS = ['RETRY', 'CAR'];
 
 // button rectangles (also used for touch hit-testing): game over side by side, pause stacked
@@ -16,7 +16,7 @@ export function menuBounds(options){
   if(options === GAME_OVER_OPTIONS){
     return options.map((_, i) => ({ x: (i === 0 ? WIDTH / 4 + 10 : WIDTH * 3 / 4 - 10) - 60, y: 164, w: 120, h: 22 }));
   }
-  return options.map((_, i) => ({ x: WIDTH / 2 - 60, y: 96 + i * 28, w: 120, h: 22 }));
+  return options.map((_, i) => ({ x: WIDTH / 2 - 60, y: 84 + i * 26, w: 120, h: 22 }));
 }
 
 // store the score in the local top 5; returns its rank (0-based) or -1
@@ -114,7 +114,7 @@ export class Screens {
   showPause(index){
     this.clear();
     this.panel(0, HEIGHT, 0.5);
-    label(this.root, 'PAUSE', WIDTH / 2, 64, { size: 16, anchorX: 0.5 });
+    label(this.root, 'PAUSE', WIDTH / 2, 58, { size: 16, anchorX: 0.5 });
     this.menu(PAUSE_OPTIONS, index);
   }
 }

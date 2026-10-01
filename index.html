@@ -28,7 +28,10 @@
           <div class="menu">
             <button type="button" data-mode="classic">CLASSIC</button>
             <button type="button" data-mode="outrun">OUTRUN</button>
-            <button type="button" data-mode="about" class="about-btn">ABOUT</button>
+            <div class="menu-row">
+              <button type="button" data-mode="settings" class="small-btn"><span class="gear" aria-hidden="true">&#9881;</span> SETTINGS</button>
+              <button type="button" data-mode="about" class="small-btn">ABOUT</button>
+            </div>
             <p class="hint">&uarr;&darr; + ENTER</p>
           </div>
           <div class="art" aria-hidden="true">
@@ -89,6 +92,17 @@
         </div>
         <canvas id="game" width="480" height="640" hidden></canvas>
         <div id="outrun-root" hidden></div>
+        <!-- Settings overlay (src/settings.js): each context shows only the options it uses -->
+        <div id="settings" hidden role="dialog" aria-modal="true" aria-labelledby="settings-title">
+          <div class="about-card settings-card">
+            <h2 id="settings-title"><span class="gear" aria-hidden="true">&#9881;</span> SETTINGS</h2>
+            <button type="button" class="toggle" data-pref="music"><span>MUSIC <kbd>M</kbd></span><span class="state">ON</span></button>
+            <button type="button" class="toggle" data-pref="engine"><span>ENGINE <kbd>E</kbd></span><span class="state">ON</span></button>
+            <button type="button" class="toggle" data-pref="sfx"><span>CAR SOUNDS <kbd>C</kbd></span><span class="state">ON</span></button>
+            <button type="button" class="toggle" data-pref="crt"><span>CRT SCANLINES <kbd>V</kbd></span><span class="state">ON</span></button>
+            <button type="button" class="about-close settings-back">BACK</button>
+          </div>
+        </div>
         <!-- About overlay (src/about.js): opened from the title screen and from both pause menus -->
         <div id="about" hidden role="dialog" aria-modal="true" aria-labelledby="about-title">
           <div class="about-card">

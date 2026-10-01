@@ -22,6 +22,7 @@ import { LevelManager } from './levelManager.js';
 import { loadRanking, saveScore } from './ranking.js';
 import { updateLaneChanges } from './laneChange.js';
 import { openAbout } from './about.js';
+import { openSettings } from './settings.js';
 const obstacles = []; // active obstacles array
 
 const levelManager = new LevelManager();
@@ -221,7 +222,7 @@ let paused = false;
 let flashTimer = 0; // visual flash on hit
 
 // Pause and game over menus (same options as the OutRun mode)
-const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'ABOUT', 'MENU'];
+const PAUSE_OPTIONS = ['CONTINUE', 'RESTART', 'SETTINGS', 'ABOUT', 'MENU'];
 const GAME_OVER_OPTIONS = ['RETRY', 'CHANGE COLOR'];
 let menuIndex = 0;
 
@@ -255,11 +256,18 @@ function openColorSelection() {
   soundManager.stopEngine();
 }
 
+// Settings changes apply to the running game; the engine restarts on CONTINUE if it is on
+function applySetting(name, on) {
+  if (name === 'engine') soundManager.setEngineMuted(!on);
+  if (name === 'sfx') soundManager.setSfxMuted(!on);
+}
+
 function selectMenuOption(option) {
   if (option === 'CONTINUE') setPaused(false);
   else if (option === 'RESTART' || option === 'CHANGE COLOR') openColorSelection();
   else if (option === 'RETRY') startGame();
   else if (option === 'ABOUT') openAbout(); // the game stays paused underneath
+  else if (option === 'SETTINGS') openSettings({ options: ['engine', 'sfx'], onChange: applySetting });
   else if (option === 'MENU') window.location.reload(); // back to the mode select screen
 }
 
