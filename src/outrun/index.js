@@ -6,6 +6,7 @@ import { OutRunRenderer, WIDTH, HEIGHT } from './OutRunRenderer.js';
 import { Hud, label, FONT } from './hud.js';
 import { Screens, COLORS, saveScore, PAUSE_OPTIONS, GAME_OVER_OPTIONS, menuBounds } from './screens.js';
 import { openAbout } from '../about.js';
+import { getPref, setPref } from '../prefs.js';
 import SoundManager from '../SoundManager.js';
 import MusicSequencer from '../audio/MusicSequencer.js';
 import { TRACKS } from '../audio/tracks.js';
@@ -29,7 +30,7 @@ export async function startOutRun(root){
   const crt = document.createElement('div');
   crt.className = 'crt';
   root.appendChild(crt);
-  let crtOn = localStorage.getItem('enduro_crt') !== 'false';
+  let crtOn = getPref('crt');
   crt.hidden = !crtOn;
 
   const road = buildTrack();
@@ -156,7 +157,7 @@ export async function startOutRun(root){
     else if(k === 'm') music.setMuted(!music.isMuted());          // M = music
     else if(k === 'e') toggleEngine();                            // E = engine
     else if(k === 'c') sound.setSfxMuted(!sound.isSfxMuted());    // C = car sounds (SFX)
-    else if(k === 'v'){ crtOn = !crtOn; crt.hidden = !crtOn; localStorage.setItem('enduro_crt', String(crtOn)); }
+    else if(k === 'v'){ crtOn = !crtOn; crt.hidden = !crtOn; setPref('crt', crtOn); }
     else if(k === 'Escape') window.location.reload(); // back to the mode select screen
     else return;
     e.preventDefault();

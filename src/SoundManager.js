@@ -1,19 +1,18 @@
+import { getPref, setPref } from './prefs.js';
+
 export default class SoundManager {
   constructor() {
     this.audioContext = null;
-    this.sfxMuted = false;      // SFX enabled by default
-    this.engineMuted = true;    // Engine disabled by default
+    this.sfxMuted = !getPref('sfx');       // defaults live in prefs.js (all on)
+    this.engineMuted = !getPref('engine');
     this.engineOscillator = null;
     this.engineGain = null;
   }
 
   init() {
-    // Load mute preferences from localStorage
-    const storedSfx = localStorage.getItem('enduro_sfx_muted');
-    this.sfxMuted = storedSfx === null ? false : storedSfx === 'true';
-
-    const storedEngine = localStorage.getItem('enduro_engine_muted');
-    this.engineMuted = storedEngine === null ? true : storedEngine === 'true';
+    // Reload mute preferences (they may have changed since the constructor, e.g. in Settings)
+    this.sfxMuted = !getPref('sfx');
+    this.engineMuted = !getPref('engine');
 
     // Create AudioContext (lazily initialized on first user interaction)
     if (!this.audioContext) {
@@ -23,12 +22,12 @@ export default class SoundManager {
 
   setSfxMuted(muted) {
     this.sfxMuted = muted;
-    localStorage.setItem('enduro_sfx_muted', muted.toString());
+    setPref('sfx', !muted);
   }
 
   setEngineMuted(muted) {
     this.engineMuted = muted;
-    localStorage.setItem('enduro_engine_muted', muted.toString());
+    setPref('engine', !muted);
     if (muted && this.engineOscillator) {
       this.stopEngine();
     }

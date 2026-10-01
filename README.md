@@ -46,7 +46,7 @@ On notebook/desktop the cabinet control panel shows the keys for the current mod
 | **Space** or **P** | Pause menu: Continue / Restart / About / Menu |
 | **Arrows** + **Enter** | Choose an option in the pause and game over menus (Retry / Change car) |
 | **M** | Toggle music (OutRun mode) |
-| **E** | Toggle engine sound |
+| **E** | Toggle engine sound (on by default) |
 | **C** | Toggle car sounds (sound effects) |
 | **V** | Toggle CRT scanlines — old TV look (OutRun mode) |
 | **Esc** | Back to mode select (OutRun mode) |

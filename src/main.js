@@ -263,6 +263,15 @@ function selectMenuOption(option) {
   else if (option === 'MENU') window.location.reload(); // back to the mode select screen
 }
 
+// Audio needs a user gesture: create it on the first key/touch and start the engine if already racing
+function ensureAudio() {
+  if (soundManager.audioContext) return;
+  soundManager.init();
+  if (running && !paused && !showColorSelection && !colorSelectionActive && !soundManager.isEngineMuted()) {
+    soundManager.startEngine(powerUpType === 'scoreboost');
+  }
+}
+
 let last = performance.now();
 const TICK = 1000/60;
 let accumulator = 0;
@@ -271,9 +280,7 @@ let accumulator = 0;
 const inputState = { left:false, right:false };
 window.addEventListener('keydown', (e) => {
   // Initialize audio on first keypress (browser requirement)
-  if (!soundManager.audioContext) {
-    soundManager.init();
-  }
+  ensureAudio();
 
   // Color selection keyboard navigation
   if (showColorSelection || colorSelectionActive) {
@@ -390,9 +397,7 @@ canvas.addEventListener('pointerdown', (ev) => {
   const y = (ev.clientY - rect.top) * canvas.height / rect.height;
 
   // Initialize audio on first touch if needed
-  if (!soundManager.audioContext) {
-    soundManager.init();
-  }
+  ensureAudio();
 
   // Color selection click handling
   if (showColorSelection || colorSelectionActive) {

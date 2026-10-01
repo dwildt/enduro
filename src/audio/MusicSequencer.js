@@ -1,5 +1,7 @@
 // Tiny Web Audio step sequencer with 2-operator FM voices (Mega Drive flavored),
 // an optional distorted power-chord guitar channel and noise drums.
+import { getPref, setPref } from '../prefs.js';
+
 const NOTE_INDEX = { C: 0, 'C#': 1, D: 2, 'D#': 3, E: 4, F: 5, 'F#': 6, G: 7, 'G#': 8, A: 9, 'A#': 10, B: 11 };
 const LOOKAHEAD = 0.12; // seconds scheduled ahead
 
@@ -41,7 +43,7 @@ export default class MusicSequencer {
     this.ctx = null;
     this.out = null;
     this.timer = null;
-    this.muted = localStorage.getItem('enduro_music_muted') === 'true';
+    this.muted = !getPref('music');
   }
 
   attach(audioContext){
@@ -59,7 +61,7 @@ export default class MusicSequencer {
   isMuted(){ return this.muted; }
   setMuted(muted){
     this.muted = muted;
-    localStorage.setItem('enduro_music_muted', String(muted));
+    setPref('music', !muted);
     if(this.out) this.out.gain.setTargetAtTime(muted ? 0 : 0.16, this.ctx.currentTime, 0.05);
   }
 

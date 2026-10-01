@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ## [Unreleased]
 
+### Changed
+- Music, engine and car sounds are all on by default (the engine used to start muted); saved choices are kept. Preferences are centralized in `src/prefs.js` (#54).
+
 ### Added
 - About screen from the title screen and the pause menu of both modes: version, author (GitHub, LinkedIn, YouTube), star the source code and GitHub Sponsors links (#51).
 - Controls legend on the cabinet control panel (notebook/desktop), per mode (#52).

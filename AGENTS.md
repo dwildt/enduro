@@ -116,7 +116,7 @@ Rendering and flow (Pixi):
 - `SoundManager.js` — procedural Web Audio SFX (hit, checkpoint, game over, power-up, lane change, timer beep, skid) and engine (`startEngine`, `updateEngineBoost`, `setEngineSpeed`).
 - `audio/MusicSequencer.js` + `audio/tracks.js` — FM step sequencer with an optional distorted power-chord `guitar` channel, noise drums (`k s h x`) and tempo ramps (`bpmEnd`/`bpmStep`); 7 radio stations (16 tokens per bar, each with `name` + `genre`).
 - **Music copyright rule:** only original compositions or arrangements of public-domain pieces (e.g. Grieg, Bach). Never transcribe or arrange copyrighted songs, even as MIDI/chiptune; "in the style of" originals are fine.
-- Mutes persisted: `enduro_sfx_muted`, `enduro_engine_muted`, `enduro_music_muted`.
+- Preferences live in `prefs.js` (`getPref(name)` / `setPref(name, on)` for `music`, `engine`, `sfx`, `crt`; keys `enduro_music_muted`, `enduro_engine_muted`, `enduro_sfx_muted`, `enduro_crt`). All default to on; saved choices win. `SoundManager`, `MusicSequencer` and the OUTRUN CRT read and write through it. CLASSIC creates audio on the first key/touch (`ensureAudio()`) and starts the engine if the race is running.
 
 ### Controls (same in both modes)
 | Key | Action |
