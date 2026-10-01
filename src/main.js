@@ -47,9 +47,9 @@ const scoreBoostDuration = 8; // 8 seconds of 2x score
 const scoreMultiplier = 2; // 2x multiplier when active
 const boostSpeedMultiplier = 1.4; // road moves faster while the score boost is active
 
-// Detect mobile/narrow viewport for showing touch buttons
+// Touch buttons on touch screens (also phones in landscape, wider than 768px) or narrow windows; same rule as OUTRUN
 function isMobileViewport() {
-  return window.innerWidth < 768; // Tablets and phones
+  return window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
 }
 
 let showTouchButtons = isMobileViewport();

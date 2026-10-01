@@ -14,6 +14,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Settings screen from the title screen and the pause menu of both modes: music, engine, car sounds and CRT toggles, usable on phones (#53).
 - Controls legend on the cabinet control panel (notebook/desktop), per mode (#52).
 
+### Fixed
+- CLASSIC shows its touch buttons on phones in landscape too (#56).
+- On touch screens, the tap that opens About or Settings from a pause menu no longer closes the overlay or toggles an option (#56).
+
 ## [1.0.0] - 2026-09-30
 
 First tagged release: both game modes inside the arcade cabinet.

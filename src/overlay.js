@@ -11,6 +11,7 @@ export function createOverlay(el){
     if(isOpen()) return;
     onCloseCallback = onClose || null;
     returnFocus = document.activeElement;
+    pressedInside = false;
     el.hidden = false;
     el.scrollTop = 0;
     (focus || focusables()[0]).focus({ preventScroll: true });
@@ -49,8 +50,15 @@ export function createOverlay(el){
     e.preventDefault();
   }
 
-  // a click on the dimmed backdrop (outside the card) also closes
-  el.addEventListener('click', (e) => { if(e.target === el) close(); });
+  // On touch screens the tap that opened the overlay (on the game canvas) ends with a click on whatever
+  // is now under the finger; ignore pointer clicks that did not start inside (keyboard clicks have detail 0).
+  let pressedInside = false;
+  el.addEventListener('pointerdown', () => { pressedInside = true; });
+  el.addEventListener('click', (e) => {
+    if(!pressedInside && e.detail !== 0){ e.preventDefault(); e.stopPropagation(); return; }
+    pressedInside = false;
+    if(e.target === el) close(); // the dimmed backdrop (outside the card) also closes
+  }, true);
 
   return { open, close, isOpen };
 }

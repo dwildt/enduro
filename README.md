@@ -65,7 +65,7 @@ The mode select screen uses **↑/↓** + **Enter** (or click). **R** is current
 | **Menus** | Tap the options directly (pause, game over, mode select); in OutRun car/radio screens tap left/right thirds to browse and the center to confirm |
 | **Swipe left/right** | CLASSIC on larger touch screens: swipe to change lanes |
 
-**Note:** On-screen buttons appear automatically on touch devices and narrow viewports (under 768px width). On phones the cabinet is slimmer (portrait) or reduced to the bezel (landscape).
+**Note:** On-screen buttons appear automatically in both modes on touch screens (including phones in landscape) and on narrow viewports (under 768px width). On phones the cabinet is slimmer (portrait) or reduced to the bezel (landscape).
 
 ## Power-ups
 
@@ -292,10 +292,10 @@ Detailed architecture: [AGENTS.md](AGENTS.md) and [specs/outrun-mode-spec.md](sp
 Test on actual mobile device or Chrome DevTools device emulation:
 
 **Movement Buttons:**
-- [ ] On-screen arrows appear on narrow viewport (< 768px width)
+- [ ] On-screen arrows appear on touch screens (portrait and landscape) and narrow viewports (< 768px width)
 - [ ] Left button moves car to left lane
 - [ ] Right button moves car to right lane
-- [ ] Buttons don't appear on desktop (> 768px width)
+- [ ] Buttons don't appear on desktop (mouse, > 768px width)
 - [ ] Buttons are large enough to tap comfortably (60x60px)
 
 **Swipe Detection:**
