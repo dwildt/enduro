@@ -34,6 +34,7 @@ Players who already changed an option keep their saved choice; only players with
 
 ## Status
 - Settings implemented (#53). Deviations: canvas pause menus show `SETTINGS` without the gear (canvas fonts have no reliable gear glyph; the HTML title button and overlay title show it in a system font). On short screens (OUTRUN in phone portrait) the toggles go in 2 columns so BACK stays visible. `overlay.js` holds the keyboard/focus behavior shared with About.
+- CLASSIC `♪` button renamed `SFX` (#55).
 
 ## Issues
 - #54 — `src/prefs.js` and all-on audio defaults (do first).

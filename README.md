@@ -60,7 +60,7 @@ The mode select screen uses **↑/↓** + **Enter** (or click). **R** is current
 |-------|--------|
 | **On-screen buttons** | Tap left/right arrows at the bottom corners to change lanes |
 | **Pause button** | CLASSIC: bottom center (next to the sound buttons); OUTRUN: top-left, below the score |
-| **Sound buttons** | CLASSIC: bottom center (car sounds and engine) |
+| **Sound buttons** | CLASSIC: bottom center, `SFX` (car sounds) and `ENG` (engine) |
 | **Settings** | Both modes: pause → SETTINGS to turn music, engine, car sounds and CRT on/off |
 | **Menus** | Tap the options directly (pause, game over, mode select); in OutRun car/radio screens tap left/right thirds to browse and the center to confirm |
 | **Swipe left/right** | CLASSIC on larger touch screens: swipe to change lanes |

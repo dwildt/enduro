@@ -6,6 +6,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ## [Unreleased]
 
 ### Changed
+- CLASSIC on-screen `♪` button renamed `SFX`, since it toggles the car sounds (#55).
 - Music, engine and car sounds are all on by default (the engine used to start muted); saved choices are kept. Preferences are centralized in `src/prefs.js` (#54).
 
 ### Added

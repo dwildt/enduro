@@ -1013,7 +1013,7 @@ function render(interp){
     ctx.fillText('→', moveButtons.right.x + moveButtons.right.w/2, moveButtons.right.y + moveButtons.right.h/2);
 
     // Control buttons (center)
-    drawControlButton(controlButtons.sfx, '♪', !soundManager.isSfxMuted(), '#0f0');
+    drawControlButton(controlButtons.sfx, 'SFX', !soundManager.isSfxMuted(), '#0f0');
     drawControlButton(controlButtons.engine, 'ENG', !soundManager.isEngineMuted(), '#fa0');
     drawControlButton(controlButtons.pause, '||', true, '#0af');
 
